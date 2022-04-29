@@ -23,12 +23,12 @@ function adaptPath(filepath) {
     return safeUnixPath;
   }
 
-  const setting = getUserSetting('terminal.integrated.shell');
+  /*const setting = getUserSetting('terminal.integrated.shell');
   const shell = setting.get('windows', '');
 
   if (!shell.endsWith('wsl.exe')) {
     return safeUnixPath;
-  }
+  }*/
 
   // append with /mnt and convert c: to c
   return '/mnt/' + safeUnixPath.replace(/^([a-zA-Z]):/, '$1');
@@ -40,11 +40,11 @@ function adaptPath(filepath) {
 
 function getSshCommand(
   config: { host: string; port: number; username: string },
-  extraOpiton?: string
+  extraOption?: string
 ) {
   let sshStr = `ssh -t ${config.username}@${config.host} -p ${config.port}`;
-  if (extraOpiton) {
-    sshStr += ` ${extraOpiton}`;
+  if (extraOption) {
+    sshStr += ` ${extraOption}`;
   }
   // sshStr += ` "cd \\"${config.workingDir}\\"; exec \\$SHELL -l"`;
   return sshStr;
