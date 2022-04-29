@@ -17,21 +17,15 @@ function shouldUseKey(config) {
 }
 
 function adaptPath(filepath) {
-  // convert to unix style
-  const safeUnixPath = filepath.replace(/\\\\/g, '/').replace(/\\/g, '/');
-  if (!isWindows) {
-    return safeUnixPath;
+  if (isWindows) {
+    return filepath.replace(/\\\\/g, '\');
   }
-
-  /*const setting = getUserSetting('terminal.integrated.shell');
-  const shell = setting.get('windows', '');
-
-  if (!shell.endsWith('wsl.exe')) {
-    return safeUnixPath;
-  }*/
+  
+  // convert to unix style
+  return filepath.replace(/\\\\/g, '/').replace(/\\/g, '/');
 
   // append with /mnt and convert c: to c
-  return '/mnt/' + safeUnixPath.replace(/^([a-zA-Z]):/, '$1');
+  //return '/mnt/' + safeUnixPath.replace(/^([a-zA-Z]):/, '$1');
 }
 
 // function shouldUsePass(config) {
