@@ -48,8 +48,9 @@ interface ServiceOption {
   };
   ignore: string[];
   ignoreFile: string;
-  remoteExplorer?: {
+  remoteExplorer: {
     filesExclude?: string[];
+    order: number | 0;
   };
   remoteTimeOffsetInHours: number;
   limitOpenFilesOnRemote: number | true;

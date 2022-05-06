@@ -28,7 +28,7 @@ to the `remotePath`.
 ## password
 *string*: The password for password-based user authentication (**note: this is stored as plain-text**).
 
-## remtoePath
+## remotePath
 *string*: The absolute path on the remote host.
 
 **Default**: `/`
@@ -103,6 +103,11 @@ Set `uploadOnSave` to false when you watch everything.
 ## remoteExplorer.fileExclude
 *string[]*: Configure that patterns for excluding files and folders.  The Remote Explorer decides which files and folders
 to show or hide based on this setting.
+
+## remoteExplorer.order
+*number*: Remote Explorer will ascending sorting by this value. If this value does not exist, sort by name.
+
+**Default**: 0
 
 ## concurrency
 *number*: Lowering the concurrency could get more stability because some clients/servers have some sort
