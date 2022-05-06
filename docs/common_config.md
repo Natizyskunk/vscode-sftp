@@ -105,7 +105,7 @@ Set `uploadOnSave` to false when you watch everything.
 to show or hide based on this setting.
 
 ## remoteExplorer.order
-*number*: Remote Explorer will ascending sorting by this value. If this value does not exist, sort by name.
+*number*: Remote Explorer will ascending sorting by this value. If the values are the same, sort by name.
 
 **Default**: 0
 
