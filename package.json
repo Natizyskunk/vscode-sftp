@@ -616,7 +616,7 @@
     "async": "^3.2.4",
     "fs-extra": "^10.1.0",
     "ftp": "^0.3.10",
-    "ignore": "^5.1.4",
+    "ignore": "^5.2.1",
     "joi": "^10.6.0",
     "lodash.debounce": "^4.0.8",
     "lru-cache": "^4.1.3",
