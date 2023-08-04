@@ -283,6 +283,15 @@
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
         }
+      },
+      {
+        "command": "sftp.remoteExplorer.refreshActiveFile",
+        "title": "Refresh Active Remote File",
+        "category": "SFTP",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
       }
     ],
     "menus": {
@@ -524,6 +533,13 @@
         {
           "command": "sftp.remoteExplorer.editInLocal",
           "group": "2_files",
+          "when": "sftp.enabled && resourceScheme == remote"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "sftp.remoteExplorer.refreshActiveFile",
+          "group": "navigation",
           "when": "sftp.enabled && resourceScheme == remote"
         }
       ],
