@@ -16,6 +16,7 @@ import { reportError, isValidFile, isConfigFile, isInWorkspace } from '../helper
 import { downloadFile, uploadFile } from '../fileHandlers';
 
 let workspaceWatcher: vscode.Disposable;
+let configFileWatcher;
 
 async function handleConfigSave(uri: vscode.Uri) {
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
@@ -93,6 +94,9 @@ function watchWorkspace({
   if (workspaceWatcher) {
     workspaceWatcher.dispose();
   }
+  if (configFileWatcher) {
+    configFileWatcher.dispose();
+  }
 
   workspaceWatcher = onDidSaveTextDocument((doc: vscode.TextDocument) => {
     const uri = doc.uri;
@@ -114,7 +118,7 @@ function watchWorkspace({
   });
 
 
-  let configFileWatcher = vscode.workspace.createFileSystemWatcher('**/' + CONFIG_PATH, true, false, true);
+  configFileWatcher = vscode.workspace.createFileSystemWatcher('**/' + CONFIG_PATH, true, false, true);
   logger.info(`Created config change watcher for **/` + CONFIG_PATH)
   configFileWatcher.onDidChange(uri=>{
     logger.info(`Change detected on ${uri}`)
@@ -145,6 +149,9 @@ function destory() {
   if (workspaceWatcher) {
     workspaceWatcher.dispose();
   }
+  if (configFileWatcher) {
+    configFileWatcher.dispose();
+  }  
 }
 
 export default {
