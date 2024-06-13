@@ -114,8 +114,8 @@ function watchWorkspace({
   });
 
 
-  logger.info(`Created config change watcher for **/` + CONFIG_PATH)
   let configFileWatcher = vscode.workspace.createFileSystemWatcher('**/' + CONFIG_PATH, true, false, true);
+  logger.info(`Created config change watcher for **/` + CONFIG_PATH)
   configFileWatcher.onDidChange(uri=>{
     logger.info(`Change detected on ${uri}`)
     if (isConfigFile(uri)) {
