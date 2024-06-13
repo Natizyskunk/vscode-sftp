@@ -5,6 +5,7 @@ import app from '../app';
 import StatusBarItem from '../ui/statusBarItem';
 import { onDidOpenTextDocument, onDidSaveTextDocument, showConfirmMessage } from '../host';
 import { readConfigsFromFile } from './config';
+import { CONFIG_PATH } from '../constants';
 import {
   createFileService,
   getFileService,
@@ -111,6 +112,18 @@ function watchWorkspace({
 
     onDidSaveFile(uri);
   });
+
+
+  logger.info(`Created config change watcher for **/` + CONFIG_PATH)
+  let configFileWatcher = vscode.workspace.createFileSystemWatcher('**/' + CONFIG_PATH, true, false, true);
+  configFileWatcher.onDidChange(uri=>{
+    logger.info(`Change detected on ${uri}`)
+    if (isConfigFile(uri)) {
+      onDidSaveSftpConfig(uri);
+      return;
+    }
+  });
+
 }
 
 function init() {
