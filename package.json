@@ -1,5 +1,5 @@
 {
-  "name": "sftp",
+  "name": "kreare-sftp",
   "displayName": "SFTP",
   "description": "SFTP/FTP sync",
   "version": "1.16.4",
