@@ -20,7 +20,7 @@
   },
 
   // we run the custom script "dev" as defined in package.json
-  "args": ["run", "dev", "--", "--display", "minimal"],
+  "args": ["run", "dev"],
 
   // The dev is started in watching mode
   "isBackground": true,
