@@ -42,6 +42,12 @@ const configScheme = {
   openSsh: Joi.boolean(),
   downloadOnOpen: Joi.boolean().allow('confirm'),
 
+  proxyType: Joi.string().valid('http', 'socks5'),
+  proxyHost: Joi.string(),
+  proxyPort: Joi.number().integer(),
+  proxyUsername: Joi.string(),
+  proxyPassword: Joi.string(),
+
   ignore: Joi.array()
     .min(0)
     .items(Joi.string()),
@@ -67,6 +73,7 @@ const configScheme = {
       .items(Joi.string()),
     order: Joi.number(),
   },
+
 };
 
 const defaultConfig = {

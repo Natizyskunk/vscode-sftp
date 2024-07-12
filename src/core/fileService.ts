@@ -75,6 +75,11 @@ interface SftpOption {
   concurrency: number;
   sshCustomParams?: string;
   hop: (Host & SftpOption)[] | (Host & SftpOption);
+  proxyType?: 'socks5' | 'http';
+  proxyHost?: string;
+  proxyPort?: number;
+  proxyUsername?: string;
+  proxyPassword?: string;
 }
 
 interface FtpOption {
