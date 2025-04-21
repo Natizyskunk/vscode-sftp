@@ -1,6 +1,7 @@
 ## SFTP configuration
 
 ### agent
+
 Path to ssh-agent's UNIX socket for ssh-agent-based user authentication. <br>
 Windows users must set to 'pageant' for authenticating with Pagenat or (actual) path to a Cygwin "UNIX socket". <br>
 It'd get more stability because some client/server have some sort of configured/hard coded limit.
@@ -16,6 +17,7 @@ It'd get more stability because some client/server have some sort of configured/
 ```
 
 ### privateKeyPath
+
 Absolute path to user private key.
 
 | Key | Value |
@@ -29,6 +31,7 @@ Absolute path to user private key.
 ```
 
 ### passphrase
+
 For an encrypted private key, this is the passphrase string used to decrypt it. <br>
 Set to 'true' for enable passphrase dialog. This will prevent from using cleartext passphrase in this config.
 
@@ -43,6 +46,7 @@ Set to 'true' for enable passphrase dialog. This will prevent from using clearte
 ```
 
 ### interactiveAuth
+
 Enable keyboard interaction authentication mechanism. Set to 'true' to enable `verifyCode` dialog. <br>
 For example using Google Authentication (multi-factor). Or pass array of predefined phrases to automatically enter them without user prompting.
 
@@ -61,6 +65,7 @@ For example using Google Authentication (multi-factor). Or pass array of predefi
 ```
 
 ### algorithms
+
 Explicit overrides for the default transport layer algorithms used for the connection.
 
 **Default**:
@@ -104,6 +109,7 @@ Explicit overrides for the default transport layer algorithms used for the conne
 ```
 
 ### sshConfigPath
+
 Absolute path to your SSH configuration file.
 
 | Key | Value | Default |
@@ -117,6 +123,7 @@ Absolute path to your SSH configuration file.
 ```
 
 ### sshCustomParams
+
 Extra parameters appended to the SSH command used by "Open SSH in Terminal".
 
 | Key | Value |
@@ -128,3 +135,48 @@ Extra parameters appended to the SSH command used by "Open SSH in Terminal".
   "sshCustomParams": "-g"
 }
 ```
+
+### Proxy Configuration (optional)
+
+Enable proxy.
+
+#### proxyHost
+
+Proxy server hostname.
+
+| Key | Value |
+| --- | --- |
+| *proxyHost* | *string* |
+
+#### proxyPort
+
+Proxy server port
+
+| Key | Value |
+| --- | --- |
+| *proxyPort* | *string* |
+
+#### proxyType
+
+'http' or 'socks5'
+
+| Key | Value |
+| --- | --- |
+| *proxyType* | *string* |
+
+#### proxyUsername
+
+Username for proxy authentication (optional)
+
+| Key | Value |
+| --- | --- |
+| *proxyUsername* | *string* |
+
+#### proxyPassword
+
+Password for proxy authentication (optional)
+
+| Key | Value |
+| --- | --- |
+| *proxyPassword* | *string* |
+

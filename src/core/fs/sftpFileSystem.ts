@@ -5,8 +5,11 @@ import FileSystem, {
   FileStats,
   FileOption,
 } from './fileSystem';
+
 import RemoteFileSystem from './remoteFileSystem';
 import { SSHClient } from '../remote-client';
+import { SocksClient } from 'socks';
+import { HttpProxyAgent } from 'http-proxy-agent';
 
 type FileHandle = Buffer;
 
@@ -33,7 +36,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
     return this.getClient().getFsClient();
   }
 
-  toFileStat(stat): FileStats {
+  toFileStat(stat: any): FileStats {
     return {
       type: FileSystem.getFileTypecharacter(stat),
       mode: toSimpleFileMode(stat.mode), // tslint:disable-line:no-bitwise
@@ -51,8 +54,36 @@ export default class SFTPFileSystem extends RemoteFileSystem {
     };
   }
 
-  _createClient(option) {
-    return new SSHClient(option);
+  _createClient(option: SftpOption) {
+    const { proxyType, proxyHost, proxyPort, proxyUsername, proxyPassword } = option;
+    let proxyAgent;
+
+    if (proxyType && proxyHost && proxyPort) {
+      if (proxyType === 'socks5') {
+        proxyAgent = {
+          createConnection: (options, callback) => {
+            SocksClient.createConnection({
+              proxy: { host: proxyHost, port: proxyPort, type: 5 },
+              command: 'connect',
+              destination: { host: options.host, port: options.port }
+            }, (err, info) => {
+              if (err) {
+                callback(err);
+              } else if (info) {
+                callback(null, info.socket);
+              } else {
+                callback(new Error('Connection info is undefined'));
+              }
+            });
+          }
+        };
+      } else if (proxyType === 'http') {
+        const auth = proxyUsername && proxyPassword ? `${proxyUsername}:${proxyPassword}@` : '';
+        proxyAgent = new HttpProxyAgent(`http://${auth}${proxyHost}:${proxyPort}`);
+      }
+    }
+
+    return new SSHClient({ ...option, agent: proxyAgent });
   }
 
   lstat(path: string): Promise<FileStats> {
@@ -67,6 +98,8 @@ export default class SFTPFileSystem extends RemoteFileSystem {
       });
     });
   }
+
+
 
   open(
     path: string,
