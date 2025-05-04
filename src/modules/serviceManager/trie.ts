@@ -1,6 +1,6 @@
 /* tslint:disable:max-classes-per-file ... */
 const defaultOption = {
-  delimiter: '/',
+  delimiter: "/",
 };
 
 interface ITrieNodeChildren<T> {
@@ -45,17 +45,21 @@ class TrieNode<T> {
   }
 
   getChildren(): TrieNode<T>[] {
-    return Object.keys(this.children).map(key => this.children[key]);
+    return Object.keys(this.children).map((key) => this.children[key]);
+  }
+
+  getChildrenNames() {
+    return Object.keys(this.children).toString();
   }
 
   addChild(token: string, childNode: TrieNode<T>): TrieNode<T> {
-    this.children[token] = childNode;
+    this.children[token.toLowerCase()] = childNode;
     childNode.parent = this;
     return this;
   }
 
   getChild(token: string): TrieNode<T> {
-    return this.children[token];
+    return this.children[token.toLowerCase()];
   }
 
   removeChild(node: TrieNode<T>) {
@@ -67,7 +71,7 @@ class TrieNode<T> {
   }
 
   hasChild(token): boolean {
-    return this.children[token] !== undefined ? true : false;
+    return this.children[token.toLowerCase()] !== undefined ? true : false;
   }
 }
 
@@ -77,12 +81,12 @@ export default class Trie<T> {
 
   constructor(dict: any, option?: any) {
     this.option = Object.assign({}, defaultOption, option);
-    this.root = new TrieNode<T>('@root');
-    Object.keys(dict).forEach(key => this.add(key, dict[key]));
+    this.root = new TrieNode<T>("@root");
+    Object.keys(dict).forEach((key) => this.add(key, dict[key]));
   }
 
   empty() {
-    this.root = new TrieNode('@root');
+    this.root = new TrieNode("@root");
   }
 
   isEmpty() {
@@ -118,7 +122,11 @@ export default class Trie<T> {
     let current = node;
     let parent;
     // tslint:disable-next-line no-conditional-assignment
-    while (!current.isLoaded() && current.getChildrenNum() <= 0 && (parent = current.getParent())) {
+    while (
+      !current.isLoaded() &&
+      current.getChildrenNum() <= 0 &&
+      (parent = current.getParent())
+    ) {
       parent.removeChild(current);
       current = parent;
     }
@@ -213,10 +221,10 @@ export default class Trie<T> {
   splitPath(path: string): string[] {
     let normalizePath = path;
     if (normalizePath[0] === this.option.delimiter) {
-      normalizePath = normalizePath.substr(1);
+      normalizePath = normalizePath.substring(1);
     }
     if (normalizePath[normalizePath.length - 1] === this.option.delimiter) {
-      normalizePath = normalizePath.substr(0, normalizePath.length - 1);
+      normalizePath = normalizePath.substring(0, normalizePath.length - 1);
     }
     return normalizePath.split(this.option.delimiter);
   }
