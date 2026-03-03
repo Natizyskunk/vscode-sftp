@@ -28,7 +28,6 @@
     "remote"
   ],
   "activationEvents": [
-    "onCommand:sftp.config",
     "workspaceContains:.vscode/sftp.json"
   ],
   "icon": "resources/icon.png",
