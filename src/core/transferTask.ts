@@ -3,6 +3,7 @@ import * as fileOperations from './fileBaseOperations';
 import { FileSystem, FileType } from './fs';
 import { Task } from './scheduler';
 import logger from '../logger';
+import * as path from 'path';
 
 let hasWarnedModifedTimePermission = false;
 
@@ -38,7 +39,11 @@ export default class TransferTask implements Task {
   private readonly _TransferOption: TransferOption;
   private _handle: Readable;
   private _cancelled: boolean;
-  // private _fileStatus: FileStatus;
+
+  // --- Task UI metadata ---
+  label: string;
+  taskId?: string;
+  taskStatus?: 'pending' | 'running' | 'done' | 'error';
 
   constructor(
     src: FileHandle,
@@ -56,6 +61,11 @@ export default class TransferTask implements Task {
     this._TransferOption = option.transferOption;
     this._transferDirection = option.transferDirection;
     this.fileType = option.fileType;
+    this.taskStatus = 'pending';
+    // Human-readable label: show filename + direction arrow
+    const fileName = path.basename(src.fsPath);
+    const arrow = option.transferDirection === TransferDirection.LOCAL_TO_REMOTE ? '↑' : '↓';
+    this.label = `${arrow} ${fileName}`;
   }
 
   get localFsPath() {

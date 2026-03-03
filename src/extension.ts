@@ -1,6 +1,9 @@
 'use strict';
+// vscode-nls MUST be configured before any other imports that use localize()
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import app from './app';
 import initCommands from './initCommands';

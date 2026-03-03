@@ -1,0 +1,60 @@
+{
+  "sftp.command.config.title": "Config",
+  "sftp.command.setProfile.title": "Set Profile",
+  "sftp.command.openConnectInTerminal.title": "Open SSH in Terminal",
+  "sftp.command.cancelAllTransfer.title": "Cancel All Transfers",
+
+  "sftp.command.upload.file.title": "Upload File",
+  "sftp.command.upload.changedFiles.title": "Upload Changed Files",
+  "sftp.command.upload.activeFile.title": "Upload Active File",
+  "sftp.command.upload.folder.title": "Upload Folder",
+  "sftp.command.upload.activeFolder.title": "Upload Active Folder",
+  "sftp.command.upload.project.title": "Upload Project",
+  "sftp.command.forceUpload.title": "Force Upload",
+  "sftp.command.upload.file.to.allProfiles.title": "Upload File To All Profiles",
+  "sftp.command.upload.activeFile.to.allProfiles.title": "Upload Active File To All Profiles",
+  "sftp.command.upload.folder.to.allProfiles.title": "Upload Folder To All Profiles",
+  "sftp.command.upload.activeFolder.to.allProfiles.title": "Upload Active Folder To All Profiles",
+  "sftp.command.upload.project.to.allProfiles.title": "Upload Project To All Profiles",
+  "sftp.command.forceUpload.to.allProfiles.title": "Force Upload To All Profiles",
+
+  "sftp.command.download.file.title": "Download File",
+  "sftp.command.download.activeFile.title": "Download Active File",
+  "sftp.command.download.folder.title": "Download Folder",
+  "sftp.command.download.activeFolder.title": "Download Active Folder",
+  "sftp.command.download.project.title": "Download Project",
+  "sftp.command.forceDownload.title": "Force Download",
+
+  "sftp.command.sync.localToRemote.title": "Sync Local -> Remote",
+  "sftp.command.sync.remoteToLocal.title": "Sync Remote -> Local",
+  "sftp.command.sync.bothDirections.title": "Sync Both Directions",
+
+  "sftp.command.diff.title": "Diff with Remote",
+  "sftp.command.diff.activeFile.title": "Diff Active File with Remote",
+
+  "sftp.command.list.title": "List",
+  "sftp.command.listActiveFolder.title": "List Active Folder",
+  "sftp.command.listAll.title": "List All",
+
+  "sftp.command.delete.remote.title": "Delete",
+  "sftp.command.create.folder.title": "Create Folder",
+  "sftp.command.create.file.title": "Create File",
+  "sftp.command.revealInExplorer.title": "Reveal in Explorer",
+  "sftp.command.revealInRemoteExplorer.title": "Reveal in Remote Explorer",
+  "sftp.command.remoteExplorer.editInLocal.title": "Edit in Local",
+  "sftp.command.viewContent.title": "View Content",
+  "sftp.command.remoteExplorer.refresh.title": "Refresh",
+  "sftp.command.remoteExplorer.refreshActiveFile.title": "Refresh Active Remote File",
+
+  "sftp.command.openTransferQueue.title": "Open Transfer Queue",
+  "sftp.command.chmod.title": "Change File Permissions (chmod)",
+  "sftp.command.search.remote.title": "Search Files on Remote",
+  "sftp.command.configureServer.title": "Configure Server (Visual Editor)",
+
+  "sftp.config.printDebugLog.description": "Print debug log on sftp output channel. (Reload VS Code after changing this setting)",
+  "sftp.config.debug.description": "Print debug log on sftp output channel. (Reload VS Code after changing this setting)",
+  "sftp.config.downloadWhenOpenInRemoteExplorer.description": "\"Download\" instead of \"View Content\" when open file in Remote Explorer",
+
+  "sftp.views.explorer.title": "Explorer",
+  "sftp.activitybar.sftp.title": "SFTP"
+}

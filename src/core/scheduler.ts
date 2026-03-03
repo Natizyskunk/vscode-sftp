@@ -3,6 +3,15 @@
 
 import { EventEmitter } from 'events';
 
+export interface TaskProgress {
+  /** Unique task identifier */
+  taskId: string;
+  /** Number of bytes transferred so far */
+  bytesTransferred: number;
+  /** Total bytes to transfer (0 if unknown) */
+  totalBytes: number;
+}
+
 // Port of lower_bound from http://en.cppreference.com/w/cpp/algorithm/lower_bound
 // Used to compute insertion index to keep queue sorted after insertion
 function lowerBound<T>(array: T[], value: T, comp: (a: T, b: T) => number) {
@@ -26,6 +35,12 @@ function lowerBound<T>(array: T[], value: T, comp: (a: T, b: T) => number) {
 }
 
 export interface Task {
+  /** Human-readable label for queue UI */
+  label?: string;
+  /** Unique ID assigned by Scheduler */
+  taskId?: string;
+  /** Current task status */
+  taskStatus?: 'pending' | 'running' | 'done' | 'error';
   run(): unknown | Promise<unknown>;
 }
 
@@ -73,7 +88,13 @@ class PriorityQueue<T> implements Queue<T> {
 
 const EVENT_TASK_START = 'task.start';
 const EVENT_TASK_DONE = 'task.done';
+const EVENT_TASK_PROGRESS = 'task.progress';
 const EVENT_IDLE = 'idle';
+
+let _taskIdCounter = 0;
+function nextTaskId(): string {
+  return `task_${++_taskIdCounter}_${Date.now()}`;
+}
 
 class Scheduler {
   private _queue: PriorityQueue<Task> = new PriorityQueue<Task>();
@@ -152,8 +173,29 @@ class Scheduler {
     this._eventEmitter.on(EVENT_TASK_DONE, listener);
   }
 
+  onTaskProgress(listener: (progress: TaskProgress) => void) {
+    this._eventEmitter.on(EVENT_TASK_PROGRESS, listener);
+  }
+
+  emitProgress(progress: TaskProgress) {
+    this._eventEmitter.emit(EVENT_TASK_PROGRESS, progress);
+  }
+
   onIdle(listener: () => void) {
     this._eventEmitter.on(EVENT_IDLE, listener);
+  }
+
+  /** Returns a snapshot of all pending tasks in the queue */
+  getQueue(): Task[] {
+    return (this._queue as any)._queue.map((item: { item: Task }) => item.item);
+  }
+
+  /** Schedule a task to run again (for retry after error) */
+  retry(task: Task) {
+    if (task.taskStatus === 'error') {
+      task.taskStatus = 'pending';
+      this.add(task);
+    }
   }
 
   get isRunning() {
@@ -180,13 +222,17 @@ class Scheduler {
 
   private async _runTask(task: Task) {
     this._pendingCount += 1;
+    task.taskId = task.taskId || nextTaskId();
+    task.taskStatus = 'running';
     this._eventEmitter.emit(EVENT_TASK_START, task);
 
     let error = null;
     try {
       await task.run();
+      task.taskStatus = 'done';
     } catch (err) {
       error = err;
+      task.taskStatus = 'error';
     } finally {
       this._pendingCount -= 1;
       this._eventEmitter.emit(EVENT_TASK_DONE, error, task);

@@ -1,0 +1,60 @@
+{
+  "sftp.command.config.title": "Настройки SFTP",
+  "sftp.command.setProfile.title": "Выбрать профиль",
+  "sftp.command.openConnectInTerminal.title": "Открыть SSH в терминале",
+  "sftp.command.cancelAllTransfer.title": "Отменить все передачи",
+
+  "sftp.command.upload.file.title": "Загрузить файл",
+  "sftp.command.upload.changedFiles.title": "Загрузить изменённые файлы",
+  "sftp.command.upload.activeFile.title": "Загрузить активный файл",
+  "sftp.command.upload.folder.title": "Загрузить папку",
+  "sftp.command.upload.activeFolder.title": "Загрузить активную папку",
+  "sftp.command.upload.project.title": "Загрузить проект",
+  "sftp.command.forceUpload.title": "Принудительная загрузка",
+  "sftp.command.upload.file.to.allProfiles.title": "Загрузить файл во все профили",
+  "sftp.command.upload.activeFile.to.allProfiles.title": "Загрузить активный файл во все профили",
+  "sftp.command.upload.folder.to.allProfiles.title": "Загрузить папку во все профили",
+  "sftp.command.upload.activeFolder.to.allProfiles.title": "Загрузить активную папку во все профили",
+  "sftp.command.upload.project.to.allProfiles.title": "Загрузить проект во все профили",
+  "sftp.command.forceUpload.to.allProfiles.title": "Принудительная загрузка во все профили",
+
+  "sftp.command.download.file.title": "Скачать файл",
+  "sftp.command.download.activeFile.title": "Скачать активный файл",
+  "sftp.command.download.folder.title": "Скачать папку",
+  "sftp.command.download.activeFolder.title": "Скачать активную папку",
+  "sftp.command.download.project.title": "Скачать проект",
+  "sftp.command.forceDownload.title": "Принудительное скачивание",
+
+  "sftp.command.sync.localToRemote.title": "Синхронизировать локальное → Сервер",
+  "sftp.command.sync.remoteToLocal.title": "Синхронизировать Сервер → локальное",
+  "sftp.command.sync.bothDirections.title": "Синхронизировать в обе стороны",
+
+  "sftp.command.diff.title": "Сравнить с удалённым",
+  "sftp.command.diff.activeFile.title": "Сравнить активный файл с удалённым",
+
+  "sftp.command.list.title": "Список файлов",
+  "sftp.command.listActiveFolder.title": "Список файлов активной папки",
+  "sftp.command.listAll.title": "Список всех файлов",
+
+  "sftp.command.delete.remote.title": "Удалить",
+  "sftp.command.create.folder.title": "Создать папку",
+  "sftp.command.create.file.title": "Создать файл",
+  "sftp.command.revealInExplorer.title": "Показать в проводнике",
+  "sftp.command.revealInRemoteExplorer.title": "Показать в удалённом проводнике",
+  "sftp.command.remoteExplorer.editInLocal.title": "Редактировать локально",
+  "sftp.command.viewContent.title": "Просмотреть содержимое",
+  "sftp.command.remoteExplorer.refresh.title": "Обновить",
+  "sftp.command.remoteExplorer.refreshActiveFile.title": "Обновить активный удалённый файл",
+
+  "sftp.command.openTransferQueue.title": "Открыть очередь передачи файлов",
+  "sftp.command.chmod.title": "Изменить права доступа (chmod)",
+  "sftp.command.search.remote.title": "Поиск файлов на сервере",
+  "sftp.command.configureServer.title": "Настроить сервер (визуальный редактор)",
+
+  "sftp.config.printDebugLog.description": "Выводить отладочный журнал в канал вывода SFTP (перезагрузите VS Code после изменения)",
+  "sftp.config.debug.description": "Выводить отладочный журнал в канал вывода SFTP (перезагрузите VS Code после изменения)",
+  "sftp.config.downloadWhenOpenInRemoteExplorer.description": "«Скачать» вместо «Просмотреть содержимое» при открытии файла в удалённом проводнике",
+
+  "sftp.views.explorer.title": "Проводник",
+  "sftp.activitybar.sftp.title": "SFTP"
+}

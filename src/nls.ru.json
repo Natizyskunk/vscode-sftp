@@ -1,0 +1,20 @@
+{
+  "sftp.error.connectionFailed": "SFTP: Ошибка подключения к {0}: {1}",
+  "sftp.info.connectionCancelled": "SFTP: Подключение отменено",
+  "sftp.info.reconnecting": "SFTP: Переподключение ({0}/{1})...",
+  "sftp.error.reconnectFailed": "SFTP: Не удалось переподключиться",
+  "sftp.info.uploadSuccess": "SFTP: Файл загружен: {0}",
+  "sftp.error.uploadFailed": "SFTP: Ошибка загрузки {0}: {1}",
+  "sftp.info.downloadSuccess": "SFTP: Файл скачан: {0}",
+  "sftp.error.downloadFailed": "SFTP: Ошибка скачивания {0}: {1}",
+  "sftp.info.syncStarted": "SFTP: Синхронизация запущена...",
+  "sftp.info.syncCompleted": "SFTP: Синхронизация завершена. Передано файлов: {0}",
+  "sftp.error.syncFailed": "SFTP: Ошибка синхронизации: {0}",
+  "sftp.error.fileNotFound": "SFTP: Файл не найден: {0}",
+  "sftp.error.permissionDenied": "SFTP: Нет доступа к файлу: {0}",
+  "sftp.error.configNotFound": "Файл конфигурации SFTP не найден. Запустите команду «SFTP: Настройки»",
+  "sftp.error.configInvalid": "Некорректная конфигурация SFTP: {0}",
+  "sftp.error.profileUnknown": "Неизвестный профиль «{0}». Проверьте настройки профилей.",
+  "sftp.info.queueCancelled": "SFTP: Все передачи отменены",
+  "sftp.warn.featureNotSupported": "SFTP: Функция не поддерживается для данного протокола: {0}"
+}

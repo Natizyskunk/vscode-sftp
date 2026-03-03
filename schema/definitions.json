@@ -93,6 +93,22 @@
             "type": "boolean",
             "description": "Update the dest only if a newer version is on the src filesystem.",
             "default": true
+          },
+          "smartSync": {
+            "type": "boolean",
+            "description": "Enable smart delta sync: compare files by mtime/size and show preview before syncing. Only transfers changed files instead of everything.",
+            "default": false
+          },
+          "conflictResolution": {
+            "type": "string",
+            "enum": ["newer", "local", "remote", "skip"],
+            "description": "How to resolve conflicts when both local and remote files changed. 'newer': prefer newer file (default). 'local': always prefer local. 'remote': always prefer remote. 'skip': skip conflicts.",
+            "default": "newer"
+          },
+          "mtimeDeltaSeconds": {
+            "type": "number",
+            "description": "Tolerance in seconds for mtime comparison (accounts for FAT/NFS clock drift). Default: 2",
+            "default": 2
           }
         }
       },
@@ -138,6 +154,26 @@
         "enum": ["number", true],
         "description": "Limit the open file descriptors to the specific number in a remote server. Set to true for using default limit(222). Do not set this unless you have to.",
         "default": true
+      },
+      "maxConnections": {
+        "type": "number",
+        "description": "Maximum number of simultaneous connections to the remote server. Prevents 'too many connections' errors. Default: 4.",
+        "default": 4,
+        "minimum": 1,
+        "maximum": 20
+      },
+      "retryCount": {
+        "type": "number",
+        "description": "Number of automatic reconnection attempts on connection failure (ECONNRESET, socket hang up, etc). Default: 3.",
+        "default": 3,
+        "minimum": 0,
+        "maximum": 10
+      },
+      "retryDelay": {
+        "type": "number",
+        "description": "Delay in milliseconds between reconnection attempts. Default: 3000 (3 seconds).",
+        "default": 3000,
+        "minimum": 500
       }
     }
   },
