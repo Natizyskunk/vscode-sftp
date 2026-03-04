@@ -106,7 +106,7 @@
 
 ### Способ 1 (VSIX)
 
-1. Скачайте `.vsix` файл из [релизов](https://github.com/IlhamAhmedow/vscode-sftp/releases/).
+1. Скачайте `.vsix` файл из [релизов](https://github.com/Ilham-ahmedow/vscode-sftp/releases/).
 2. В VS Code: Extensions → `...` → `Install from VSIX…`
 3. Выберите файл и перезагрузите.
 
@@ -242,4 +242,4 @@ Remote Explorer позволяет просматривать файлы на у
 
 ## Контакты
 
-Автор: **IlhamAhmedow** — ahmedow@ilham71.ru | [t.me/ilham2802](https://t.me/ilham2802)
+Автор: **Ilham-ahmedow** — ahmedow@ilham71.ru | [t.me/ilham2802](https://t.me/ilham2802)
