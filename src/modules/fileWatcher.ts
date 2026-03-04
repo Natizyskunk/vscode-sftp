@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as debounce from 'lodash.debounce';
 import logger from '../logger';
-import { isValidFile, fileDepth } from '../helper';
+import { isValidFile, fileDepth, simplifyPath } from '../helper';
 import { upload, removeRemote } from '../fileHandlers';
 import { WatcherService, TransferDirection } from '../core';
 import app from '../app';
@@ -33,11 +33,11 @@ function doUpload() {
     }
 
     const fspath = uri.fsPath;
-    logger.info(`[watcher/updated] ${fspath}`);
+    logger.info(`[watcher/updated] ${simplifyPath(fspath)}`);
     try {
       await upload(uri);
     } catch (error) {
-      logger.error(error, `upload ${fspath}`);
+      logger.error(error, `upload ${simplifyPath(fspath)}`);
       app.sftpBarItem.updateStatus(StatusBarItem.Status.error);
     }
   });
@@ -48,11 +48,11 @@ function doDelete() {
   deleteQueue.clear();
   files.forEach(async uri => {
     const fspath = uri.fsPath;
-    logger.info(`[watcher/removed] ${fspath}`);
+    logger.info(`[watcher/removed] ${simplifyPath(fspath)}`);
     try {
       await removeRemote(uri);
     } catch (error) {
-      logger.error(error, `remove ${fspath}`);
+      logger.error(error, `remove ${simplifyPath(fspath)}`);
       app.sftpBarItem.updateStatus(StatusBarItem.Status.error);
     }
   });

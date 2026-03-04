@@ -37,6 +37,7 @@
   "sftp.command.listAll.title": "List All",
 
   "sftp.command.delete.remote.title": "Delete",
+  "sftp.command.delete.both.title": "Delete Local and Remote",
   "sftp.command.create.folder.title": "Create Folder",
   "sftp.command.create.file.title": "Create File",
   "sftp.command.revealInExplorer.title": "Reveal in Explorer",

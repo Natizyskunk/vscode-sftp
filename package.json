@@ -2,20 +2,20 @@
   "name": "sftp",
   "displayName": "SFTP",
   "description": "SFTP/FTP sync",
-  "version": "1.16.3",
-  "publisher": "Natizyskunk",
-  "author": "Natizyskunk <natan.fourie@hotmail.fr> (https://github.com/Natizyskunk)",
+  "version": "2.0.0",
+  "publisher": "IlhamAhmedow",
+  "author": "IlhamAhmedow <ahmedow@ilham71.ru> (https://t.me/ilham2028)",
   "engines": {
     "vscode": "^1.64.2"
   },
   "bugs": {
-    "url": "https://github.com/Natizyskunk/vscode-sftp/issues",
-    "email": "natan.fourie@hotmail.fr"
+    "url": "https://github.com/IlhamAhmedow/vscode-sftp/issues",
+    "email": "ahmedow@ilham71.ru"
   },
-  "homepage": "https://github.com/Natizyskunk/vscode-sftp/blob/master/README.md",
+  "homepage": "https://github.com/IlhamAhmedow/vscode-sftp/blob/master/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Natizyskunk/vscode-sftp.git"
+    "url": "https://github.com/IlhamAhmedow/vscode-sftp.git"
   },
   "license": "MIT",
   "categories": [
@@ -246,6 +246,11 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.delete.both",
+        "title": "%sftp.command.delete.both.title%",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.create.folder",
         "title": "%sftp.command.create.folder.title%",
         "category": "SFTP"
@@ -448,6 +453,10 @@
           "when": "false"
         },
         {
+          "command": "sftp.delete.both",
+          "when": "false"
+        },
+        {
           "command": "sftp.create.folder",
           "when": "false"
         },
@@ -534,6 +543,11 @@
           "group": "sftp.trans@2",
           "alt": "sftp.forceDownload",
           "when": "sftp.enabled && explorerResourceIsFolder"
+        },
+        {
+          "command": "sftp.delete.both",
+          "group": "7_modification",
+          "when": "sftp.enabled && !explorerResourceIsRoot"
         }
       ],
       "editor/context": [
@@ -730,7 +744,7 @@
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "package": "vsce package",
-    "pub:debug": "rm -rf _debug && mkdir _debug && vsce package --out _debug/sftp-debug.vsix && cd _debug && git init && git commit --allow-empty -m 'update debug package' && git checkout -b debug-pacakge && cp ../INSTALL_DEBUG.md README.md  && git add . && git commit -am 'update debug package' && git push git@github.com:Natizyskunk/vscode-sftp.git debug-pacakge --force"
+    "pub:debug": "rm -rf _debug && mkdir _debug && vsce package --out _debug/sftp-debug.vsix && cd _debug && git init && git commit --allow-empty -m 'update debug package' && git checkout -b debug-pacakge && cp ../INSTALL_DEBUG.md README.md  && git add . && git commit -am 'update debug package' && git push git@github.com:IlhamAhmedow/vscode-sftp.git debug-pacakge --force"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",

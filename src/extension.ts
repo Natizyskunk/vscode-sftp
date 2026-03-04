@@ -54,12 +54,21 @@ export async function activate(context: vscode.ExtensionContext) {
       app.remoteExplorer.refresh();
     }
   });
+  // ── Кнопка в статус-баре для быстрого открытия визуального конфигуратора
+  const configBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 98);
+  configBtn.text = '$(settings-gear) SFTP';
+  configBtn.tooltip = 'Открыть SFTP: конфиг, файловый менеджер, логи';
+  configBtn.command = 'sftp.configureServer';
+  configBtn.show();
+  context.subscriptions.push(configBtn);
+
   try {
     await setup(workspaceFolders);
     app.remoteExplorer = new RemoteExplorer(context);
   } catch (error) {
     reportError(error);
   }
+
 }
 
 export function deactivate() {

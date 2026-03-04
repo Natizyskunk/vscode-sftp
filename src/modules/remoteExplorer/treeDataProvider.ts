@@ -270,7 +270,11 @@ export default class RemoteTreeData
       this._rootsMap!.set(id, item);
       this._map.set(item.resource.uri.query, item);
     });
-    this._roots.sort((a,b) => a.explorerContext.config.remoteExplorer.order - b.explorerContext.config.remoteExplorer.order || a.explorerContext.fileService.name.localeCompare(b.explorerContext.fileService.name));
+      this._roots.sort((a, b) =>
+        ((a.explorerContext.config.remoteExplorer || {}) as any).order -
+          ((b.explorerContext.config.remoteExplorer || {}) as any).order ||
+        a.explorerContext.fileService.name.localeCompare(b.explorerContext.fileService.name)
+      );
     return this._roots;
   }
 }

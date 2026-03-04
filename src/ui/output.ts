@@ -1,10 +1,14 @@
 import * as vscode from 'vscode';
+import { EventEmitter } from 'events';
 import app from '../app';
 import { EXTENSION_NAME } from '../constants';
 import StatusBarItem from './statusBarItem';
 
 let isShow = false;
 const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME);
+
+/** Глобальный EventEmitter — подписчики получают строки логов в реальном времени */
+export const logEmitter = new EventEmitter();
 
 export function show() {
   app.sftpBarItem.updateStatus(StatusBarItem.Status.ok);
@@ -43,4 +47,5 @@ export function print(...args) {
     .join(' ');
 
   outputChannel.appendLine(msg);
+  logEmitter.emit('log', msg);
 }

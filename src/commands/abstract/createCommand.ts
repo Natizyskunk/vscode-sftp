@@ -1,8 +1,16 @@
-import { Uri, window } from 'vscode';
-import logger from '../../logger';
-import { reportError } from '../../helper';
-import { handleCtxFromUri, allHandleCtxFromUri, FileHandlerContext } from '../../fileHandlers';
-import Command from './command';
+import { Uri, window } from "vscode";
+import logger from "../../logger";
+import { reportError } from "../../helper";
+import {
+  handleCtxFromUri,
+  allHandleCtxFromUri,
+  FileHandlerContext,
+} from "../../fileHandlers";
+import Command from "./command";
+import {
+  COMMAND_UPLOAD_FILE_TO_ALL_PROFILES,
+  COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES,
+} from "../../constants";
 
 interface BaseCommandOption {
   id: string;
@@ -15,7 +23,9 @@ interface CommandOption extends BaseCommandOption {
 
 interface FileCommandOption extends BaseCommandOption {
   handleFile: (ctx: FileHandlerContext) => Promise<unknown>;
-  getFileTarget: (...args: any[]) => undefined | Uri | Uri[] | Promise<undefined | Uri | Uri[]>;
+  getFileTarget: (
+    ...args: any[]
+  ) => undefined | Uri | Uri[] | Promise<undefined | Uri | Uri[]>;
 }
 
 function checkType<T>() {
@@ -39,7 +49,9 @@ export function createCommand(commandOption: CommandOption & { name: string }) {
   };
 }
 
-export function createFileCommand(commandOption: FileCommandOption & { name: string }) {
+export function createFileCommand(
+  commandOption: FileCommandOption & { name: string },
+) {
   return class FileCommand extends Command {
     constructor() {
       super();
@@ -48,19 +60,30 @@ export function createFileCommand(commandOption: FileCommandOption & { name: str
     }
 
     protected async doCommandRun(...args) {
-      if ((this.id === COMMAND_UPLOAD_FILE_TO_ALL_PROFILES || this.id === COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES) 
-        && await window.showInformationMessage('Are you sure you want to upload to all profiles?', 'Yes', 'No').then(answer => answer !== 'Yes')) {
+      if (
+        (this.id === COMMAND_UPLOAD_FILE_TO_ALL_PROFILES ||
+          this.id === COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES) &&
+        (await window
+          .showInformationMessage(
+            "Are you sure you want to upload to all profiles?",
+            "Yes",
+            "No",
+          )
+          .then((answer) => answer !== "Yes"))
+      ) {
         return;
       }
-      
+
       const target = await commandOption.getFileTarget(...args);
       if (!target) {
-        logger.warn(`The "${this.name}" command get canceled because of missing targets.`);
+        logger.warn(
+          `The "${this.name}" command get canceled because of missing targets.`,
+        );
         return;
       }
 
       const targetList: Uri[] = Array.isArray(target) ? target : [target];
-      const pendingTasks = targetList.map(async uri => {
+      const pendingTasks = targetList.map(async (uri) => {
         try {
           await commandOption.handleFile(handleCtxFromUri(uri));
         } catch (error) {
@@ -73,7 +96,9 @@ export function createFileCommand(commandOption: FileCommandOption & { name: str
   };
 }
 
-export function createFileMultiCommand(commandOption: FileCommandOption & { name: string }) {
+export function createFileMultiCommand(
+  commandOption: FileCommandOption & { name: string },
+) {
   return class FileCommand extends Command {
     constructor() {
       super();
@@ -82,21 +107,34 @@ export function createFileMultiCommand(commandOption: FileCommandOption & { name
     }
 
     protected async doCommandRun(...args) {
-      if ((this.id === COMMAND_UPLOAD_FILE_TO_ALL_PROFILES || this.id === COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES) 
-        && await window.showInformationMessage('Are you sure you want to upload to all profiles?', 'Yes', 'No').then(answer => answer !== 'Yes')) {
+      if (
+        (this.id === COMMAND_UPLOAD_FILE_TO_ALL_PROFILES ||
+          this.id === COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES) &&
+        (await window
+          .showInformationMessage(
+            "Are you sure you want to upload to all profiles?",
+            "Yes",
+            "No",
+          )
+          .then((answer) => answer !== "Yes"))
+      ) {
         return;
       }
-      
+
       const target = await commandOption.getFileTarget(...args);
       if (!target) {
-        logger.warn(`The "${this.name}" command get canceled because of missing targets.`);
+        logger.warn(
+          `The "${this.name}" command get canceled because of missing targets.`,
+        );
         return;
       }
 
       const targetList: Uri[] = Array.isArray(target) ? target : [target];
-      const pendingTasks = targetList.map(async uri => {
+      const pendingTasks = targetList.map(async (uri) => {
         try {
-          await Promise.all(allHandleCtxFromUri(uri).map(commandOption.handleFile));
+          await Promise.all(
+            allHandleCtxFromUri(uri).map(commandOption.handleFile),
+          );
         } catch (error) {
           reportError(error);
         }

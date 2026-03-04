@@ -38,3 +38,42 @@ export const removeRemote = createFileHandler<FileHandleOption & { skipDir?: boo
     refreshRemoteExplorer(this.target, false);
   },
 });
+
+export const removeBoth = createFileHandler<FileHandleOption & { skipDir?: boolean }>({
+  name: 'removeBoth',
+  async handle(option) {
+    const vscode = require('vscode');
+    const remoteFs = await this.fileService.getRemoteFileSystem(this.config);
+    const { remoteFsPath, localFsPath } = this.target;
+
+    // 1. Удаляем на сервере
+    try {
+      const stat = await remoteFs.lstat(remoteFsPath);
+      switch (stat.type) {
+        case FileType.Directory:
+          await fileOperations.removeDir(remoteFsPath, remoteFs, {});
+          break;
+        case FileType.File:
+        case FileType.SymbolicLink:
+          await fileOperations.removeFile(remoteFsPath, remoteFs, {});
+          break;
+        default:
+          logger.warn(`Unsupported file type (type = ${stat.type}). File ${remoteFsPath}`);
+      }
+    } catch (err) {
+      logger.warn(`Remote delete failed (may not exist): ${remoteFsPath} — ${err.message}`);
+    }
+
+    // 2. Удаляем локально через VS Code (корзина)
+    await vscode.workspace.fs.delete(vscode.Uri.file(localFsPath), { recursive: true, useTrash: true });
+  },
+  transformOption() {
+    const config = this.config;
+    return {
+      ignore: config.ignore,
+    };
+  },
+  afterHandle() {
+    refreshRemoteExplorer(this.target, false);
+  },
+});
