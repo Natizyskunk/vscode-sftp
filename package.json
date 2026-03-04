@@ -3,19 +3,19 @@
   "displayName": "SFTP",
   "description": "SFTP/FTP sync",
   "version": "2.0.0",
-  "publisher": "IlhamAhmedow",
-  "author": "IlhamAhmedow <ahmedow@ilham71.ru> (https://t.me/ilham2802)",
+  "publisher": "Ilham-ahmedow",
+  "author": "Ilham-ahmedow <ahmedow@ilham71.ru> (https://t.me/ilham2802)",
   "engines": {
     "vscode": "^1.64.2"
   },
   "bugs": {
-    "url": "https://github.com/IlhamAhmedow/vscode-sftp/issues",
+    "url": "https://github.com/Ilham-ahmedow/vscode-sftp/issues",
     "email": "ahmedow@ilham71.ru"
   },
-  "homepage": "https://github.com/IlhamAhmedow/vscode-sftp/blob/master/README.md",
+  "homepage": "https://github.com/Ilham-ahmedow/vscode-sftp/blob/master/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IlhamAhmedow/vscode-sftp.git"
+    "url": "https://github.com/Ilham-ahmedow/vscode-sftp.git"
   },
   "license": "MIT",
   "categories": [
