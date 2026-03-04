@@ -4,7 +4,7 @@
 (форк от оригинального [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git))
 
 - 📦 VSIX релизы: https://github.com/IlhamAhmedow/vscode-sftp/releases/
-- 📬 Контакт: ahmedow@ilham71.ru | [t.me/ilham2028](https://t.me/ilham2028)
+- 📬 Контакт: ahmedow@ilham71.ru | [t.me/ilham2802](https://t.me/ilham2802)
 
 ---
 
@@ -242,4 +242,4 @@ Remote Explorer позволяет просматривать файлы на у
 
 ## Контакты
 
-Автор: **IlhamAhmedow** — ahmedow@ilham71.ru | [t.me/ilham2028](https://t.me/ilham2028)
+Автор: **IlhamAhmedow** — ahmedow@ilham71.ru | [t.me/ilham2802](https://t.me/ilham2802)
