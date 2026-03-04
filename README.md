@@ -1,9 +1,9 @@
 # SFTP Sync — расширение для VS Code
 
-Поддерживаемая и значительно расширенная версия **v2.0.0** от [@IlhamAhmedow](https://github.com/IlhamAhmedow/) 🚀 <br>
+Поддерживаемая и значительно расширенная версия **v2.0.0** от [@Ilham-ahmedow](https://github.com/Ilham-ahmedow/) 🚀 <br>
 (форк от оригинального [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git))
 
-- 📦 VSIX релизы: https://github.com/IlhamAhmedow/vscode-sftp/releases/
+- 📦 VSIX релизы: https://github.com/Ilham-ahmedow/vscode-sftp/releases/
 - 📬 Контакт: ahmedow@ilham71.ru | [t.me/ilham2802](https://t.me/ilham2802)
 
 ---
