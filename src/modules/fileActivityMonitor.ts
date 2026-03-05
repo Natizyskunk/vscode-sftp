@@ -11,7 +11,7 @@ import {
   findAllFileService,
   disposeFileService,
 } from './serviceManager';
-import { reportError, isValidFile, isConfigFile, isInWorkspace } from '../helper';
+import { reportError, isValidFile, isConfigFile, isInWorkspace, simplifyPath } from '../helper';
 import { downloadFile, uploadFile } from '../fileHandlers';
 
 let workspaceWatcher: vscode.Disposable;
@@ -48,11 +48,11 @@ async function handleFileSave(uri: vscode.Uri) {
   if (config.uploadOnSave) {
     const fspath = await realpathSync.native(uri.fsPath);
     uri = vscode.Uri.file(fspath);
-    logger.info(`[file-save] ${fspath}`);
+    logger.info(`[file-save] ${simplifyPath(fspath)}`);
     try {
       await uploadFile(uri);
     } catch (error) {
-      logger.error(error, `download ${fspath}`);
+      logger.error(error, `upload ${simplifyPath(fspath)}`);
       app.sftpBarItem.updateStatus(StatusBarItem.Status.error);
     }
   }
@@ -72,11 +72,11 @@ async function downloadOnOpen(uri: vscode.Uri) {
     }
 
     const fspath = uri.fsPath;
-    logger.info(`[file-open] ${fspath}`);
+    logger.info(`[file-open] ${simplifyPath(fspath)}`);
     try {
       await downloadFile(uri);
     } catch (error) {
-      logger.error(error, `download ${fspath}`);
+      logger.error(error, `download ${simplifyPath(fspath)}`);
       app.sftpBarItem.updateStatus(StatusBarItem.Status.error);
     }
   }

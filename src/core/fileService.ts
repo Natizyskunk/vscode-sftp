@@ -14,6 +14,7 @@ import Scheduler from './scheduler';
 import { createRemoteIfNoneExist, removeRemoteFs } from './remoteFs';
 import TransferTask from './transferTask';
 import localFs from './localFs';
+import { QueuePanel } from '../ui/queuePanel';
 
 type Omit<T, U> = Pick<T, Exclude<keyof T, U>>;
 
@@ -47,6 +48,12 @@ interface ServiceOption {
     skipCreate: boolean;
     ignoreExisting: boolean;
     update: boolean;
+    /** Enable smart delta sync — show preview, transfer only changed files */
+    smartSync?: boolean;
+    /** Conflict resolution strategy: 'newer' | 'local' | 'remote' | 'skip' */
+    conflictResolution?: 'newer' | 'local' | 'remote' | 'skip';
+    /** Tolerance seconds for mtime comparison (default: 2) */
+    mtimeDeltaSeconds?: number;
   };
   ignore: string[];
   ignoreFile: string;
@@ -56,6 +63,13 @@ interface ServiceOption {
   };
   remoteTimeOffsetInHours: number;
   limitOpenFilesOnRemote: number | true;
+  // --- NEW: Connection Pool & Retry ---
+  /** Max simultaneous connections per host (default: 4) */
+  maxConnections?: number;
+  /** Number of retry attempts on connection failure (default: 3) */
+  retryCount?: number;
+  /** Delay in ms between retry attempts (default: 3000) */
+  retryDelay?: number;
 }
 
 interface WatcherConfig {
@@ -460,10 +474,24 @@ export default class FileService {
     scheduler.onTaskStart(task => {
       this._pendingTransferTasks.add(task as TransferTask);
       this._eventEmitter.emit(Event.BEFORE_TRANSFER, task);
+      // Update QueuePanel if open
+      const panel = QueuePanel.getInstance();
+      if (panel && task.taskId) {
+        panel.markRunning(task.taskId);
+      }
     });
     scheduler.onTaskDone((err, task) => {
       this._pendingTransferTasks.delete(task as TransferTask);
       this._eventEmitter.emit(Event.AFTER_TRANSFER, err, task);
+      // Update QueuePanel if open
+      const panel = QueuePanel.getInstance();
+      if (panel && task.taskId) {
+        if (err) {
+          panel.markError(task.taskId, err.message);
+        } else {
+          panel.markDone(task.taskId);
+        }
+      }
     });
 
     let runningPromise: Promise<void> | null = null;
@@ -480,8 +508,12 @@ export default class FileService {
         if (isStopped) {
           return;
         }
-
         scheduler.add(task);
+        // Add to QueuePanel if open
+        const panel = QueuePanel.getInstance();
+        if (panel) {
+          panel.addTask(task);
+        }
       },
       run() {
         if (isStopped) {

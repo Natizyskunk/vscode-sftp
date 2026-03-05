@@ -4,6 +4,8 @@
 !node_modules/**/*
 !dist/extension.js
 !package.json
+!package.nls.json
+!package.nls.ru.json
 !README.md
 !CHANGELOG.md
 !LICENSE

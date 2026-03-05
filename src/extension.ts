@@ -1,6 +1,9 @@
 'use strict';
+// vscode-nls MUST be configured before any other imports that use localize()
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import app from './app';
 import initCommands from './initCommands';
@@ -51,12 +54,28 @@ export async function activate(context: vscode.ExtensionContext) {
       app.remoteExplorer.refresh();
     }
   });
+  // ── Кнопка в статус-баре для быстрого открытия визуального конфигуратора
+  const configBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 98);
+  configBtn.text = '$(settings-gear) SFTP';
+  configBtn.tooltip = 'Открыть SFTP: конфиг, файловый менеджер, логи';
+  configBtn.command = 'sftp.configureServer';
+  configBtn.show();
+  context.subscriptions.push(configBtn);
+
+  const termBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 97);
+  termBtn.text = '$(terminal) SSH';
+  termBtn.tooltip = 'Открыть SSH терминал';
+  termBtn.command = 'sftp.openConnectInTerminal';
+  termBtn.show();
+  context.subscriptions.push(termBtn);
+
   try {
     await setup(workspaceFolders);
     app.remoteExplorer = new RemoteExplorer(context);
   } catch (error) {
     reportError(error);
   }
+
 }
 
 export function deactivate() {

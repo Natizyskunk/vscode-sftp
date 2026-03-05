@@ -19,6 +19,8 @@ const config = {
   externals: {
     vscode: 'commonjs vscode',
     ssh2: 'commonjs ssh2',
+    // git.d.ts provides types for VS Code built-in git extension, not a real module
+    './git': '{}',
   },
   resolve: {
     extensions: ['.ts', '.js'],
@@ -31,6 +33,10 @@ const config = {
         use: [
           {
             loader: 'ts-loader',
+            options: {
+              // transpileOnly: faster builds, skips type checking (use eslint/tsc separately)
+              transpileOnly: true,
+            },
           },
         ],
       },
