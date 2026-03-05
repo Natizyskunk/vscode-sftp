@@ -1,10 +1,10 @@
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-import { logEmitter } from './output';
+import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
+import { logEmitter } from "./output";
 
 export class ServerConfigPanel {
-  static readonly viewType = 'sftp.serverConfig';
+  static readonly viewType = "sftp.serverConfig";
   private static _instance: ServerConfigPanel | undefined;
 
   private readonly _panel: vscode.WebviewPanel;
@@ -18,8 +18,10 @@ export class ServerConfigPanel {
       return ServerConfigPanel._instance;
     }
     const panel = vscode.window.createWebviewPanel(
-      ServerConfigPanel.viewType, '⚙ SFTP', vscode.ViewColumn.One,
-      { enableScripts: true, retainContextWhenHidden: true }
+      ServerConfigPanel.viewType,
+      "⚙ SFTP",
+      vscode.ViewColumn.One,
+      { enableScripts: true, retainContextWhenHidden: true },
     );
     ServerConfigPanel._instance = new ServerConfigPanel(panel, configPath);
     return ServerConfigPanel._instance;
@@ -30,33 +32,56 @@ export class ServerConfigPanel {
     this._configPath = configPath;
     try {
       if (fs.existsSync(configPath)) {
-        this._config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        this._config = JSON.parse(fs.readFileSync(configPath, "utf8"));
       }
-    } catch { /* empty */ }
+    } catch {
+      /* empty */
+    }
 
     this._panel.onDidDispose(() => {
-      logEmitter.removeListener('log', this._logListener);
+      logEmitter.removeListener("log", this._logListener);
       ServerConfigPanel._instance = undefined;
     });
 
     this._logListener = (msg: string) => {
-      this._panel.webview.postMessage({ command: 'log', line: msg });
+      this._panel.webview.postMessage({ command: "log", line: msg });
     };
-    logEmitter.on('log', this._logListener);
+    logEmitter.on("log", this._logListener);
 
-    this._panel.webview.onDidReceiveMessage(async msg => {
+    this._panel.webview.onDidReceiveMessage(async (msg) => {
       switch (msg.command) {
-        case 'save': await this._save(msg.config); break;
-        case 'testConnection': await this._testConnection(msg.config); break;
-        case 'openFile':
-          vscode.workspace.openTextDocument(this._configPath).then(d => vscode.window.showTextDocument(d));
+        case "save":
+          await this._save(msg.config);
           break;
-        case 'listDir': await this._listDir(msg.remotePath); break;
-        case 'downloadFile': await this._downloadFile(msg.remotePath, false); break;
-        case 'deleteRemote': await this._deleteRemote(msg.remotePath, msg.isDir); break;
-        case 'uploadToDir': await this._uploadToDir(msg.remotePath); break;
-        case 'openLocalFile': await this._openLocalFile(msg.localPath, msg.remotePath); break;
-        case 'openInBrowser': this._openInBrowser(msg.remotePath); break;
+        case "testConnection":
+          await this._testConnection(msg.config);
+          break;
+        case "openTerminal":
+          this._openTerminal(msg.config);
+          break;
+        case "openFile":
+          vscode.workspace
+            .openTextDocument(this._configPath)
+            .then((d) => vscode.window.showTextDocument(d));
+          break;
+        case "listDir":
+          await this._listDir(msg.remotePath);
+          break;
+        case "downloadFile":
+          await this._downloadFile(msg.remotePath, false);
+          break;
+        case "deleteRemote":
+          await this._deleteRemote(msg.remotePath, msg.isDir);
+          break;
+        case "uploadToDir":
+          await this._uploadToDir(msg.remotePath);
+          break;
+        case "openLocalFile":
+          await this._openLocalFile(msg.localPath, msg.remotePath);
+          break;
+        case "openInBrowser":
+          this._openInBrowser(msg.remotePath);
+          break;
       }
     });
 
@@ -67,50 +92,100 @@ export class ServerConfigPanel {
     try {
       const merged = { ...this._config, ...config };
       for (const k of Object.keys(merged)) {
-        if (merged[k] === '' || merged[k] === null) delete merged[k];
+        if (merged[k] === "" || merged[k] === null) delete merged[k];
       }
       const dir = path.dirname(this._configPath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(this._configPath, JSON.stringify(merged, null, 2), 'utf8');
+      fs.writeFileSync(
+        this._configPath,
+        JSON.stringify(merged, null, 2),
+        "utf8",
+      );
       this._config = merged;
-      this._panel.webview.postMessage({ command: 'saved' });
-      vscode.window.showInformationMessage('SFTP: Конфигурация сохранена ✓');
+      this._panel.webview.postMessage({ command: "saved" });
+      vscode.window.showInformationMessage("SFTP: Конфигурация сохранена ✓");
     } catch (err) {
       vscode.window.showErrorMessage(`SFTP: Ошибка: ${(err as Error).message}`);
     }
   }
 
   private _connect(cfg: Record<string, any>) {
-    const { Client } = require('ssh2');
+    const { Client } = require("ssh2");
     const client = new Client();
     const opts: any = {
       host: cfg.host,
-      port: parseInt(cfg.port || '22', 10),
+      port: parseInt(cfg.port || "22", 10),
       username: cfg.username,
       password: cfg.password || undefined,
       readyTimeout: 9000,
     };
     if (cfg.privateKeyPath) {
-      opts.privateKey = fs.readFileSync(cfg.privateKeyPath.replace('~', process.env.HOME || ''));
+      opts.privateKey = fs.readFileSync(
+        cfg.privateKeyPath.replace("~", process.env.HOME || ""),
+      );
     }
     return { client, opts };
   }
 
+  private _openTerminal(cfg: Record<string, any>) {
+    if (cfg.protocol !== "sftp") {
+      vscode.window.showErrorMessage("Терминал доступен только для протокола SFTP");
+      return;
+    }
+    if (!cfg.host || !cfg.username) {
+      vscode.window.showErrorMessage("Для терминала нужны хост и пользователь");
+      return;
+    }
+    
+    const terminal = vscode.window.createTerminal(`SSH: ${cfg.name || cfg.host}`);
+    terminal.show();
+
+    let cmd = `ssh ${cfg.username}@${cfg.host} -p ${cfg.port || 22}`;
+
+    // Если есть приватный ключ - просто используем его
+    if (cfg.privateKeyPath) {
+      cmd += ` -i "${cfg.privateKeyPath.replace("~", process.env.HOME || "")}"`;
+      terminal.sendText(cmd);
+      return;
+    }
+
+    if (cfg.password) {
+      // Отключаем попытки зайти по всем локальным ключам (иначе сервер может оборвать коннект 
+      // с ошибкой Permission denied / Too many authentication failures до того, как запросит пароль).
+      const sshOpts = "-o PubkeyAuthentication=no -o PreferredAuthentications=password,keyboard-interactive";
+      
+      // Передаем через переменную окружения (SSHPASS) для безопасности (не светится в history).
+      cmd = `export SSHPASS="${cfg.password.replace(/"/g, '\\"')}" && sshpass -e ssh ${sshOpts} ${cfg.username}@${cfg.host} -p ${cfg.port || 22}`;
+    }
+
+    terminal.sendText(cmd);
+  }
+
   private async _testConnection(cfg: Record<string, any>) {
-    this._panel.webview.postMessage({ command: 'testingConnection' });
+    this._panel.webview.postMessage({ command: "testingConnection" });
     try {
-      const { client, opts } = this._connect(cfg);
+      const { client, opts } = this._connect(cfg);ф
       await new Promise<void>((resolve, reject) => {
-        const t = setTimeout(() => reject(new Error('Timeout (10s)')), 10000);
-        client.on('ready', () => { clearTimeout(t); client.end(); resolve(); })
-              .on('error', (e: Error) => { clearTimeout(t); reject(e); })
-              .connect(opts);
+        const t = setTimeout(() => reject(new Error("Timeout (10s)")), 10000);
+        client
+          .on("ready", () => {
+            clearTimeout(t);
+            client.end();
+            resolve();
+          })
+          .on("error", (e: Error) => {
+            clearTimeout(t);
+            reject(e);
+          })
+          .connect(opts);
       });
-      this._panel.webview.postMessage({ command: 'testSuccess' });
-      vscode.window.showInformationMessage(`SFTP: ✅ Подключение к ${cfg.host} успешно!`);
+      this._panel.webview.postMessage({ command: "testSuccess" });
+      vscode.window.showInformationMessage(
+        `SFTP: ✅ Подключение к ${cfg.host} успешно!`,
+      );
     } catch (err) {
       const msg = (err as Error).message;
-      this._panel.webview.postMessage({ command: 'testError', message: msg });
+      this._panel.webview.postMessage({ command: "testError", message: msg });
       vscode.window.showErrorMessage(`SFTP: ❌ ${msg}`);
     }
   }
@@ -119,45 +194,70 @@ export class ServerConfigPanel {
     try {
       const { client, opts } = this._connect(this._config);
       const listing: any[] = await new Promise((resolve, reject) => {
-        client.on('ready', () => {
-          client.sftp((err, sftp) => {
-            if (err) { client.end(); return reject(err); }
-            sftp.readdir(remotePath, (err2, list) => {
-              client.end();
-              if (err2) return reject(err2);
-              resolve(list);
+        client
+          .on("ready", () => {
+            client.sftp((err, sftp) => {
+              if (err) {
+                client.end();
+                return reject(err);
+              }
+              sftp.readdir(remotePath, (err2, list) => {
+                client.end();
+                if (err2) return reject(err2);
+                resolve(list);
+              });
             });
-          });
-        }).on('error', reject).connect(opts);
+          })
+          .on("error", reject)
+          .connect(opts);
       });
 
       const localBase = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-      const configRemoteBase = this._config.remotePath || '/';
+      const configRemoteBase = this._config.remotePath || "/";
 
       const files = listing
         .sort((a, b) => {
-          const aD = !!(a.attrs.mode & 0o040000), bD = !!(b.attrs.mode & 0o040000);
-          if (aD && !bD) return -1; if (!aD && bD) return 1;
+          const aD = !!(a.attrs.mode & 0o040000),
+            bD = !!(b.attrs.mode & 0o040000);
+          if (aD && !bD) return -1;
+          if (!aD && bD) return 1;
           return a.filename.localeCompare(b.filename);
         })
-        .map(f => {
+        .map((f) => {
           const isDir = !!(f.attrs.mode & 0o040000);
-          const fp = remotePath.replace(/\/+$/, '') + '/' + f.filename;
+          const fp = remotePath.replace(/\/+$/, "") + "/" + f.filename;
           const rel = path.posix.relative(configRemoteBase, fp);
           const localFsPath = localBase ? path.join(localBase, rel) : null;
-          let localStatus: 'ok' | 'outdated' | 'none' = 'none';
+          let localStatus: "ok" | "outdated" | "none" = "none";
           if (!isDir && localFsPath) {
             try {
               const ls = fs.statSync(localFsPath);
-              localStatus = ls.mtimeMs >= f.attrs.mtime * 1000 - 2000 ? 'ok' : 'outdated';
-            } catch { /* no local file */ }
+              localStatus =
+                ls.mtimeMs >= f.attrs.mtime * 1000 - 2000 ? "ok" : "outdated";
+            } catch {
+              /* no local file */
+            }
           }
-          return { name: f.filename, isDir, size: f.attrs.size, mtime: f.attrs.mtime * 1000, localStatus, localPath: localFsPath || '' };
+          return {
+            name: f.filename,
+            isDir,
+            size: f.attrs.size,
+            mtime: f.attrs.mtime * 1000,
+            localStatus,
+            localPath: localFsPath || "",
+          };
         });
 
-      this._panel.webview.postMessage({ command: 'dirListing', remotePath, files });
+      this._panel.webview.postMessage({
+        command: "dirListing",
+        remotePath,
+        files,
+      });
     } catch (err) {
-      this._panel.webview.postMessage({ command: 'dirError', message: (err as Error).message });
+      this._panel.webview.postMessage({
+        command: "dirError",
+        message: (err as Error).message,
+      });
     }
   }
 
@@ -165,68 +265,109 @@ export class ServerConfigPanel {
     const folders = vscode.workspace.workspaceFolders;
     if (!folders) return;
     const localBase = folders[0].uri.fsPath;
-    const rel = path.posix.relative(this._config.remotePath || '/', remotePath);
+    const rel = path.posix.relative(this._config.remotePath || "/", remotePath);
     const localPath = path.join(localBase, rel);
     const { client, opts } = this._connect(this._config);
     await new Promise<void>((resolve, reject) => {
-      client.on('ready', () => {
-        client.sftp((err, sftp) => {
-          if (err) { client.end(); return reject(err); }
-          fs.mkdirSync(path.dirname(localPath), { recursive: true });
-          sftp.fastGet(remotePath, localPath, err2 => { client.end(); err2 ? reject(err2) : resolve(); });
-        });
-      }).on('error', reject).connect(opts);
+      client
+        .on("ready", () => {
+          client.sftp((err, sftp) => {
+            if (err) {
+              client.end();
+              return reject(err);
+            }
+            fs.mkdirSync(path.dirname(localPath), { recursive: true });
+            sftp.fastGet(remotePath, localPath, (err2) => {
+              client.end();
+              err2 ? reject(err2) : resolve();
+            });
+          });
+        })
+        .on("error", reject)
+        .connect(opts);
     });
     if (!skipMsg) {
       vscode.window.showInformationMessage(`SFTP: ✅ Скачан → ${localPath}`);
-      this._panel.webview.postMessage({ command: 'downloadDone' });
+      this._panel.webview.postMessage({ command: "downloadDone" });
     }
     return localPath;
   }
 
   private async _deleteRemote(remotePath: string, isDir: boolean) {
-    const ok = await vscode.window.showWarningMessage(`Удалить на сервере: ${remotePath}?`, { modal: true }, 'Удалить');
-    if (ok !== 'Удалить') return;
+    const ok = await vscode.window.showWarningMessage(
+      `Удалить на сервере: ${remotePath}?`,
+      { modal: true },
+      "Удалить",
+    );
+    if (ok !== "Удалить") return;
     try {
       const { client, opts } = this._connect(this._config);
       await new Promise<void>((resolve, reject) => {
-        client.on('ready', () => {
-          client.sftp((err, sftp) => {
-            if (err) { client.end(); return reject(err); }
-            const done = (e?) => { client.end(); e ? reject(e) : resolve(); };
-            if (isDir) {
-              client.exec(`rm -rf "${remotePath}"`, (e, stream) => {
-                if (e) return done(e);
-                stream.on('close', () => done()).stderr.on('data', d => reject(new Error(d.toString())));
-              });
-            } else { sftp.unlink(remotePath, done); }
-          });
-        }).on('error', reject).connect(opts);
+        client
+          .on("ready", () => {
+            client.sftp((err, sftp) => {
+              if (err) {
+                client.end();
+                return reject(err);
+              }
+              const done = (e?) => {
+                client.end();
+                e ? reject(e) : resolve();
+              };
+              if (isDir) {
+                client.exec(`rm -rf "${remotePath}"`, (e, stream) => {
+                  if (e) return done(e);
+                  stream
+                    .on("close", () => done())
+                    .stderr.on("data", (d) => reject(new Error(d.toString())));
+                });
+              } else {
+                sftp.unlink(remotePath, done);
+              }
+            });
+          })
+          .on("error", reject)
+          .connect(opts);
       });
       vscode.window.showInformationMessage(`SFTP: ✅ Удалено: ${remotePath}`);
-      this._panel.webview.postMessage({ command: 'deleteRemoteDone' });
+      this._panel.webview.postMessage({ command: "deleteRemoteDone" });
     } catch (err) {
       vscode.window.showErrorMessage(`SFTP: ❌ ${(err as Error).message}`);
     }
   }
 
   private async _uploadToDir(remotePath: string) {
-    const uris = await vscode.window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: false, openLabel: 'Выгрузить' });
+    const uris = await vscode.window.showOpenDialog({
+      canSelectFiles: true,
+      canSelectFolders: false,
+      canSelectMany: false,
+      openLabel: "Выгрузить",
+    });
     if (!uris?.[0]) return;
     const localFile = uris[0].fsPath;
-    const remoteFile = remotePath.replace(/\/+$/, '') + '/' + path.basename(localFile);
+    const remoteFile =
+      remotePath.replace(/\/+$/, "") + "/" + path.basename(localFile);
     try {
       const { client, opts } = this._connect(this._config);
       await new Promise<void>((resolve, reject) => {
-        client.on('ready', () => {
-          client.sftp((err, sftp) => {
-            if (err) { client.end(); return reject(err); }
-            sftp.fastPut(localFile, remoteFile, err2 => { client.end(); err2 ? reject(err2) : resolve(); });
-          });
-        }).on('error', reject).connect(opts);
+        client
+          .on("ready", () => {
+            client.sftp((err, sftp) => {
+              if (err) {
+                client.end();
+                return reject(err);
+              }
+              sftp.fastPut(localFile, remoteFile, (err2) => {
+                client.end();
+                err2 ? reject(err2) : resolve();
+              });
+            });
+          })
+          .on("error", reject)
+          .connect(opts);
       });
       vscode.window.showInformationMessage(`SFTP: ✅ Выгружен → ${remoteFile}`);
-      this._panel.webview.postMessage({ command: 'uploadDone' });
+      this._panel.webview.postMessage({ command: "uploadDone" });
     } catch (err) {
       vscode.window.showErrorMessage(`SFTP: ❌ ${(err as Error).message}`);
     }
@@ -235,36 +376,42 @@ export class ServerConfigPanel {
   private async _openLocalFile(localPath: string, remotePath: string) {
     try {
       if (!fs.existsSync(localPath)) {
-        vscode.window.showInformationMessage(`SFTP: Скачиваю ${path.basename(remotePath)}...`);
+        vscode.window.showInformationMessage(
+          `SFTP: Скачиваю ${path.basename(remotePath)}...`,
+        );
         await this._downloadFile(remotePath, true);
       }
       const doc = await vscode.workspace.openTextDocument(localPath);
-      await vscode.window.showTextDocument(doc, { viewColumn: vscode.ViewColumn.Beside });
+      await vscode.window.showTextDocument(doc, {
+        viewColumn: vscode.ViewColumn.Beside,
+      });
     } catch (err) {
       vscode.window.showErrorMessage(`SFTP: ❌ ${(err as Error).message}`);
     }
   }
 
   private _openInBrowser(remotePath: string) {
-    const siteUrl = (this._config.siteUrl || '').replace(/\/+$/, '');
+    const siteUrl = (this._config.siteUrl || "").replace(/\/+$/, "");
     if (!siteUrl) {
-      vscode.window.showWarningMessage('SFTP: Укажите URL сайта в настройках (поле "URL сайта")');
+      vscode.window.showWarningMessage(
+        'SFTP: Укажите URL сайта в настройках (поле "URL сайта")',
+      );
       return;
     }
-    const rel = path.posix.relative(this._config.remotePath || '/', remotePath);
-    vscode.env.openExternal(vscode.Uri.parse(siteUrl + '/' + rel));
+    const rel = path.posix.relative(this._config.remotePath || "/", remotePath);
+    vscode.env.openExternal(vscode.Uri.parse(siteUrl + "/" + rel));
   }
 
-  private _v(k: string, fb = '') {
+  private _v(k: string, fb = "") {
     const v = this._config[k];
     return v !== undefined && v !== null ? String(v) : fb;
   }
 
   private _render() {
     const c = this._config;
-    const protocol = c.protocol || 'sftp';
+    const protocol = c.protocol || "sftp";
     const syncOpt = c.syncOption || {};
-    const remotePath = this._v('remotePath', '/');
+    const remotePath = this._v("remotePath", "/");
 
     // ─── CSS ───────────────────────────────────────────────────────────────
     const css = `
@@ -357,7 +504,7 @@ button.sm{padding:4px 10px;font-size:12px;border-radius:5px;}
 .autoscroll-btn.on{border-color:var(--green);color:var(--green);}`;
 
     // ─── HTML ──────────────────────────────────────────────────────────────
-    const ignore = Array.isArray(c.ignore) ? c.ignore.join('\n') : '';
+    const ignore = Array.isArray(c.ignore) ? c.ignore.join("\n") : "";
 
     this._panel.webview.html = `<!DOCTYPE html>
 <html lang="ru"><head><meta charset="UTF-8">
@@ -377,9 +524,9 @@ button.sm{padding:4px 10px;font-size:12px;border-radius:5px;}
   <div class="section">
     <h3>Протокол</h3>
     <div class="proto-tabs">
-      <div class="proto-tab ${protocol==='sftp'?'active':''}" onclick="setProtocol('sftp')">SFTP (SSH)</div>
-      <div class="proto-tab ${protocol==='ftp'?'active':''}" onclick="setProtocol('ftp')">FTP</div>
-      <div class="proto-tab ${protocol==='ftps'?'active':''}" onclick="setProtocol('ftps')">FTPS</div>
+      <div class="proto-tab ${protocol === "sftp" ? "active" : ""}" onclick="setProtocol('sftp')">SFTP (SSH)</div>
+      <div class="proto-tab ${protocol === "ftp" ? "active" : ""}" onclick="setProtocol('ftp')">FTP</div>
+      <div class="proto-tab ${protocol === "ftps" ? "active" : ""}" onclick="setProtocol('ftps')">FTPS</div>
     </div>
     <input type="hidden" id="protocol" value="${protocol}">
   </div>
@@ -387,28 +534,28 @@ button.sm{padding:4px 10px;font-size:12px;border-radius:5px;}
   <div class="section">
     <h3>Соединение</h3>
     <div class="grid three">
-      <div class="field"><label>Хост <span class="req">*</span></label><input id="host" type="text" placeholder="example.com" value="${this._v('host')}"></div>
-      <div class="field"><label>Порт</label><input id="port" type="number" placeholder="22" value="${this._v('port','22')}"></div>
-      <div class="field"><label>Таймаут (мс)</label><input id="connectTimeout" type="number" placeholder="10000" value="${this._v('connectTimeout','10000')}"></div>
+      <div class="field"><label>Хост <span class="req">*</span></label><input id="host" type="text" placeholder="example.com" value="${this._v("host")}"></div>
+      <div class="field"><label>Порт</label><input id="port" type="number" placeholder="22" value="${this._v("port", "22")}"></div>
+      <div class="field"><label>Таймаут (мс)</label><input id="connectTimeout" type="number" placeholder="10000" value="${this._v("connectTimeout", "10000")}"></div>
     </div>
   </div>
 
   <div class="section">
     <h3>Аутентификация</h3>
     <div class="grid">
-      <div class="field"><label>Пользователь <span class="req">*</span></label><input id="username" type="text" placeholder="root" value="${this._v('username')}"></div>
-      <div class="field"><label>Пароль</label><input id="password" type="password" placeholder="••••••••" value="${this._v('password')}"></div>
-      <div class="field sftp-only ${protocol!=='sftp'?'hidden':''}"><label>Путь к приватному ключу</label><input id="privateKeyPath" type="text" placeholder="~/.ssh/id_rsa" value="${this._v('privateKeyPath')}"></div>
-      <div class="field sftp-only ${protocol!=='sftp'?'hidden':''}"><label>Passphrase</label><input id="passphrase" type="password" placeholder="(если ключ защищён)" value="${this._v('passphrase')}"></div>
+      <div class="field"><label>Пользователь <span class="req">*</span></label><input id="username" type="text" placeholder="root" value="${this._v("username")}"></div>
+      <div class="field"><label>Пароль</label><input id="password" type="password" placeholder="••••••••" value="${this._v("password")}"></div>
+      <div class="field sftp-only ${protocol !== "sftp" ? "hidden" : ""}"><label>Путь к приватному ключу</label><input id="privateKeyPath" type="text" placeholder="~/.ssh/id_rsa" value="${this._v("privateKeyPath")}"></div>
+      <div class="field sftp-only ${protocol !== "sftp" ? "hidden" : ""}"><label>Passphrase</label><input id="passphrase" type="password" placeholder="(если ключ защищён)" value="${this._v("passphrase")}"></div>
     </div>
   </div>
 
   <div class="section">
     <h3>Пути и сайт</h3>
     <div class="grid">
-      <div class="field"><label>Удалённый путь <span class="req">*</span></label><input id="remotePath" type="text" placeholder="/var/www/html" value="${this._v('remotePath','/')}"></div>
-      <div class="field"><label>Имя профиля</label><input id="name" type="text" placeholder="production" value="${this._v('name')}"></div>
-      <div class="field full"><label>URL сайта (для открытия файлов в браузере)</label><input id="siteUrl" type="text" placeholder="https://example.com" value="${this._v('siteUrl')}"></div>
+      <div class="field"><label>Удалённый путь <span class="req">*</span></label><input id="remotePath" type="text" placeholder="/var/www/html" value="${this._v("remotePath", "/")}"></div>
+      <div class="field"><label>Имя профиля</label><input id="name" type="text" placeholder="production" value="${this._v("name")}"></div>
+      <div class="field full"><label>URL сайта (для открытия файлов в браузере)</label><input id="siteUrl" type="text" placeholder="https://example.com" value="${this._v("siteUrl")}"></div>
     </div>
   </div>
 
@@ -416,20 +563,20 @@ button.sm{padding:4px 10px;font-size:12px;border-radius:5px;}
     <h3>Поведение</h3>
     <div class="grid">
       <div>
-        <div class="check-row"><input type="checkbox" id="uploadOnSave" ${c.uploadOnSave?'checked':''}><span onclick="document.getElementById('uploadOnSave').click()">Выгружать при сохранении</span></div>
-        <div class="check-row"><input type="checkbox" id="downloadOnOpen" ${c.downloadOnOpen?'checked':''}><span onclick="document.getElementById('downloadOnOpen').click()">Скачивать при открытии</span></div>
-        <div class="check-row"><input type="checkbox" id="smartSync" ${syncOpt.smartSync?'checked':''}><span onclick="document.getElementById('smartSync').click()">🧠 Умная синхронизация</span></div>
+        <div class="check-row"><input type="checkbox" id="uploadOnSave" ${c.uploadOnSave ? "checked" : ""}><span onclick="document.getElementById('uploadOnSave').click()">Выгружать при сохранении</span></div>
+        <div class="check-row"><input type="checkbox" id="downloadOnOpen" ${c.downloadOnOpen ? "checked" : ""}><span onclick="document.getElementById('downloadOnOpen').click()">Скачивать при открытии</span></div>
+        <div class="check-row"><input type="checkbox" id="smartSync" ${syncOpt.smartSync ? "checked" : ""}><span onclick="document.getElementById('smartSync').click()">🧠 Умная синхронизация</span></div>
       </div>
       <div class="field">
         <label>Разрешение конфликтов</label>
         <select id="conflictResolution">
-          <option value="newer" ${(syncOpt.conflictResolution||'newer')==='newer'?'selected':''}>Новее (newer)</option>
-          <option value="local" ${syncOpt.conflictResolution==='local'?'selected':''}>Всегда локальный</option>
-          <option value="remote" ${syncOpt.conflictResolution==='remote'?'selected':''}>Всегда сервер</option>
-          <option value="skip" ${syncOpt.conflictResolution==='skip'?'selected':''}>Пропускать</option>
+          <option value="newer" ${(syncOpt.conflictResolution || "newer") === "newer" ? "selected" : ""}>Новее (newer)</option>
+          <option value="local" ${syncOpt.conflictResolution === "local" ? "selected" : ""}>Всегда локальный</option>
+          <option value="remote" ${syncOpt.conflictResolution === "remote" ? "selected" : ""}>Всегда сервер</option>
+          <option value="skip" ${syncOpt.conflictResolution === "skip" ? "selected" : ""}>Пропускать</option>
         </select>
         <label style="margin-top:10px">Параллельных соединений</label>
-        <input id="concurrency" type="number" placeholder="4" value="${this._v('concurrency','4')}">
+        <input id="concurrency" type="number" placeholder="4" value="${this._v("concurrency", "4")}">
       </div>
     </div>
     <hr class="divider">
@@ -442,6 +589,7 @@ button.sm{padding:4px 10px;font-size:12px;border-radius:5px;}
 <div class="footer">
   <div style="display:flex;gap:8px;align-items:center">
     <button onclick="testConnection()">🔌 Тест соединения</button>
+    <button onclick="openTerminal()" title="Открыть нативный SSH терминал в VS Code">🖥 SSH Терминал</button>
     <span id="testStatus" class="status-text"></span>
   </div>
   <div style="display:flex;gap:8px">
@@ -534,6 +682,7 @@ function testConnection() {
   vscode.postMessage({ command: 'testConnection', config: getConfig() });
 }
 function openFile() { vscode.postMessage({ command: 'openFile' }); }
+function openTerminal() { vscode.postMessage({ command: 'openTerminal', config: getConfig() }); }
 
 // ── File Manager
 function fmNavigate(p) {

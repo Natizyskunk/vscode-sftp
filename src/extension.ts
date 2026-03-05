@@ -62,6 +62,13 @@ export async function activate(context: vscode.ExtensionContext) {
   configBtn.show();
   context.subscriptions.push(configBtn);
 
+  const termBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 97);
+  termBtn.text = '$(terminal) SSH';
+  termBtn.tooltip = 'Открыть SSH терминал';
+  termBtn.command = 'sftp.openConnectInTerminal';
+  termBtn.show();
+  context.subscriptions.push(termBtn);
+
   try {
     await setup(workspaceFolders);
     app.remoteExplorer = new RemoteExplorer(context);

@@ -487,6 +487,16 @@
       ],
       "explorer/context": [
         {
+          "command": "sftp.config",
+          "group": "sftp@1",
+          "when": "sftp.enabled && explorerResourceIsRoot"
+        },
+        {
+          "command": "sftp.openConnectInTerminal",
+          "group": "sftp@2",
+          "when": "sftp.enabled && explorerResourceIsRoot"
+        },
+        {
           "command": "sftp.revealInRemoteExplorer",
           "group": "navigation@20",
           "when": "sftp.enabled && !explorerResourceIsRoot"

@@ -25,14 +25,18 @@ function adaptPath(filepath) {
 }
 
 function getSshCommand(
-  config: { host: string; port: number; username: string },
+  config: { host: string; port: number; username: string; remotePath?: string },
   extraOption?: string
 ) {
   let sshStr = `ssh -t ${config.username}@${config.host} -p ${config.port}`;
   if (extraOption) {
     sshStr += ` ${extraOption}`;
   }
-  // sshStr += ` "cd \\"${config.workingDir}\\"; exec \\$SHELL -l"`;
+  
+  // Если указан remotePath, перейдем в него сразу после входа
+  if (config.remotePath) {
+    sshStr += ` "cd \\"${config.remotePath}\\"; exec \\$SHELL -l"`;
+  }
   return sshStr;
 }
 
@@ -78,13 +82,19 @@ export default checkCommand({
       host: remoteConfig.host,
       port: remoteConfig.port,
       username: remoteConfig.username,
+      remotePath: remoteConfig.remotePath,
     };
-    const terminal = vscode.window.createTerminal(remoteConfig.name);
+    const terminal = vscode.window.createTerminal(`SSH: ${remoteConfig.name || remoteConfig.host}`);
     let sshCommand;
+    
     if (shouldUseAgent(remoteConfig)) {
       sshCommand = getSshCommand(sshConfig);
     } else if (shouldUseKey(remoteConfig)) {
       sshCommand = getSshCommand(sshConfig, `-i "${adaptPath(remoteConfig.privateKeyPath)}"`);
+    } else if (remoteConfig.password) {
+      // Отключаем попытки ключей, используем sshpass
+      const sshOpts = "-o PubkeyAuthentication=no -o PreferredAuthentications=password,keyboard-interactive";
+      sshCommand = `export SSHPASS="${remoteConfig.password.replace(/"/g, '\\"')}" && sshpass -e ` + getSshCommand(sshConfig, sshOpts);
     } else {
       sshCommand = getSshCommand(sshConfig);
     }
@@ -98,7 +108,7 @@ export default checkCommand({
         });
     }
 
-    terminal.sendText(sshCommand);
     terminal.show();
+    terminal.sendText(sshCommand);
   },
 });
