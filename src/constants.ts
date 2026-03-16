@@ -62,4 +62,10 @@ export const COMMAND_REMOTEEXPLORER_EDITINLOCAL = 'sftp.remoteExplorer.editInLoc
 export const COMMAND_REMOTEEXPLORER_VIEW_CONTENT = 'sftp.viewContent';
 
 export const COMMAND_CREATE_FOLDER = 'sftp.create.folder';
+export const COMMAND_GOTO_FOLDER = 'sftp.goto.folder';
 export const COMMAND_CREATE_FILE = 'sftp.create.file';
+
+export const COMMAND_VIEW_LOGS = 'sftp.logs.viewLogs';
+
+export const COMMAND_DATABASE_OPEN = 'sftp.database.open';
+export const COMMAND_DATABASE_REFRESH = 'sftp.database.refresh';

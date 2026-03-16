@@ -19,6 +19,8 @@ export interface ConnectOption {
   hop?: ConnectOption | ConnectOption[];
   limitOpenFilesOnRemote?: boolean | number;
 
+  post_connect?: string | string[];
+
   // ftp-only
   secure?: any;
   secureOptions?: object;
@@ -61,6 +63,10 @@ export default abstract class RemoteClient {
     }
 
     return this._doConnect({ ...connectOption, password }, config);
+  }
+
+  getUnderlyingClient() {
+    return this._client;
   }
 
   onDisconnected(cb) {

@@ -37,6 +37,7 @@ interface ServiceOption {
   protocol: string;
   remote?: string;
   uploadOnSave: boolean;
+  ssh_prefix:"undefined",
   useTempFile: boolean;
   openSsh: boolean;
   downloadOnOpen: boolean | 'confirm';
@@ -56,6 +57,8 @@ interface ServiceOption {
   };
   remoteTimeOffsetInHours: number;
   limitOpenFilesOnRemote: number | true;
+  operationTimeout: number;
+  showTransferProgress: boolean;
 }
 
 interface WatcherConfig {
@@ -149,6 +152,7 @@ function getHostInfo(config) {
     'name',
     'remotePath',
     'uploadOnSave',
+    'ssh_prefix',
     'useTempFile',
     'openSsh',
     'downloadOnOpen',
@@ -158,6 +162,7 @@ function getHostInfo(config) {
     'concurrency',
     'syncOption',
     'sshConfigPath',
+    'showTransferProgress',
   ];
 
   return Object.keys(config).reduce((obj, key) => {
@@ -363,6 +368,7 @@ function mergeProfile(
 enum Event {
   BEFORE_TRANSFER = 'BEFORE_TRANSFER',
   AFTER_TRANSFER = 'AFTER_TRANSFER',
+  TRANSFER_PROGRESS = 'TRANSFER_PROGRESS',
 }
 
 let id = 0;
@@ -451,6 +457,10 @@ export default class FileService {
     this._eventEmitter.on(Event.AFTER_TRANSFER, listener);
   }
 
+  onTransferProgress(listener: (bytesTransferred: number, totalBytes: number, task: TransferTask) => void) {
+    this._eventEmitter.on(Event.TRANSFER_PROGRESS, listener);
+  }
+
   createTransferScheduler(concurrency): TransferScheduler {
     const fileService = this;
     const scheduler = new Scheduler({
@@ -459,6 +469,10 @@ export default class FileService {
     });
     scheduler.onTaskStart(task => {
       this._pendingTransferTasks.add(task as TransferTask);
+      const transferTask = task as TransferTask;
+      transferTask.setProgressCallback((bytes, total) => {
+        this._eventEmitter.emit(Event.TRANSFER_PROGRESS, bytes, total, transferTask);
+      });
       this._eventEmitter.emit(Event.BEFORE_TRANSFER, task);
     });
     scheduler.onTaskDone((err, task) => {

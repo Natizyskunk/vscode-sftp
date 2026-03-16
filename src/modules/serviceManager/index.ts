@@ -123,6 +123,13 @@ export function createFileService(config: any, workspace: string) {
       app.sftpBarItem.showMsg(`done ${filename}`, filepath, 2000 * 2);
     }
   });
+  service.onTransferProgress((bytes, total, task) => {
+    if (config.showTransferProgress === false) return;
+    app.sftpBarItem.showProgress(
+      path.basename(task.localFsPath),
+      bytes, total, task.startTime
+    );
+  });
 
   return service;
 }

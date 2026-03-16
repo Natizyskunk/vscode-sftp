@@ -123,6 +123,34 @@ export default class StatusBarItem {
     }
   }
 
+  showProgress(fileName: string, bytesTransferred: number, totalBytes: number, startTime: number) {
+    const percent = totalBytes > 0 ? Math.round((bytesTransferred / totalBytes) * 100) : 0;
+    const elapsed = (Date.now() - startTime) / 1000;
+    const speed = elapsed > 0 ? bytesTransferred / elapsed : 0;
+    const eta = speed > 0 && totalBytes > 0
+      ? Math.round((totalBytes - bytesTransferred) / speed)
+      : 0;
+
+    const progressText = totalBytes > 0
+      ? `${fileName} ${percent}% | ${StatusBarItem._formatBytes(speed)}/s | ~${eta}s`
+      : `${fileName} ${StatusBarItem._formatBytes(bytesTransferred)}`;
+
+    const tooltipText = totalBytes > 0
+      ? `${StatusBarItem._formatBytes(bytesTransferred)} / ${StatusBarItem._formatBytes(totalBytes)}`
+      : `${StatusBarItem._formatBytes(bytesTransferred)} transferred`;
+
+    this.text = progressText;
+    this.statusBarItem.tooltip = tooltipText;
+    this._render();
+  }
+
+  private static _formatBytes(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+  }
+
   reset() {
     this.text = this.name;
     this.statusBarItem.tooltip = this.tooltip;

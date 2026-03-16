@@ -304,6 +304,57 @@
         "type": "string",
         "description": "Extra parameters append to SSH command using by \"Open SSH in Terminal\"",
         "default": "\"cd \"${remotePath}\"; exec \\$SHELL -l\""
+      },
+      "post_connect": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "Commands to run after SSH connection is established. Can be a single command string or an array of commands."
+      }
+    }
+  },
+  "database": {
+    "type": "object",
+    "properties": {
+      "database": {
+        "type": "array",
+        "description": "Database connections accessible via SSH tunnel.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "host": {
+              "type": "string",
+              "description": "Database server hostname. Use 127.0.0.1 or localhost for databases on the remote server (auto-tunneled via SSH).",
+              "default": "127.0.0.1"
+            },
+            "port": {
+              "type": "number",
+              "description": "Database server port.",
+              "default": 3306
+            },
+            "username": {
+              "type": "string",
+              "description": "Database username."
+            },
+            "password": {
+              "type": "string",
+              "description": "Database password."
+            },
+            "database": {
+              "type": "string",
+              "description": "Database name to connect to."
+            }
+          },
+          "required": ["host", "port", "username", "password", "database"]
+        }
       }
     }
   },

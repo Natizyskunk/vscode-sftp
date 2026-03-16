@@ -31,6 +31,7 @@ const configScheme = {
   algorithms: Joi.any(),
   sshConfigPath: Joi.string(),
   sshCustomParams: Joi.string(),
+  post_connect: Joi.alternatives([Joi.string(), Joi.array().items(Joi.string())]).optional(),
 
   secure: Joi.any().valid(true, false, 'control', 'implicit'),
   secureOptions: nullable(Joi.object()),
@@ -38,6 +39,7 @@ const configScheme = {
 
   remotePath: Joi.string().required(),
   uploadOnSave: Joi.boolean(),
+  ssh_prefix: Joi.string(),
   useTempFile: Joi.boolean(),
   openSsh: Joi.boolean(),
   downloadOnOpen: Joi.boolean().allow('confirm'),
@@ -52,6 +54,8 @@ const configScheme = {
     autoDelete: Joi.boolean(),
   },
   concurrency: Joi.number().integer(),
+  operationTimeout: Joi.number().integer(),
+  showTransferProgress: Joi.boolean(),
 
   syncOption: {
     delete: Joi.boolean(),
@@ -67,6 +71,16 @@ const configScheme = {
       .items(Joi.string()),
     order: Joi.number(),
   },
+
+  database: Joi.array().items(
+    Joi.object({
+      host: Joi.string().required(),
+      port: Joi.number().integer().required(),
+      username: Joi.string().required(),
+      password: Joi.string().required(),
+      database: Joi.string().required(),
+    })
+  ),
 };
 
 const defaultConfig = {
@@ -74,6 +88,7 @@ const defaultConfig = {
   // name: undefined,
   remotePath: './',
   uploadOnSave: false,
+  ssh_prefix: 'undefined',
   useTempFile: false,
   openSsh: false,
   downloadOnOpen: false,
@@ -84,7 +99,9 @@ const defaultConfig = {
   //   autoUpload: false,
   //   autoDelete: false,
   // },
-  concurrency: 4,
+  concurrency: 8,
+  operationTimeout: 30000,
+  showTransferProgress: true,
   // limitOpenFilesOnRemote: false
 
   protocol: 'sftp',
@@ -188,6 +205,7 @@ export function newConfig(basePath) {
             username: 'username',
             remotePath: '/',
             uploadOnSave: false,
+            ssh_prefix: 'undefined',
             useTempFile: false,
             openSsh: false,
           },

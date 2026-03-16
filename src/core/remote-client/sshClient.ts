@@ -6,7 +6,7 @@ import { FileSystem, RemoteFileSystem, SFTPFileSystem } from '../fs';
 import logger from '../../logger';
 import CustomError from '../customError';
 
-let MAX_OPEN_FD_NUM = 222;
+let MAX_OPEN_FD_NUM = 512;
 
 export default class SSHClient extends RemoteClient {
   private sftp: any;
@@ -91,6 +91,21 @@ export default class SSHClient extends RemoteClient {
     }
 
     await this._connectSSHClient(this._client, { ...lastOption, sock }, config);
+
+    // Execute post_connect commands before SFTP session
+    const postConnect = connectOption.post_connect;
+    if (postConnect) {
+      const commands = Array.isArray(postConnect) ? postConnect : [postConnect];
+      for (const cmd of commands) {
+        try {
+          await this._execCommand(this._client, cmd);
+          logger.info(`post_connect command succeeded: ${cmd}`);
+        } catch (err) {
+          logger.warn(`post_connect command failed: ${cmd} - ${err.message || err}`);
+        }
+      }
+    }
+
     this.sftp = await this._getSftp(this._client);
 
     if (lastOption.limitOpenFilesOnRemote) {
@@ -327,6 +342,21 @@ export default class SSHClient extends RemoteClient {
         }
 
         resolve(sftp);
+      });
+    });
+  }
+
+  private _execCommand(client, command: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      client.exec(command, (err, stream) => {
+        if (err) {
+          return reject(err);
+        }
+        let output = '';
+        stream.on('data', (data) => { output += data.toString(); });
+        stream.stderr.on('data', (data) => { output += data.toString(); });
+        stream.on('close', () => { resolve(output); });
+        stream.on('error', reject);
       });
     });
   }

@@ -72,7 +72,7 @@ export default abstract class RemoteFileSystem extends FileSystem {
     return remoteTimeMilliseconds - this._remoteTimeOffsetInMilliseconds;
   }
 
-  toRemoteTimeInSecnonds(localtime: number): number {
+  toRemoteTimeInSeconds(localtime: number): number {
     return localtime + this._remoteTimeOffsetInSeconds;
   }
 

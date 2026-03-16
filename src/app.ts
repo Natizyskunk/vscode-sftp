@@ -3,12 +3,14 @@ import StatusBarItem from './ui/statusBarItem';
 import { COMMAND_TOGGLE_OUTPUT } from './constants';
 import AppState from './modules/appState';
 import RemoteExplorer from './modules/remoteExplorer';
+import { DatabaseExplorer } from './modules/databaseManager';
 
 interface App {
   fsCache: LRU.Cache<string, string>;
   state: AppState;
   sftpBarItem: StatusBarItem;
   remoteExplorer: RemoteExplorer;
+  databaseExplorer: DatabaseExplorer;
 }
 
 const app: App = Object.create(null);

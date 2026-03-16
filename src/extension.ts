@@ -7,9 +7,10 @@ import initCommands from './initCommands';
 import { reportError } from './helper';
 import fileActivityMonitor from './modules/fileActivityMonitor';
 import { tryLoadConfigs } from './modules/config';
-import { getAllFileService, createFileService, disposeFileService } from './modules/serviceManager';
+import { getAllFileService, createFileService, findAllFileService, disposeFileService } from './modules/serviceManager';
 import { getWorkspaceFolders, setContextValue } from './host';
 import RemoteExplorer from './modules/remoteExplorer';
+import { DatabaseExplorer, closeAllTunnels } from './modules/databaseManager';
 
 async function setupWorkspaceFolder(dir) {
   const configs = await tryLoadConfigs(dir);
@@ -19,7 +20,6 @@ async function setupWorkspaceFolder(dir) {
 }
 
 function setup(workspaceFolders: vscode.WorkspaceFolder[]) {
-  fileActivityMonitor.init();
   const pendingInits = workspaceFolders.map(folder => setupWorkspaceFolder(folder.uri.fsPath));
 
   return Promise.all(pendingInits);
@@ -41,25 +41,55 @@ export async function activate(context: vscode.ExtensionContext) {
 
   setContextValue('enabled', true);
   app.sftpBarItem.show();
-  app.state.subscribe(_ => {
-    const currentText = app.sftpBarItem.getText();
-    // current is showing profile
-    if (currentText.startsWith('SFTP')) {
-      app.sftpBarItem.reset();
-    }
-    if (app.remoteExplorer) {
-      app.remoteExplorer.refresh();
-    }
-  });
+
   try {
-    await setup(workspaceFolders);
+    // Create RemoteExplorer FIRST so state subscriptions and config events can reference it
     app.remoteExplorer = new RemoteExplorer(context);
+
+    app.databaseExplorer = new DatabaseExplorer(context);
+
+    app.state.subscribe(_ => {
+      const currentText = app.sftpBarItem.getText();
+      // current is showing profile
+      if (currentText.startsWith('SFTP')) {
+        app.sftpBarItem.reset();
+      }
+      app.remoteExplorer.refresh();
+      app.databaseExplorer.refresh();
+    });
+
+    // Setup services THEN start file activity monitor
+    await setup(workspaceFolders);
+    fileActivityMonitor.init();
   } catch (error) {
     reportError(error);
   }
+
+  // Handle dynamic workspace folder changes
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeWorkspaceFolders(async event => {
+      for (const added of event.added) {
+        try {
+          await setupWorkspaceFolder(added.uri.fsPath);
+        } catch (error) {
+          reportError(error);
+        }
+      }
+      for (const removed of event.removed) {
+        findAllFileService(s => s.workspace === removed.uri.fsPath)
+          .forEach(disposeFileService);
+      }
+      app.remoteExplorer.refresh();
+      app.databaseExplorer.refresh();
+    })
+  );
 }
 
-export function deactivate() {
+export async function deactivate() {
   fileActivityMonitor.destory();
   getAllFileService().forEach(disposeFileService);
+  if (app.databaseExplorer) {
+    await app.databaseExplorer.dispose();
+  }
+  closeAllTunnels();
 }

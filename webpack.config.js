@@ -19,6 +19,7 @@ const config = {
   externals: {
     vscode: 'commonjs vscode',
     ssh2: 'commonjs ssh2',
+    mysql2: 'commonjs mysql2',
   },
   resolve: {
     extensions: ['.ts', '.js'],

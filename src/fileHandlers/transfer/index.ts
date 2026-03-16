@@ -67,7 +67,7 @@ export const sync2Remote = createFileHandler<SyncOption>({
     const config = this.config;
     const syncOption = config.syncOption || {};
     return {
-      perserveTargetMode: config.protocol === 'sftp' && !config.filePerm && !config.dirPerm,
+      preserveTargetMode: config.protocol === 'sftp' && !config.filePerm && !config.dirPerm,
       useTempFile: config.useTempFile,
       openSsh: config.openSsh,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
@@ -107,7 +107,7 @@ export const sync2Local = createFileHandler<SyncOption>({
     const config = this.config;
     const syncOption = config.syncOption || {};
     return {
-      perserveTargetMode: false,
+      preserveTargetMode: false,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
       ignore: config.ignore,
       delete: syncOption.delete,
@@ -124,7 +124,7 @@ export const upload = createFileHandler<TransferOption>({
   transformOption() {
     const config = this.config;
     return {
-      perserveTargetMode: config.protocol === 'sftp' && !config.filePerm && !config.dirPerm,
+      preserveTargetMode: config.protocol === 'sftp' && !config.filePerm && !config.dirPerm,
       useTempFile: config.useTempFile,
       openSsh: config.openSsh,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
@@ -142,7 +142,7 @@ export const uploadFile = createFileHandler<TransferOption>({
   transformOption() {
     const config = this.config;
     return {
-      perserveTargetMode: config.protocol === 'sftp' && !config.filePerm,
+      preserveTargetMode: config.protocol === 'sftp' && !config.filePerm,
       useTempFile: config.useTempFile,
       openSsh: config.openSsh,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
@@ -160,7 +160,7 @@ export const uploadFolder = createFileHandler<TransferOption>({
   transformOption() {
     const config = this.config;
     return {
-      perserveTargetMode: config.protocol === 'sftp' && !config.dirPerm,
+      preserveTargetMode: config.protocol === 'sftp' && !config.dirPerm,
       useTempFile: config.useTempFile,
       openSsh: config.openSsh,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
@@ -178,7 +178,7 @@ export const download = createFileHandler<TransferOption>({
   transformOption() {
     const config = this.config;
     return {
-      perserveTargetMode: false,
+      preserveTargetMode: false,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
       ignore: config.ignore,
     };
@@ -191,7 +191,7 @@ export const downloadFile = createFileHandler<TransferOption>({
   transformOption() {
     const config = this.config;
     return {
-      perserveTargetMode: false,
+      preserveTargetMode: false,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
       ignore: config.ignore,
     };
@@ -204,7 +204,7 @@ export const downloadFolder = createFileHandler<TransferOption>({
   transformOption() {
     const config = this.config;
     return {
-      perserveTargetMode: false,
+      preserveTargetMode: false,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
       ignore: config.ignore,
     };

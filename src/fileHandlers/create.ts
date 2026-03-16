@@ -1,7 +1,12 @@
 import { refreshRemoteExplorer } from './shared';
-import { fileOperations } from '../core';
+import { fileOperations,UResource } from '../core';
 import createFileHandler from './createFileHandler';
 import { FileHandleOption } from './option';
+import logger from '../logger';
+import app from '../app';
+import { executeCommand } from '../host';
+
+
 
 export const createRemoteFile = createFileHandler<FileHandleOption & { skipDir?: boolean }>({
   name: 'createRemoteFile',
@@ -11,24 +16,6 @@ export const createRemoteFile = createFileHandler<FileHandleOption & { skipDir?:
 
     let promise;
     promise = fileOperations.createFile(remoteFsPath, remoteFs, {});
-
-    /*
-    const stat = await remoteFs.lstat(remoteFsPath);
-    switch (stat.type) {
-      case FileType.Directory:
-        if (option.skipDir) {
-          return;
-        }
-        promise = fileOperations.createDir(remoteFsPath, remoteFs, {});
-        // promise = fileOperations.removeDir(remoteFsPath, remoteFs, {});
-        break;
-      case FileType.File:
-      case FileType.SymbolicLink:
-        // promise = fileOperations.removeFile(remoteFsPath, remoteFs, {});
-        break;
-      default:
-        throw new Error(`Unsupported file type (type = ${stat.type})`);
-    }*/
     await promise;
   },
   transformOption() {
@@ -50,24 +37,6 @@ export const createRemoteFolder = createFileHandler<FileHandleOption & { skipDir
 
     let promise;
     promise = fileOperations.createDir(remoteFsPath, remoteFs, {});
-
-    /*
-    const stat = await remoteFs.lstat(remoteFsPath);
-    switch (stat.type) {
-      case FileType.Directory:
-        if (option.skipDir) {
-          return;
-        }
-        promise = fileOperations.createDir(remoteFsPath, remoteFs, {});
-        // promise = fileOperations.removeDir(remoteFsPath, remoteFs, {});
-        break;
-      case FileType.File:
-      case FileType.SymbolicLink:
-        // promise = fileOperations.removeFile(remoteFsPath, remoteFs, {});
-        break;
-      default:
-        throw new Error(`Unsupported file type (type = ${stat.type})`);
-    }*/
     await promise;
   },
   transformOption() {
@@ -77,6 +46,34 @@ export const createRemoteFolder = createFileHandler<FileHandleOption & { skipDir
     };
   },
   afterHandle() {
-    refreshRemoteExplorer(this.target, false);
+    refreshRemoteExplorer(this.target, true);
   },
 });
+
+export const gotoFolder = createFileHandler<FileHandleOption & { skipDir?: boolean }>({
+  name: 'gotoFolder',
+  async handle(option) {
+    let originalString = String(this.target.remoteUri);
+    logger.warn(`originalString : ${originalString}`);
+
+    const lastIndex = originalString.lastIndexOf("%2F");
+    let valueAfterLast = "";
+    if (lastIndex !== -1) {
+      valueAfterLast = originalString.substring(lastIndex + 3);
+    }
+    let isDirectory = true;
+    if (valueAfterLast.includes(".")) {
+      isDirectory = false;
+    }
+    logger.warn(`isDirectory: ${isDirectory}`);
+    if(isDirectory){
+      await app.remoteExplorer.reveal({
+        resource: UResource.makeResource(this.target.remoteUri),
+        isDirectory: isDirectory,
+      });
+    }else{
+      await executeCommand('sftp.remoteExplorer.editInLocal', this.target.localUri);
+    }
+  }
+});
+// app/etc/di.xml

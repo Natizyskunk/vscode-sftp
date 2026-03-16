@@ -17,6 +17,8 @@ function hashOption(opiton) {
     .join('');
 }
 
+const DEFAULT_MAX_IDLE_MS = 5 * 60 * 1000; // 5 minutes
+
 class KeepAliveRemoteFs {
   private isValid: boolean = false;
 
@@ -24,15 +26,24 @@ class KeepAliveRemoteFs {
 
   private fs: RemoteFileSystem;
 
+  private _lastActivity: number = Date.now();
+
   async getFs(
     option: ConnectOption & {
       protocol: string;
       remoteTimeOffsetInHours: number;
+      operationTimeout?: number;
     }
   ): Promise<RemoteFileSystem> {
     if (this.isValid) {
-      this.pendingPromise = null;
-      return Promise.resolve(this.fs);
+      const idleMs = Date.now() - this._lastActivity;
+      if (idleMs > DEFAULT_MAX_IDLE_MS) {
+        this.invalid('idle');
+      } else {
+        this._lastActivity = Date.now();
+        this.pendingPromise = null;
+        return Promise.resolve(this.fs);
+      }
     }
 
     if (this.pendingPromise) {
@@ -75,6 +86,9 @@ class KeepAliveRemoteFs {
       clientOption: connectOption,
       remoteTimeOffsetInHours: option.remoteTimeOffsetInHours,
     });
+    if (option.operationTimeout && (this.fs as any).setOperationTimeout) {
+      (this.fs as any).setOperationTimeout(option.operationTimeout);
+    }
     this.fs.onDisconnected(this.invalid.bind(this));
 
     app.sftpBarItem.showMsg('connecting...', connectOption.connectTimeout);
@@ -86,6 +100,7 @@ class KeepAliveRemoteFs {
         () => {
           app.sftpBarItem.reset();
           this.isValid = true;
+          this._lastActivity = Date.now();
           return this.fs;
         },
         err => {

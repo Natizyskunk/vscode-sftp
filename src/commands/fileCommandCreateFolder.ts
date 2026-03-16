@@ -4,6 +4,7 @@ import { createRemoteFolder } from '../fileHandlers';
 import { checkFileCommand } from './abstract/createCommand';
 import { uriFromExplorerContextOrEditorContext } from './shared';
 import { window, Uri } from 'vscode';
+import logger from '../logger';
 
 export default checkFileCommand({
   id: COMMAND_CREATE_FOLDER,
@@ -25,7 +26,7 @@ export default checkFileCommand({
 
     if (result !== undefined) {
      //   window.showInformationMessage(targets.toString() + '%252F' + result);
-
+      logger.warn(`${Uri.parse(targets.toString() + '/' + result)}`);
         return Uri.parse(targets.toString() + '/' + result);
     }
 

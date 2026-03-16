@@ -7,6 +7,7 @@ import FileSystem, {
 } from './fileSystem';
 import RemoteFileSystem from './remoteFileSystem';
 import { SSHClient } from '../remote-client';
+import { withTimeout } from '../operationTimeout';
 
 type FileHandle = Buffer;
 
@@ -29,6 +30,16 @@ function toSimpleFileMode(mode: number) {
 }
 
 export default class SFTPFileSystem extends RemoteFileSystem {
+  private _operationTimeout: number = 30000;
+
+  setOperationTimeout(timeoutMs: number) {
+    this._operationTimeout = timeoutMs;
+  }
+
+  private _withTimeout<T>(promise: Promise<T>, operationName: string): Promise<T> {
+    return withTimeout(promise, this._operationTimeout, operationName);
+  }
+
   get sftp() {
     return this.getClient().getFsClient();
   }
@@ -56,7 +67,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
   }
 
   lstat(path: string): Promise<FileStats> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.lstat(path, (err, stat) => {
         if (err) {
           reject(err);
@@ -65,7 +76,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve(this.toFileStat(stat));
       });
-    });
+    }), 'lstat');
   }
 
   open(
@@ -73,7 +84,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
     flags: string,
     mode?: number
   ): Promise<SFTPFileDescriptor> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.open(path, flags, mode, (err, handle) => {
         if (err) {
           return reject(err);
@@ -84,11 +95,11 @@ export default class SFTPFileSystem extends RemoteFileSystem {
           handle,
         });
       });
-    });
+    }), 'open');
   }
 
   close(fd: SFTPFileDescriptor): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.close(fd.handle, err => {
         if (err) {
           reject(err);
@@ -97,11 +108,11 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve();
       });
-    });
+    }), 'close');
   }
 
   fstat(fd: SFTPFileDescriptor): Promise<FileStats> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.fstat(fd.handle, (err, stat) => {
         if (err) {
           // Try stat() for sftp servers that may not support fstat() for
@@ -120,15 +131,15 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve(this.toFileStat(stat));
       });
-    });
+    }), 'fstat');
   }
 
   futimes(fd: SFTPFileDescriptor, atime: number, mtime: number): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.futimes(
         fd.handle,
-        this.toRemoteTimeInSecnonds(atime),
-        this.toRemoteTimeInSecnonds(mtime),
+        this.toRemoteTimeInSeconds(atime),
+        this.toRemoteTimeInSeconds(mtime),
         err => {
           if (err) {
             reject(err);
@@ -138,11 +149,11 @@ export default class SFTPFileSystem extends RemoteFileSystem {
           resolve();
         }
       );
-    });
+    }), 'futimes');
   }
 
   fchmod(fd: SFTPFileDescriptor, mode: number): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.fchmod(fd.handle, mode, err => {
         if (err) {
           // Try chmod() for sftp servers that may not support fchmod() for
@@ -161,11 +172,11 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve();
       });
-    });
+    }), 'fchmod');
   }
 
   async chmod(path: string, mode: number): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.chmod(path, mode, err => {
         if(err) {
           reject(err)
@@ -173,15 +184,14 @@ export default class SFTPFileSystem extends RemoteFileSystem {
         }
         resolve();
       });
-    })
+    }), 'chmod');
   }
 
   get(path, option?: FileOption): Promise<Readable> {
     return new Promise((resolve, reject) => {
-      // const opt = { ...option, autoDestroy: false };
       try {
-        // const stream = this.sftp.createReadStream(path, opt);
-        const stream = this.sftp.createReadStream(path, option);
+        const opt = { ...option, highWaterMark: 64 * 1024 };
+        const stream = this.sftp.createReadStream(path, opt);
         resolve(stream);
       } catch (err) {
         reject(err);
@@ -190,7 +200,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
   }
 
   rename(srcPath: string, destPath: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.rename(srcPath, destPath, err => {
         if (err) {
           return reject(err);
@@ -198,12 +208,12 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve();
       });
-    });
+    }), 'rename');
   }
 
   // See: https://github.com/mscdex/ssh2/issues/1054
   renameAtomic(srcPath: string, destPath: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.ext_openssh_rename(srcPath, destPath, err => {
         if (err) {
           return reject(err);
@@ -211,7 +221,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve();
       });
-    });
+    }), 'renameAtomic');
   }
 
   async put(input: Readable, path, option?: FileOption): Promise<void> {
@@ -238,7 +248,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
   }
 
   readlink(path: string): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.readlink(path, (err, linkString) => {
         if (err) {
           reject(err);
@@ -247,22 +257,22 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve(linkString);
       });
-    });
+    }), 'readlink');
   }
 
   symlink(targetPath: string, path: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    return this._withTimeout(new Promise<void>((resolve, reject) => {
       this.sftp.symlink(targetPath, path, err => {
         if (err) {
           reject(err);
         }
         resolve();
       });
-    });
+    }), 'symlink');
   }
 
   mkdir(dir: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    return this._withTimeout(new Promise<void>((resolve, reject) => {
       this.sftp.mkdir(dir, err => {
         if (err) {
           reject(err);
@@ -270,7 +280,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
         }
         resolve();
       });
-    });
+    }), 'mkdir');
   }
 
   async ensureDir(dir: string): Promise<void> {
@@ -315,7 +325,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
   }
 
   list(dir: string, { showHiddenFiles = true } = {}): Promise<FileEntry[]> {
-    return new Promise((resolve, reject) => {
+    return this._withTimeout(new Promise((resolve, reject) => {
       this.sftp.readdir(dir, (err, result) => {
         if (err) {
           reject(err);
@@ -327,11 +337,11 @@ export default class SFTPFileSystem extends RemoteFileSystem {
         );
         resolve(fileEntries);
       });
-    });
+    }), 'list');
   }
 
   unlink(path: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    return this._withTimeout(new Promise<void>((resolve, reject) => {
       this.sftp.unlink(path, err => {
         if (err) {
           reject(err);
@@ -340,7 +350,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
 
         resolve();
       });
-    });
+    }), 'unlink');
   }
 
   rmdir(path: string, recursive: boolean): Promise<void> {
@@ -398,7 +408,8 @@ export default class SFTPFileSystem extends RemoteFileSystem {
     }
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const writer: WriteStream = this.sftp.createWriteStream(path, option);
+      const opt = { ...option, highWaterMark: 64 * 1024 };
+      const writer: WriteStream = this.sftp.createWriteStream(path, opt);
       writer.once('error', reject).once('finish', resolve); // transffered
 
       input.once('error', err => {

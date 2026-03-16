@@ -23,8 +23,8 @@ export default class LocalRemoteFileSystem extends RemoteFileSystem {
   futimes(fd: number, atime: number, mtime: number): Promise<void> {
     return fse.futimes(
       fd,
-      this.toRemoteTimeInSecnonds(atime),
-      this.toRemoteTimeInSecnonds(mtime)
+      this.toRemoteTimeInSeconds(atime),
+      this.toRemoteTimeInSeconds(mtime)
     );
   }
 }

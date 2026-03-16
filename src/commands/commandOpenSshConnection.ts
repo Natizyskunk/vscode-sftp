@@ -4,6 +4,7 @@ import { getAllFileService } from '../modules/serviceManager';
 import { ExplorerRoot } from '../modules/remoteExplorer';
 import { interpolate } from '../utils';
 import { checkCommand } from './abstract/createCommand';
+import logger from '../logger';
 
 const isWindows = process.platform === 'win32';
 
@@ -25,14 +26,20 @@ function adaptPath(filepath) {
 }
 
 function getSshCommand(
-  config: { host: string; port: number; username: string },
+  config: { host: string; port: number; username: string; ssh_prefix?: string },
   extraOption?: string
 ) {
-  let sshStr = `ssh -t ${config.username}@${config.host} -p ${config.port}`;
+  let sshStr;
+  logger.warn(`${config.ssh_prefix}`);
+  if(config.ssh_prefix && config.ssh_prefix != 'undefined') {
+    var prefix = config.ssh_prefix.replace(/::\/::/g, "\\");
+    sshStr = `${prefix} ssh -t ${config.username}@${config.host} -p ${config.port}`;
+  }else{
+    sshStr = `ssh -t ${config.username}@${config.host} -p ${config.port}`;
+  }
   if (extraOption) {
     sshStr += ` ${extraOption}`;
   }
-  // sshStr += ` "cd \\"${config.workingDir}\\"; exec \\$SHELL -l"`;
   return sshStr;
 }
 
@@ -78,6 +85,7 @@ export default checkCommand({
       host: remoteConfig.host,
       port: remoteConfig.port,
       username: remoteConfig.username,
+      ssh_prefix: remoteConfig.ssh_prefix,
     };
     const terminal = vscode.window.createTerminal(remoteConfig.name);
     let sshCommand;
@@ -100,5 +108,15 @@ export default checkCommand({
 
     terminal.sendText(sshCommand);
     terminal.show();
+
+    // Send post_connect commands to terminal after SSH connects
+    if (remoteConfig.post_connect) {
+      const commands = Array.isArray(remoteConfig.post_connect)
+        ? remoteConfig.post_connect
+        : [remoteConfig.post_connect];
+      setTimeout(() => {
+        commands.forEach(cmd => terminal.sendText(cmd));
+      }, 2000);
+    }
   },
 });

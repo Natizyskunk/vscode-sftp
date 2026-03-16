@@ -106,19 +106,11 @@ export default function createFileHandler<T>(
     app.sftpBarItem.startSpinner();
     try {
       await handlerOption.handle.call(handleCtx, invokeOption);
-    // } catch (error) {
-    //   reportError(error, `when ${handlerOption.name} ${target.localFsPath}`);
-    //   Object.defineProperty(error, 'reported', {
-    //     configurable: false,
-    //     enumerable: false,
-    //     value: true,
-    //   });
-    //   throw error;
+      if (handlerOption.afterHandle) {
+        await handlerOption.afterHandle.call(handleCtx);
+      }
     } finally {
       app.sftpBarItem.stopSpinner();
-    }
-    if (handlerOption.afterHandle) {
-      handlerOption.afterHandle.call(handleCtx);
     }
   }
 

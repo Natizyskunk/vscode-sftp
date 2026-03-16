@@ -34,7 +34,9 @@ async function handleConfigSave(uri: vscode.Uri) {
   } catch (error) {
     reportError(error);
   } finally {
-    app.remoteExplorer.refresh();
+    if (app.remoteExplorer) {
+      app.remoteExplorer.refresh();
+    }
   }
 }
 

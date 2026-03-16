@@ -1,3 +1,55 @@
+## 1.17.0 - 2026-03-17
+* New Feature : Database Manager — browse and manage MySQL databases directly from VS Code with automatic SSH tunneling.
+  - New "Database" tree view in the SFTP sidebar showing configured databases, expandable to list tables.
+  - Webview panel with three tabs: **Structure** (columns & indexes), **Data** (paginated rows), and **Query** (SQL editor with Ctrl+Enter execution).
+  - Automatic SSH tunnel creation for databases on the remote server (127.0.0.1/localhost).
+  - Confirmation dialog for non-SELECT queries to prevent accidental data modification.
+  - Configure via `"database"` array in `.vscode/sftp.json`.
+* New Feature : `post_connect` config option — run shell commands after SSH connection is established.
+  - Supports a single command string or an array of commands.
+  - Commands execute on both programmatic SFTP connections and SSH terminal sessions.
+  - Configure via `"post_connect"` in `.vscode/sftp.json`.
+* New Feature : File size display in Remote Explorer.
+  - Human-readable file sizes (B, KB, MB, GB) shown next to filenames.
+  - Toggle with `sftp.remoteExplorer.showFileSize` setting (enabled by default).
+* New Feature : File-type icons in Remote Explorer.
+  - Files and folders now display appropriate icons from the active VS Code icon theme.
+  - File icons are resolved by extension (e.g., `.ts`, `.json`, `.html` get distinct icons).
+* New Feature : Remote Server Log Viewer — WebView-based log analysis tool for nginx/apache.
+  - Auto-discover log files on the remote server (`/var/log/nginx`, `/var/log/apache2`, `/var/log/httpd`).
+  - Parse Combined Log Format (access logs) and nginx/apache error logs with auto-detection.
+  - Filter logs by IP, URI, status code, user-agent, and date range.
+  - Group logs by IP, URI, User-Agent, or status code.
+  - Real-time log streaming via `tail -f`.
+  - Color-coded log entries (2xx green, 4xx orange, 5xx red).
+  - Stats sidebar with request counts, top IPs, top URIs, and suspicious pattern detection (SQL injection, path traversal, XSS, scanners, shellshock, WordPress scans, high request rates).
+  - Accessible via `SFTP: View Server Logs` command or right-click on a server root in Remote Explorer.
+  - Custom log paths configurable via `sftp.logViewer.customLogPaths` setting.
+* New Feature : Transfer progress display in status bar.
+  - Shows filename, percentage, transfer speed, and estimated time remaining during uploads/downloads.
+  - Configurable via `"showTransferProgress"` in `sftp.json` (enabled by default).
+* New Feature : Dynamic workspace folder detection.
+  - Extension now automatically detects workspace folders added or removed mid-session.
+  - No more need to restart VS Code or reload the window when adding folders to a multi-root workspace.
+* Improvement : Idle connection timeout and auto-reconnect.
+  - Connections idle for more than 5 minutes are automatically reconnected on the next operation.
+  - All SFTP operations now have a configurable timeout (default 30s) to prevent indefinite hangs.
+  - Configurable via `"operationTimeout"` in `sftp.json`.
+* Improvement : Faster file transfers.
+  - Default transfer concurrency increased from 4 to 8.
+  - SFTP stream buffer size increased from 16KB to 64KB, reducing syscall overhead.
+  - Maximum open file descriptor limit increased from 222 to 512.
+* Fix : Remote Explorer now refreshes immediately after creating files and folders.
+* Fix : Initialization race condition — RemoteExplorer is now created before config loading, and file activity monitor starts after services are ready.
+* Fix : Typo `"Config dssadasd Not Found"` corrected to `"Config Not Found"`.
+* Fix : Typo `perserveTargetMode` corrected to `preserveTargetMode`.
+* Fix : Typo `makePreivewUrl` corrected to `makePreviewUrl`.
+* Fix : Typo `toRemoteTimeInSecnonds` corrected to `toRemoteTimeInSeconds`.
+* Added `mysql2` dependency.
+* New commands: `SFTP: Open Database Manager`, `Database Explorer: Refresh`, `SFTP: View Server Logs`.
+* New settings: `sftp.remoteExplorer.showFileSize`, `sftp.logViewer.customLogPaths`.
+* New config options: `operationTimeout`, `showTransferProgress`.
+
 ## 1.16.3 - 2023-06-16
 * [#356] New Feature : Upload to all profiles (Pull request [#313](https://github.com/Natizyskunk/vscode-sftp/pull/313) from @wewawa vscode-sftp:create_multi_command).
 * [#357] Fix : Correcting Typo 'avaliable' => 'available' (Pull request [#343](https://github.com/Natizyskunk/vscode-sftp/pull/343) from @kjo-sdds vscode-sftp:develop).

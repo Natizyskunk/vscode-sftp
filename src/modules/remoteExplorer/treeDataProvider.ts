@@ -29,7 +29,7 @@ const DEFAULT_FILES_EXCLUDE = ['.git', '.svn', '.hg', 'CVS', '.DS_Store'];
  *  So we change url path for custom title.
  *  This is not break anything because we get fspth from uri.query.'
  */
-function makePreivewUrl(uri: vscode.Uri) {
+function makePreviewUrl(uri: vscode.Uri) {
   // const query = querystring.parse(uri.query);
   // query.originPath = uri.path;
   // query.originQuery = uri.query;
@@ -43,6 +43,14 @@ function makePreivewUrl(uri: vscode.Uri) {
 interface ExplorerChild {
   resource: Resource;
   isDirectory: boolean;
+  size?: number;
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 }
 
 export interface ExplorerRoot extends ExplorerChild {
@@ -94,13 +102,13 @@ export default class RemoteTreeData
       const children = await this.getChildren(item);
       children
         .filter(i => !i.isDirectory)
-        .forEach(i => this._onDidChangeFile.fire(makePreivewUrl(i.resource.uri)));
+        .forEach(i => this._onDidChangeFile.fire(makePreviewUrl(i.resource.uri)));
     } else {
       const parent = await this.getParent(item);
       if (parent) {
         this._onDidChangeFolder.fire(parent);
       }
-      this._onDidChangeFile.fire(makePreivewUrl(item.resource.uri));
+      this._onDidChangeFile.fire(makePreviewUrl(item.resource.uri));
     }
   }
 
@@ -113,9 +121,16 @@ export default class RemoteTreeData
     if (!customLabel) {
       customLabel = upath.basename(item.resource.fsPath);
     }
+    const showSize = getExtensionSetting().get('remoteExplorer.showFileSize', true);
+    const description = !item.isDirectory && item.size !== undefined && showSize
+      ? formatFileSize(item.size)
+      : undefined;
+
     return {
       label: customLabel,
+      description,
       resourceUri: item.resource.uri,
+      iconPath: item.isDirectory ? vscode.ThemeIcon.Folder : vscode.ThemeIcon.File,
       collapsibleState: item.isDirectory ? vscode.TreeItemCollapsibleState.Collapsed : undefined,
       contextValue: isRoot ? 'root' : item.isDirectory ? 'folder' : 'file',
       command: item.isDirectory
@@ -163,13 +178,17 @@ export default class RemoteTreeData
         });
         const mapItem = this._map.get(newResource.uri.query);
         if (mapItem) {
+          if (!isDirectory) {
+            (mapItem as ExplorerChild).size = file.size;
+          }
           return mapItem;
         } else {
-          const newItem = {
+          const newItem: ExplorerChild = {
             resource: UResource.updateResource(item.resource, {
               remotePath: file.fspath,
             }),
             isDirectory,
+            size: isDirectory ? undefined : file.size,
           };
           this._map.set(newItem.resource.uri.query, newItem);
           return newItem;
@@ -236,7 +255,7 @@ export default class RemoteTreeData
       return;
     }
 
-    showTextDocument(makePreivewUrl(item.resource.uri));
+    showTextDocument(makePreviewUrl(item.resource.uri));
   }
 
   private _getRoots(): ExplorerRoot[] {

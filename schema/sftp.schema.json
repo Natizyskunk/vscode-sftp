@@ -13,6 +13,9 @@
       "$ref": "definitions.json#/sftp"
     },
     {
+      "$ref": "definitions.json#/database"
+    },
+    {
       "type": "object",
       "properties": {
         "protocol": {

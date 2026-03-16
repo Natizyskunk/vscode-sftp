@@ -23,7 +23,7 @@ export interface TransferOption {
   filePerm?: number;
   dirPerm?: number;
   fallbackMode?: number;
-  perserveTargetMode: boolean;
+  preserveTargetMode: boolean;
   useTempFile?: boolean;
   openSsh?: boolean;
 }
@@ -38,7 +38,11 @@ export default class TransferTask implements Task {
   private readonly _TransferOption: TransferOption;
   private _handle: Readable;
   private _cancelled: boolean;
-  // private _fileStatus: FileStatus;
+  private _fileSize: number = 0;
+  private _bytesTransferred: number = 0;
+  private _onProgress: ((bytesTransferred: number, totalBytes: number) => void) | null = null;
+  private _lastProgressTime: number = 0;
+  startTime: number = 0;
 
   constructor(
     src: FileHandle,
@@ -78,7 +82,12 @@ export default class TransferTask implements Task {
     return this._transferDirection;
   }
 
+  setProgressCallback(cb: (bytesTransferred: number, totalBytes: number) => void) {
+    this._onProgress = cb;
+  }
+
   async run() {
+    this.startTime = Date.now();
     const src = this._srcFsPath;
     const target = this._targetFsPath;
     const srcFs = this._srcFs;
@@ -118,7 +127,7 @@ export default class TransferTask implements Task {
     const srcFs = this._srcFs;
     const targetFs = this._targetFs;
     const {
-      perserveTargetMode,
+      preserveTargetMode,
       useTempFile,
       openSsh,
       fallbackMode,
@@ -133,8 +142,8 @@ export default class TransferTask implements Task {
     const uploadTarget = target + (useTempFile ? ".new" : "");
 
     // Use mode first.
-    // Then check perserveTargetMode and fallback to fallbackMode if fail to get mode of target
-    if (mode === undefined && perserveTargetMode) {
+    // Then check preserveTargetMode and fallback to fallbackMode if fail to get mode of target
+    if (mode === undefined && preserveTargetMode) {
       if (useTempFile) {
         [targetFd, uploadFd] = await Promise.all([
           targetFs.open(target, 'r')  // Get handle for reading the target mode
@@ -168,6 +177,27 @@ export default class TransferTask implements Task {
         srcFs.get(src),
         targetFs.open(uploadTarget, 'w'),
       ]);
+    }
+
+    // Get file size and attach progress listener
+    try {
+      const stat = await srcFs.lstat(src);
+      this._fileSize = stat.size;
+    } catch {
+      // ignore - progress will show without total
+    }
+    this._bytesTransferred = 0;
+    if (this._onProgress) {
+      this._handle.on('data', (chunk: Buffer) => {
+        this._bytesTransferred += chunk.length;
+        const now = Date.now();
+        if (now - this._lastProgressTime >= 100) {
+          this._lastProgressTime = now;
+          if (this._onProgress) {
+            this._onProgress(this._bytesTransferred, this._fileSize);
+          }
+        }
+      });
     }
 
     try {
