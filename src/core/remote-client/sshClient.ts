@@ -92,6 +92,12 @@ export default class SSHClient extends RemoteClient {
 
     await this._connectSSHClient(this._client, { ...lastOption, sock }, config);
     this.sftp = await this._getSftp(this._client);
+    // ssh2 v1.x no longer emits Client 'close' on channel-level closure.
+    // Detect SFTP channel close (e.g. killall sftp-server or server idle timeout)
+    // and propagate it so KeepAliveRemoteFs.invalid() triggers a reconnect.
+    this.sftp.on('close', () => {
+      this._client.end();
+    });
 
     if (lastOption.limitOpenFilesOnRemote) {
       if (typeof lastOption.limitOpenFilesOnRemote !== 'boolean') {
@@ -301,8 +307,6 @@ export default class SSHClient extends RemoteClient {
         .on('error', err => {
           reject(new Error(`[${option.host}]: ${err.message}`));
         })
-        .on('close', this.end())
-        .on('end', this.end())
         .connect({
           keepaliveInterval: 1000 * 30, // 30 secs, original
           // keepaliveInterval: 1000 * 600, // 10 mins
