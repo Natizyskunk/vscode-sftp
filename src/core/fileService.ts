@@ -12,6 +12,7 @@ import Ignore from './ignore';
 import { FileSystem } from './fs';
 import Scheduler from './scheduler';
 import { createRemoteIfNoneExist, removeRemoteFs } from './remoteFs';
+import { resolveSSHConfig } from './sshConfigResolver';
 import TransferTask from './transferTask';
 import localFs from './localFs';
 
@@ -75,6 +76,8 @@ interface SftpOption {
   concurrency: number;
   sshCustomParams?: string;
   hop: (Host & SftpOption)[] | (Host & SftpOption);
+  proxyJump?: (Host & SftpOption)[];
+  sshHostAlias?: string;
 }
 
 interface FtpOption {
@@ -236,8 +239,9 @@ function mergeConfigWithExternalRefer(
   }
 
   const parsedSSHConfig = sshConfig.parse(sshConfigContent);
+  const sshLookupHost = copyed.host;
   const section = parsedSSHConfig.find({
-    Host: copyed.host,
+    Host: sshLookupHost,
   });
 
   if (section === null) {
@@ -250,7 +254,7 @@ function mergeConfigWithExternalRefer(
     ['user', 'username'],
     ['identityfile', 'privateKeyPath'],
     ['serveraliveinterval', 'keepalive'],
-    ['connecttimeout', 'connTimeout'],
+    ['connecttimeout', 'connectTimeout'],
   ]);
 
   section.config.forEach(line => {
@@ -268,6 +272,29 @@ function mergeConfigWithExternalRefer(
       }
     }
   });
+
+  const resolved = resolveSSHConfig(parsedSSHConfig as any, sshLookupHost, {
+    agent: copyed.agent,
+    privateKeyPath: copyed.privateKeyPath,
+    passphrase: copyed.passphrase,
+    interactiveAuth: copyed.interactiveAuth,
+    algorithms: copyed.algorithms,
+    connectTimeout: copyed.connectTimeout,
+  });
+
+  if (resolved.host) {
+    copyed.host = resolved.host;
+    copyed.sshHostAlias = config.host;
+  }
+
+  setConfigValue(copyed, 'port', resolved.port);
+  setConfigValue(copyed, 'username', resolved.username);
+  setConfigValue(copyed, 'privateKeyPath', resolved.privateKeyPath);
+  setConfigValue(copyed, 'connectTimeout', resolved.connectTimeout);
+
+  if (resolved.proxyJump && copyed.proxyJump === undefined) {
+    copyed.proxyJump = resolved.proxyJump as any;
+  }
 
   // Bug introduced in pull request #69 : Fix ssh config resolution
   /* const parsedSSHConfig = sshConfig.parse(sshConfigContent);
@@ -322,6 +349,16 @@ function getCompleteConfig(
       workspace,
       mergedConfig.privateKeyPath
     );
+  }
+
+  if (mergedConfig.proxyJump) {
+    mergedConfig.proxyJump = mergedConfig.proxyJump.map(jumpOption => {
+      const next = Object.assign({}, jumpOption);
+      if (next.privateKeyPath) {
+        next.privateKeyPath = resolvePath(workspace, next.privateKeyPath);
+      }
+      return next;
+    });
   }
 
   if (mergedConfig.ignoreFile) {

@@ -36,12 +36,49 @@ export default class SSHClient extends RemoteClient {
     connectOption: ConnectOption,
     config: Config
   ): Promise<void> {
-    const { hop, ...option } = connectOption;
+    const { hop, proxyJump, ...option } = connectOption;
 
     let lastOption: ConnectOption = option;
     let fs: FileSystem | RemoteFileSystem = localFs;
     let sock;
-    if (
+    if (Array.isArray(proxyJump) && proxyJump.length > 0) {
+      this.hoppingClients = [];
+
+      for (let index = 0; index < proxyJump.length; index++) {
+        const curOpt = Object.assign({}, proxyJump[index]);
+        if (curOpt.port === undefined) {
+          curOpt.port = 22;
+        }
+
+        const preClient = this.hoppingClients[index - 1];
+        if (preClient) {
+          sock = await this._makeHopping(preClient, curOpt.host, curOpt.port);
+        } else {
+          sock = undefined;
+        }
+
+        if (curOpt.privateKeyPath) {
+          const buffer = await localFs.readFile(curOpt.privateKeyPath);
+          curOpt.privateKey = buffer.toString();
+        }
+
+        const client = new SSHClient(curOpt);
+        this.hoppingClients.push(client);
+        await client._connectSSHClient(
+          client._client,
+          Object.assign({}, curOpt, { sock }),
+          config
+        );
+      }
+
+      const lastClient = this.hoppingClients[this.hoppingClients.length - 1];
+      sock = await this._makeHopping(
+        lastClient,
+        lastOption.host,
+        lastOption.port
+      );
+      fs = localFs;
+    } else if (
       (Array.isArray(hop) && hop.length > 0) ||
       (hop && Object.keys(hop).length > 0)
     ) {
@@ -337,7 +374,7 @@ export default class SSHClient extends RemoteClient {
       // Create a connect form 127.0.0.1:port to dstHost:dstPort
       sshClient._client.forwardOut(
         '127.0.0.1',
-        sshClient._option.port,
+        0,
         dstHost,
         dstPort,
         (error, stream) => {

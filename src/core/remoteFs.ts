@@ -12,9 +12,26 @@ import {
 import localFs from './localFs';
 
 function hashOption(opiton) {
-  return Object.keys(opiton)
-    .map(key => opiton[key])
-    .join('');
+  const normalize = value => {
+    if (Array.isArray(value)) {
+      return value.map(normalize);
+    }
+
+    if (value && typeof value === 'object') {
+      return Object.keys(value)
+        .sort()
+        .reduce((result, key) => {
+          if (typeof value[key] !== 'function') {
+            result[key] = normalize(value[key]);
+          }
+          return result;
+        }, {});
+    }
+
+    return value;
+  };
+
+  return JSON.stringify(normalize(opiton));
 }
 
 class KeepAliveRemoteFs {

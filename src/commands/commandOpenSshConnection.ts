@@ -25,10 +25,14 @@ function adaptPath(filepath) {
 }
 
 function getSshCommand(
-  config: { host: string; port: number; username: string },
+  config: { host: string; port: number; username: string; sshConfigPath?: string },
   extraOption?: string
 ) {
-  let sshStr = `ssh -t ${config.username}@${config.host} -p ${config.port}`;
+  let sshStr = 'ssh -t';
+  if (config.sshConfigPath) {
+    sshStr += ` -F "${adaptPath(config.sshConfigPath)}"`;
+  }
+  sshStr += ` ${config.username}@${config.host} -p ${config.port}`;
   if (extraOption) {
     sshStr += ` ${extraOption}`;
   }
@@ -75,9 +79,10 @@ export default checkCommand({
     }
 
     const sshConfig = {
-      host: remoteConfig.host,
+      host: remoteConfig.sshHostAlias || remoteConfig.host,
       port: remoteConfig.port,
       username: remoteConfig.username,
+      sshConfigPath: remoteConfig.sshConfigPath,
     };
     const terminal = vscode.window.createTerminal(remoteConfig.name);
     let sshCommand;
