@@ -2,7 +2,7 @@
   "name": "ccd-sftp",
   "displayName": "CCD SFTP",
   "description": "SFTP/FTP sync",
-  "version": "1.17.1",
+  "version": "1.17.2",
   "publisher": "CCD-Studios",
   "author": "CCD <hello@ccdstudios.com> (https://github.com/ChrisCurdDesign)",
   "engines": {
