@@ -1,7 +1,10 @@
-v# sftp sync extension for VS Code
+sftp sync extension for VS Code
 
-New maintained and updated version by [@Natizyskunk](https://github.com/Natizyskunk/) 😀 <!-- and [@satiromarra](https://github.com/satiromarra) --> <br>
-(Forked from the no longer maintained [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git))
+Yes this is another fork now in 2026! Seems that this extension keeps getting left behind, but we at CCD are still here using it and wanted to keep it working. We'll try and keep it maintained and review pull requests.
+
+- Forked from the no longer maintained [Kreare's SFTP plugin](https://github.com/Kreare/vscode-sftp.git))
+- ...which was forked from the no longer maintained [Natizyskunk's SFTP plugin](https://github.com/Natizyskunk/vscode-sftp.git))
+- ...which was forked from the no longer maintained [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git))
 
 - VS Code marketplace : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp <br>
 - VSIX release : https://github.com/Natizyskunk/vscode-sftp/releases/
@@ -16,7 +19,7 @@ At the start of the year 2023, a new fork from [@satiromarra](https://github.com
 
 As of today (2023-06-23) we'll now be two collaborators : [@satiromarra](https://github.com/satiromarra) and [@me](https://github.com/Natizyskunk) 🙂.
 
-We've been working hard to fix a lot of things and we've updated more than 50 new releases with a lot of improvements and stability fixes and we've brought new features for almost two years now. 
+We've been working hard to fix a lot of things and we've updated more than 50 new releases with a lot of improvements and stability fixes and we've brought new features for almost two years now.
 
 We'll try to keep this extension up-to-date as much as we can and add new relevant features. For the last 6 months I wasn't able to work a lot on the project because of personal reasons at the time so I'm glad [@satiromarra](https://github.com/satiromarra) was able to take on while I wasn't here.
 
@@ -103,28 +106,28 @@ For detailed explanations please go to [wiki](https://github.com/Natizyskunk/vsc
 ## Example configurations
 You can see the full list of configuration options [here](https://github.com/Natizyskunk/vscode-sftp/wiki/configuration).
 
-- [sftp sync extension for VS Code](#sftp-sync-extension-for-vs-code)
-  - [Installation](#installation)
-    - [Method 1 (Recommended : Auto update)](#method-1-recommended--auto-update)
-    - [Method 2 (Manual update)](#method-2-manual-update)
-  - [Documentation](#documentation)
-  - [Usage](#usage)
-  - [Example configurations](#example-configurations)
-    - [Simple](#simple)
-    - [Profiles](#profiles)
-    - [Multiple Context](#multiple-context)
-    - [Connection Hopping](#connection-hopping)
-      - [Single Hop](#single-hop)
-      - [Multiple Hop](#multiple-hop)
-    - [Configuration in User Setting](#configuration-in-user-setting)
-  - [Remote Explorer](#remote-explorer)
-    - [Multiple Select](#multiple-select)
-    - [Order](#order)
-  - [Debug](#debug)
-  - [FAQ](#faq)
-  - [Donation](#donation)
-    - [Buy Me a Coffee](#buy-me-a-coffee)
-    - [PayPal](#paypal)
+- [INFOS - 2023/06/23](#infos---20230623)
+- [Installation](#installation)
+  - [Method 1 (Recommended : Auto update)](#method-1-recommended--auto-update)
+  - [Method 2 (Manual update)](#method-2-manual-update)
+- [Documentation](#documentation)
+- [Usage](#usage)
+- [Example configurations](#example-configurations)
+  - [Simple](#simple)
+  - [Profiles](#profiles)
+  - [Multiple Context](#multiple-context)
+  - [Connection Hopping](#connection-hopping)
+    - [Single Hop](#single-hop)
+    - [Multiple Hop](#multiple-hop)
+  - [Configuration in User Setting](#configuration-in-user-setting)
+- [Remote Explorer](#remote-explorer)
+  - [Multiple Select](#multiple-select)
+  - [Order](#order)
+- [Debug](#debug)
+- [FAQ](#faq)
+- [Donation](#donation)
+  - [Buy Me a Coffee](#buy-me-a-coffee)
+  - [PayPal](#paypal)
 
 ### Simple
 ```json
