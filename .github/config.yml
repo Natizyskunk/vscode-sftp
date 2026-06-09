@@ -4,7 +4,7 @@
 # Can be either a string :
 requestInfoReplyComment: >
   We would appreciate it if you could provide us with more info about this issue!
-  
+
 # *OPTIONAL* default titles to check against for lack of descriptiveness
 # MUST BE ALL LOWERCASE
 requestInfoDefaultTitles:
@@ -30,5 +30,5 @@ requestInfoOn:
 
 # *OPTIONAL* Add a list of people whose Issues/PRs will not be commented on
 # keys must be GitHub usernames
-requestInfoUserstoExclude:
-  - Natizyskunk
+# requestInfoUserstoExclude:
+  # - Natizyskunk

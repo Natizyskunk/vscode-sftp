@@ -9,7 +9,7 @@ assignees: ''
 
 **Do you read the FAQ?**
 - [ ] Yes.
-- [ ] [I am going to read now.](https://github.com/Natizyskunk/vscode-sftp/blob/master/FAQ.md)
+- [ ] [I am going to read now.](https://github.com/ChrisCurdDesign/vscode-sftp/blob/master/FAQ.md)
 
 **Describe the bug**
 A clear and concise description of what the bug is.

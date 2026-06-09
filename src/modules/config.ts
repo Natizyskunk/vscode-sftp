@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as Joi from 'joi';
+import { parse, ParseError, printParseErrorCode } from 'jsonc-parser';
 import { CONFIG_PATH } from '../constants';
 import { reportError } from '../helper';
 import { showTextDocument } from '../host';
@@ -139,7 +140,22 @@ export function validateConfig(config) {
 }
 
 export function readConfigsFromFile(configPath): Promise<any[]> {
-  return fse.readJson(configPath).then(config => {
+  return fse.readFile(configPath, 'utf8').then(content => {
+    const errors: ParseError[] = [];
+    const config = parse(content, errors, {
+      allowTrailingComma: true,
+      disallowComments: false,
+    });
+
+    if (errors.length > 0) {
+      const details = errors
+        .map(error => {
+          return `offset ${error.offset}: ${printParseErrorCode(error.error)}`;
+        })
+        .join('; ');
+      throw new Error(`Invalid JSONC in ${configPath}: ${details}`);
+    }
+
     const configs = Array.isArray(config) ? config : [config];
     return configs.map(mergedDefault);
   });

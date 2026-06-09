@@ -27,7 +27,7 @@ export default abstract class Command {
     };
   }
 
-  protected abstract async doCommandRun(...args: any[]);
+  protected abstract doCommandRun(...args: any[]): Promise<any> | any;
 
   async run(...args) {
     logger.trace(`run command '${this.name}'`);

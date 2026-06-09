@@ -9,12 +9,13 @@
 - [How can I upload files as root?](#how-can-i-upload-files-as-root)
 - [Automatically sync both ways without user interaction](#automatically-sync-both-ways-without-user-interaction)
 - [Show dotfiles/hidden files in remote explorer](#show-dotfileshidden-files-in-remote-explorer)
+	- [If using proftpd](#if-using-proftpd)
 
 ## Error: Failure
 
-The failure error message comes from the remote side and is more or less the default/generic error 
+The failure error message comes from the remote side and is more or less the default/generic error
 message that sftp server sends when a syscall fails or something similar happens.
-To know what exactly is going wrong you could try to enable debug output for the sftp server 
+To know what exactly is going wrong you could try to enable debug output for the sftp server
 and then execute your transfers again and see what (if anything) shows up in the logs there.
 
 ### Error: Failure - Solution One
@@ -25,7 +26,7 @@ Change `remotePath` to the actual path if it's a symlink.
 
 The problem could be that your server runs out of file descriptors.
 You should try to increase the file descriptors limit.
-If you don't have the permission to do this, set [limitOpenFilesOnRemote](https://github.com/Natizyskunk/vscode-sftp/wiki/Configuration#limitopenfilesonremote) option in your config.
+If you don't have the permission to do this, set [limitOpenFilesOnRemote](https://github.com/ChrisCurdDesign/vscode-sftp/wiki/Configuration#limitopenfilesonremote) option in your config.
 
 ## Error: Connection closed
 
@@ -35,8 +36,8 @@ You'll have to Explicitly override the default transport layer algorithms used f
 {
 	"algorithms": {
 		"kex": [
-			"ecdh-sha2-nistp256", 
-			"ecdh-sha2-nistp384", 
+			"ecdh-sha2-nistp256",
+			"ecdh-sha2-nistp384",
 			"ecdh-sha2-nistp521"
 		],
 		"cipher": [
@@ -52,17 +53,17 @@ You'll have to Explicitly override the default transport layer algorithms used f
 			"aes256-ctr"
 		],
 		"serverHostKey": [
-			"ssh-rsa", 
+			"ssh-rsa",
 			"ssh-dss",
 			"ssh-ed25519",
-			"ecdsa-sha2-nistp256", 
-			"ecdsa-sha2-nistp384", 
+			"ecdsa-sha2-nistp256",
+			"ecdsa-sha2-nistp384",
 			"ecdsa-sha2-nistp521",
 			"rsa-sha2-256",
 			"rsa-sha2-512"
 		],
 		"hmac": [
-			"hmac-sha2-256", 
+			"hmac-sha2-256",
 			"hmac-sha2-512"
 		]
 	}
@@ -167,7 +168,7 @@ Please edit the config file `proftpd.conf`. Depending on your installation, the 
 
 Search for the `ListOptions` parameter and change it from `"-l"` to `"-la"`.
 
-It should look like this : 
+It should look like this :
 ```conf
 #Global settings
 <Global>

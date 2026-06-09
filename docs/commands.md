@@ -5,7 +5,7 @@ Create a new configuration file for a project.
 
 ## SFTP: Set Profile
 Set the current profile.
-           
+
 ### KeyBindings Args
 func(profileName: string)
 
@@ -29,7 +29,7 @@ Download the entire folder the current file is located in.
 1. Any files that exist on both local and remote that have a different timestamp between local and remote are copied over.
 2. Any files that only exist on the local are copied over.
 
-You can change the default behavior by [syncOption](https://github.com/Natizyskunk/vscode-sftp/wiki/Configuration#syncoption).
+You can change the default behavior by [syncOption](https://github.com/ChrisCurdDesign/vscode-sftp/wiki/Configuration#syncoption).
 
 ## SFTP: Sync Remote -> Local
 Same as `Sync Local -> Remote`, but in the opposite direction.
@@ -37,7 +37,7 @@ Same as `Sync Local -> Remote`, but in the opposite direction.
 ## SFTP: Sync Both Directions
 Compare file modification times, and will always perform the action that causes the newest file to be present in both locations.
 
-*Only [skipCreate](https://github.com/Natizyskunk/vscode-sftp/wiki/Configuration#syncoptionskipcreate) and [ignoreExisting](https://github.com/Natizyskunk/vscode-sftp/wiki/Configuration#syncoptionignoreexisting) are valid for this command.*
+*Only [skipCreate](https://github.com/ChrisCurdDesign/vscode-sftp/wiki/Configuration#syncoptionskipcreate) and [ignoreExisting](https://github.com/ChrisCurdDesign/vscode-sftp/wiki/Configuration#syncoptionignoreexisting) are valid for this command.*
 
 ## SFTP: List Active Folder
 List the folder the current file is located in.

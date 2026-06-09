@@ -1,4 +1,8 @@
-## 1.16.4 - 2024-06-13
+## 1.17.0 - 2026-06-01
+* Fix `isDate is not a function` error
+* Add support for jsonc formatting in sftp.json, attempt to set default language when editing sftp.json to jsonc to allow comments and trailing commas.
+
+## 1.17.0 - 2024-06-13
 * []     Added watcher on ftpsync.json to reload the configuration after any change to the file (like a git branch change)
 
 ## 1.16.3 - 2023-06-16
