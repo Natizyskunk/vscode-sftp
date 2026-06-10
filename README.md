@@ -1,5 +1,24 @@
 # sftp sync extension for VS Code
 
+## Deprecation Notice
+
+**This extension is no longer actively maintained.**
+
+For continuity, this repository remains available as historical context for the community and previous contributors.
+
+### Recommended successor: CCD SFTP
+
+- Marketplace: https://marketplace.visualstudio.com/items?itemName=CCD-Studios.ccd-sftp
+- Repository: https://github.com/ChrisCurdDesign/vscode-sftp
+
+## Migration
+
+1. Uninstall old extension.
+2. Install `CCD-Studios.ccd-sftp`.
+3. Keep your existing `sftp.json` config unless specific settings changed.
+
+## Old readme:
+
 New maintained and updated version by [@Natizyskunk](https://github.com/Natizyskunk/) 😀 <!-- and [@satiromarra](https://github.com/satiromarra) --> <br>
 (Forked from the no longer maintained [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git))
 
