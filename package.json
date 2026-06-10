@@ -252,6 +252,11 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.delete.localAndRemote.activeFile",
+        "title": "Delete local and remote files",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.create.folder",
         "title": "Create Folder",
         "category": "SFTP"
@@ -370,6 +375,10 @@
         },
         {
           "command": "sftp.delete.remote.activeFile",
+          "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.delete.localAndRemote.activeFile",
           "when": "sftp.enabled"
         },
         {
@@ -523,6 +532,16 @@
         {
           "command": "sftp.download.file",
           "group": "sftp.trans@2",
+          "when": "sftp.enabled && resourceScheme == file"
+        },
+        {
+          "command": "sftp.delete.remote.activeFile",
+          "group": "sftp.trans@3",
+          "when": "sftp.enabled && resourceScheme == file"
+        },
+        {
+          "command": "sftp.delete.localAndRemote.activeFile",
+          "group": "sftp.trans@4",
           "when": "sftp.enabled && resourceScheme == file"
         },
         {

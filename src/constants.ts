@@ -55,6 +55,8 @@ export const COMMAND_LIST_ACTIVEFOLDER = 'sftp.listActiveFolder';
 export const COMMAND_LIST_ALL = 'sftp.listAll';
 export const COMMAND_DELETE_REMOTE = 'sftp.delete.remote';
 export const COMMAND_DELETE_REMOTE_ACTIVEFILE = 'sftp.delete.remote.activeFile';
+export const COMMAND_DELETE_LOCAL_AND_REMOTE_ACTIVEFILE =
+	'sftp.delete.localAndRemote.activeFile';
 export const COMMAND_REVEAL_IN_EXPLORER = 'sftp.revealInExplorer';
 export const COMMAND_REVEAL_IN_REMOTE_EXPLORER = 'sftp.revealInRemoteExplorer';
 
