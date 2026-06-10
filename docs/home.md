@@ -1,6 +1,6 @@
 # Home
 
-1. [Setting](./setting.md)
+1. [Setting](./settings.md)
 2. [Config](./configuration.md)
     - [Common](./common_configuration.md)
     - [SFTP](./sftp_configuration.md)
