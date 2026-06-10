@@ -1,4 +1,8 @@
-## 1.17.0 - 2026-06-01
+## 1.18.0 - 2026-06-10
+* When no active profile is selected, user will be prompted to set a profile, before retrying the original action
+
+
+## 1.17.2 - 2026-06-09
 * Fix `isDate is not a function` error
 * Add support for jsonc formatting in sftp.json, attempt to set default language when editing sftp.json to jsonc to allow comments and trailing commas.
 
