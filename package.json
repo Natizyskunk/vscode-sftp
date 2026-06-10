@@ -247,6 +247,11 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.delete.remote.activeFile",
+        "title": "Delete remote file",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.create.folder",
         "title": "Create Folder",
         "category": "SFTP"
@@ -361,6 +366,10 @@
         },
         {
           "command": "sftp.listAll",
+          "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.delete.remote.activeFile",
           "when": "sftp.enabled"
         },
         {
