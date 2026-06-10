@@ -86,13 +86,17 @@ export function showWarningMessage(message: string, ...items: string[]) {
 export async function showConfirmMessage(
   message: string,
   confirmLabel: string = 'Yes',
-  cancelLabel: string = 'No'
+  cancelLabel: string = 'No',
+  modal: boolean = false
 ) {
-  const result = await vscode.window.showInformationMessage(
-    message,
-    { title: confirmLabel },
-    { title: cancelLabel }
-  );
+  const result = modal
+    ? await vscode.window.showInformationMessage(message, { modal }, { title: confirmLabel })
+    : await vscode.window.showInformationMessage(
+        message,
+        { modal },
+        { title: confirmLabel },
+        { title: cancelLabel }
+      );
 
   return Boolean(result && result.title === confirmLabel);
 }
