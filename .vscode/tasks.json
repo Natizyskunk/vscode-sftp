@@ -10,44 +10,60 @@
 {
   "version": "2.0.0",
 
-  // we want to run npm
-  "command": "npm",
-
-  "type": "shell",
-
-  "presentation": {
-    "reveal": "silent"
-  },
-
-  // we run the custom script "dev" as defined in package.json
-  "args": ["run", "dev"],
-
-  // The dev is started in watching mode
-  "isBackground": true,
-
-  // use the standard tsc in watch mode problem matcher to find compile problems in the output.
-  "problemMatcher": {
-    "owner": "webpack",
-    "fileLocation": "relative",
-    "severity": "error",
-    "pattern": [
-      {
-        "regexp": "^(.*)\\s+in\\s+(.*)\\s(\\d+):(\\d+)-(\\d+)$",
-        "severity": 1,
-        "file": 2,
-        "line": 3,
-        "column": 4,
-        "endColumn": 5
+  "tasks": [
+    {
+      // we want to run npm
+      "label": "npm: dev",
+      "command": "npm",
+      "type": "shell",
+      "presentation": {
+        "reveal": "silent"
       },
-      {
-        "regexp": "^(?!Hash|Time|Version|Built at).+:\\s+(.*)$",
-        "message": 0
+
+      // we run the custom script "dev" as defined in package.json
+      "args": ["run", "dev"],
+
+      // The dev is started in watching mode
+      "isBackground": true,
+
+      // use the standard tsc in watch mode problem matcher to find compile problems in the output.
+      "problemMatcher": {
+        "owner": "webpack",
+        "fileLocation": "relative",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "^(.*)\\s+in\\s+(.*)\\s(\\d+):(\\d+)-(\\d+)$",
+            "severity": 1,
+            "file": 2,
+            "line": 3,
+            "column": 4,
+            "endColumn": 5
+          },
+          {
+            "regexp": "^(?!Hash|Time|Version|Built at).+:\\s+(.*)$",
+            "message": 0
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^$",
+          "endsPattern": "^$"
+        }
       }
-    ],
-    "background": {
-      "activeOnStart": true,
-      "beginsPattern": "^$",
-      "endsPattern": "^$"
+    },
+    {
+      "label": "npm: create package",
+      "command": "npm",
+      "type": "shell",
+      "args": ["run", "package"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      }
     }
-  }
+  ]
 }
