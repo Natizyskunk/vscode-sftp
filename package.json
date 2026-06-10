@@ -247,8 +247,18 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.delete.remote.file",
+        "title": "Delete remote file",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.delete.remote.activeFile",
         "title": "Delete remote file",
+        "category": "SFTP"
+      },
+      {
+        "command": "sftp.delete.localAndRemote",
+        "title": "Delete local and remote files",
         "category": "SFTP"
       },
       {
@@ -380,6 +390,14 @@
         {
           "command": "sftp.delete.localAndRemote.activeFile",
           "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.delete.remote.file",
+          "when": "false"
+        },
+        {
+          "command": "sftp.delete.localAndRemote",
+          "when": "false"
         },
         {
           "command": "sftp.upload.file",
@@ -516,6 +534,16 @@
           "group": "sftp.trans@2",
           "alt": "sftp.forceDownload",
           "when": "sftp.enabled && explorerResourceIsFolder"
+        },
+        {
+          "command": "sftp.delete.remote.file",
+          "group": "sftp.trans@3",
+          "when": "sftp.enabled && !explorerResourceIsRoot && !explorerResourceIsFolder"
+        },
+        {
+          "command": "sftp.delete.localAndRemote",
+          "group": "sftp.trans@4",
+          "when": "sftp.enabled && !explorerResourceIsRoot && !explorerResourceIsFolder"
         }
       ],
       "editor/context": [
@@ -632,6 +660,11 @@
           "command": "sftp.delete.remote",
           "group": "7_modification",
           "when": "view == remoteExplorer && viewItem != root"
+        },
+        {
+          "command": "sftp.delete.localAndRemote",
+          "group": "7_modification",
+          "when": "view == remoteExplorer && viewItem == file"
         },
         {
           "command": "sftp.create.folder",
