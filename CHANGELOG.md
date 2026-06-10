@@ -1,6 +1,7 @@
 ## 1.18.0 - 2026-06-10
 * When no active profile is selected, user will be prompted to set a profile, before retrying the original action
-
+* Added new commands `Delete remote file` and `Delete local and remote files` to command palette and relevant context menus
+* Moved to modal popup for deletion confirmations
 
 ## 1.17.2 - 2026-06-09
 * Fix `isDate is not a function` error
