@@ -1,9 +1,35 @@
 import { refreshRemoteExplorer } from '../shared';
 import createFileHandler, { FileHandlerContext } from '../createFileHandler';
+import {
+  guardUpload,
+  guardBulkUpload,
+  rememberRemoteVersion,
+  forgetUnder,
+} from '../../modules/overwriteGuard';
+import { confirmProtectedUpload } from '../../modules/prodGuard';
+import { rsyncUpload } from '../../core/rsync';
+import { FileType } from '../../core';
 import { transfer, sync, TransferOption, SyncOption, TransferDirection } from './transfer';
 
 function createTransferHandle(direction: TransferDirection) {
   return async function handle(this: FileHandlerContext, option) {
+    // rsync upload backend (for servers whose SFTP subsystem rejects writes)
+    if (
+      direction === TransferDirection.LOCAL_TO_REMOTE &&
+      this.config.uploadMethod === 'rsync'
+    ) {
+      const stat = await this.fileService
+        .getLocalFileSystem()
+        .lstat(this.target.localFsPath);
+      await rsyncUpload(
+        this.config,
+        this.target.localFsPath,
+        this.target.remoteFsPath,
+        stat.type === FileType.Directory
+      );
+      return;
+    }
+
     const remoteFs = await this.fileService.getRemoteFileSystem(this.config);
     const localFs = this.fileService.getLocalFileSystem();
     const { localFsPath, remoteFsPath } = this.target;
@@ -139,6 +165,10 @@ export const upload = createFileHandler<TransferOption>({
 export const uploadFile = createFileHandler<TransferOption>({
   name: 'upload file',
   handle: uploadHandle,
+  // confirm protected (prod) uploads, then warn if the remote changed since open
+  async beforeHandle() {
+    return (await confirmProtectedUpload(this)) && (await guardUpload(this));
+  },
   transformOption() {
     const config = this.config;
     return {
@@ -150,6 +180,7 @@ export const uploadFile = createFileHandler<TransferOption>({
     };
   },
   afterHandle() {
+    rememberRemoteVersion(this).catch(() => undefined);
     refreshRemoteExplorer(this.target, false);
   },
 });
@@ -157,6 +188,10 @@ export const uploadFile = createFileHandler<TransferOption>({
 export const uploadFolder = createFileHandler<TransferOption>({
   name: 'upload folder',
   handle: uploadHandle,
+  // confirm protected (prod) uploads, then batched overwrite guard
+  async beforeHandle() {
+    return (await confirmProtectedUpload(this)) && (await guardBulkUpload(this));
+  },
   transformOption() {
     const config = this.config;
     return {
@@ -168,6 +203,8 @@ export const uploadFolder = createFileHandler<TransferOption>({
     };
   },
   afterHandle() {
+    // these files were just overwritten; drop stale baselines under the folder
+    forgetUnder(this.target.localFsPath);
     refreshRemoteExplorer(this.target, true);
   },
 });
@@ -188,6 +225,10 @@ export const download = createFileHandler<TransferOption>({
 export const downloadFile = createFileHandler<TransferOption>({
   name: 'download file',
   handle: downloadHandle,
+  // we now hold the remote's version: use it as the overwrite-guard baseline
+  afterHandle() {
+    rememberRemoteVersion(this).catch(() => undefined);
+  },
   transformOption() {
     const config = this.config;
     return {

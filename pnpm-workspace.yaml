@@ -1,0 +1,11 @@
+# vsce packages the extension expecting a flat node_modules (the external `ssh2`
+# dependency must be resolvable at the top level), so use a hoisted, symlink-free
+# layout instead of pnpm's default isolated one.
+nodeLinker: hoisted
+
+# ssh2's only native build (cpu-features) is optional — it falls back to pure JS.
+# Don't build it, and don't let the pre-run deps check treat that as fatal.
+verifyDepsBeforeRun: false
+ignoredBuiltDependencies:
+  - cpu-features
+  - ssh2

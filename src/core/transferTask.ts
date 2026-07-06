@@ -113,14 +113,30 @@ export default class TransferTask implements Task {
   }
 
   private async _transferFile() {
+    try {
+      await this._doTransferFile(!!this._TransferOption.useTempFile);
+    } catch (error) {
+      // rsync-style fallback: a direct write needs write permission on the file
+      // itself; if that fails (you only own the directory), retry via a temp file
+      // + atomic rename, which only needs directory write permission.
+      if (!this._TransferOption.useTempFile && !this._cancelled) {
+        logger.warn(
+          `Direct write failed (${error && error.message}); retrying with a temp file.`
+        );
+        await this._doTransferFile(true);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  private async _doTransferFile(useTempFile: boolean) {
     const src = this._srcFsPath;
     const target = this._targetFsPath;
     const srcFs = this._srcFs;
     const targetFs = this._targetFs;
     const {
       perserveTargetMode,
-      useTempFile,
-      openSsh,
       fallbackMode,
       atime,
       mtime,
@@ -198,12 +214,15 @@ export default class TransferTask implements Task {
 
       if (useTempFile) {
         logger.info("moving from: " + target + ".new" + " to: " + target);
-        if(openSsh) {
+        // Prefer an atomic overwrite-rename (OpenSSH posix-rename): like rsync, it
+        // only needs write permission on the *directory*, not on the target file.
+        // Fall back to delete + rename when the server lacks the extension.
+        try {
           await targetFs.renameAtomic(uploadTarget, target);
-        } else {
+        } catch (error) {
           try {
             await targetFs.unlink(target);
-          } catch(error) {
+          } catch (e) {
             // Just ignore
           }
           await targetFs.rename(uploadTarget, target);

@@ -16,6 +16,8 @@ export const COMMAND_TOGGLE_OUTPUT = 'sftp.toggleOutput';
 // commands in package.json
 export const COMMAND_CONFIG = 'sftp.config';
 export const COMMAND_SET_PROFILE = 'sftp.setProfile';
+// sentinel arg: set the profile of the active editor's context directly
+export const SET_PROFILE_ACTIVE_CONTEXT = '__sftp_active_context__';
 export const COMMAND_CANCEL_ALL_TRANSFER = 'sftp.cancelAllTransfer';
 export const COMMAND_OPEN_CONNECTION_IN_TERMINAL = 'sftp.openConnectInTerminal';
 
@@ -50,6 +52,11 @@ export const COMMAND_SYNC_BOTH_DIRECTIONS = 'sftp.sync.bothDirections';
 
 export const COMMAND_DIFF = 'sftp.diff';
 export const COMMAND_DIFF_ACTIVEFILE = 'sftp.diff.activeFile';
+
+export const COMMAND_CHANGES_REFRESH = 'sftp.changesExplorer.refresh';
+export const COMMAND_CHANGES_UPLOAD_ALL = 'sftp.changesExplorer.uploadAll';
+export const COMMAND_CHANGES_UPLOAD_FILE = 'sftp.changesExplorer.uploadFile';
+export const COMMAND_CHANGES_TOGGLE_SCOPE = 'sftp.changesExplorer.toggleScope';
 export const COMMAND_LIST = 'sftp.list';
 export const COMMAND_LIST_ACTIVEFOLDER = 'sftp.listActiveFolder';
 export const COMMAND_LIST_ALL = 'sftp.listAll';

@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -16,10 +17,16 @@ const config = {
     devtoolModuleFilenameTemplate: '../[resource-path]',
   },
   devtool: 'source-map',
+  // Only `vscode` is provided by the host. `ssh2` is bundled so the .vsix is
+  // self-contained (no node_modules to ship). ssh2's optional native crypto
+  // accelerator (cpu-features / *.node) is ignored — it falls back to pure JS.
   externals: {
     vscode: 'commonjs vscode',
-    ssh2: 'commonjs ssh2',
   },
+  plugins: [
+    new webpack.IgnorePlugin({ resourceRegExp: /^cpu-features$/ }),
+    new webpack.IgnorePlugin({ resourceRegExp: /\.node$/ }),
+  ],
   resolve: {
     extensions: ['.ts', '.js'],
   },

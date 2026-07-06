@@ -50,10 +50,37 @@
         "type": "string",
         "description": "Name of remote which configs with `remoteFs.remote` in User Setting. Configuration will get merged to this remote."
       },
+      "uploadMethod": {
+        "type": "string",
+        "enum": ["sftp", "rsync"],
+        "description": "How to upload files for this context. 'sftp' (default) uses the SFTP subsystem. 'rsync' shells out to the local rsync binary over SSH — useful when the server restricts the SFTP subsystem but allows shell/rsync. rsync mode needs an SSH key (privateKeyPath) or ssh-agent.",
+        "default": "sftp"
+      },
       "uploadOnSave": {
         "type": "boolean",
         "description": "True to upload on every save operation of VS Code.",
         "default": false
+      },
+      "uploadGuard": {
+        "type": "boolean",
+        "description": "True to warn before uploading when the remote file changed since you opened it (another user may have edited it), to avoid silently overwriting their changes.",
+        "default": false
+      },
+      "protectedProfiles": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Profile names treated as production: the status bar turns red and uploads ask for confirmation while one of these profiles is active. e.g. [\"prod\"].",
+        "default": []
+      },
+      "showRemoteFreshness": {
+        "type": "boolean",
+        "description": "True to show in the status bar whether the open file's remote version is newer/older/same as your local copy.",
+        "default": false
+      },
+      "remoteWatchInterval": {
+        "type": "number",
+        "description": "Seconds between background checks of the open file's remote version. When > 0, you get a live notification the moment another user changes it on the server. 0 disables watching.",
+        "default": 0
       },
       "useTempFile": {
         "type": "boolean",

@@ -7,9 +7,17 @@ import initCommands from './initCommands';
 import { reportError } from './helper';
 import fileActivityMonitor from './modules/fileActivityMonitor';
 import { tryLoadConfigs } from './modules/config';
-import { getAllFileService, createFileService, disposeFileService } from './modules/serviceManager';
+import {
+  getAllFileService,
+  getFileService,
+  createFileService,
+  disposeFileService,
+} from './modules/serviceManager';
 import { getWorkspaceFolders, setContextValue } from './host';
+import { isProtected } from './modules/prodGuard';
+import { init as initFreshnessIndicator } from './modules/freshnessIndicator';
 import RemoteExplorer from './modules/remoteExplorer';
+import ChangesExplorer from './modules/changesExplorer';
 
 async function setupWorkspaceFolder(dir) {
   const configs = await tryLoadConfigs(dir);
@@ -18,7 +26,7 @@ async function setupWorkspaceFolder(dir) {
   });
 }
 
-function setup(workspaceFolders: vscode.WorkspaceFolder[]) {
+function setup(workspaceFolders: readonly vscode.WorkspaceFolder[]) {
   fileActivityMonitor.init();
   const pendingInits = workspaceFolders.map(folder => setupWorkspaceFolder(folder.uri.fsPath));
 
@@ -34,6 +42,10 @@ export async function activate(context: vscode.ExtensionContext) {
     reportError(error, 'initCommands');
   }
 
+  // expose per-workspace storage before services are created (used to restore
+  // each context's active profile)
+  app.workspaceState = context.workspaceState;
+
   const workspaceFolders = getWorkspaceFolders();
   if (!workspaceFolders) {
     return;
@@ -41,19 +53,45 @@ export async function activate(context: vscode.ExtensionContext) {
 
   setContextValue('enabled', true);
   app.sftpBarItem.show();
-  app.state.subscribe(_ => {
+  const refreshUI = () => {
     const currentText = app.sftpBarItem.getText();
-    // current is showing profile
+    // only reset when the bar is showing the idle label, not a transfer message
     if (currentText.startsWith('SFTP')) {
       app.sftpBarItem.reset();
     }
     if (app.remoteExplorer) {
       app.remoteExplorer.refresh();
     }
-  });
+  };
+  app.state.subscribe(refreshUI);
+  // status bar follows the active editor's context (server/profile) and turns red
+  // when a protected (prod) profile is active for that file
+  const updateMainBar = () => {
+    app.sftpBarItem.reset();
+    let protectedNow = false;
+    const editor = vscode.window.activeTextEditor;
+    if (editor && editor.document.uri.scheme === 'file') {
+      const service = getFileService(editor.document.uri);
+      if (service) {
+        try {
+          protectedNow = isProtected(service, service.getConfig());
+        } catch (e) {
+          /* config not resolvable yet — treat as not protected */
+        }
+      }
+    }
+    app.sftpBarItem.setBackground(protectedNow);
+  };
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(updateMainBar)
+  );
   try {
     await setup(workspaceFolders);
     app.remoteExplorer = new RemoteExplorer(context);
+    // tslint:disable-next-line no-unused-expression
+    new ChangesExplorer(context);
+    initFreshnessIndicator(context);
+    updateMainBar();
   } catch (error) {
     reportError(error);
   }

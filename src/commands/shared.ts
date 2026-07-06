@@ -45,7 +45,7 @@ function createFileSelector(filterCreator?) {
 }
 
 export function selectContext(): Promise<Uri | undefined> {
-  return new Promise((resolve, reject) => {
+  return new Promise<Uri | undefined>((resolve, reject) => {
     const sercives = getAllFileService();
     const projectsList = sercives
       .map(service => ({
@@ -70,7 +70,7 @@ export function selectContext(): Promise<Uri | undefined> {
         }
 
         // cancel selection
-        resolve();
+        resolve(undefined);
       }, reject);
   });
 }

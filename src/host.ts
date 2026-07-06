@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { EXTENSION_NAME } from './constants';
 
 export function getOpenTextDocuments(): vscode.TextDocument[] {
-  return vscode.workspace.textDocuments;
+  return [...vscode.workspace.textDocuments];
 }
 
 export function getUserSetting(section: string, resource?: vscode.Uri | null | undefined) {

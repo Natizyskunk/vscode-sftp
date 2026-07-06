@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 const nullable = schema => schema.optional().allow(null);
 
-const configScheme = {
+const configScheme = Joi.object({
   context: Joi.string(),
   protocol: Joi.any().valid('sftp', 'ftp', 'test'),
 
@@ -14,11 +14,9 @@ const configScheme = {
   agent: nullable(Joi.string()),
   privateKeyPath: nullable(Joi.string()),
   passphrase: nullable(Joi.string().allow(true)),
-  interactiveAuth: Joi.alternatives([
-    Joi.boolean(),
-    Joi.array()
-      .items(Joi.string()),
-  ]).optional(),
+  interactiveAuth: Joi.alternatives()
+    .try(Joi.boolean(), Joi.array().items(Joi.string()))
+    .optional(),
 
   secure: Joi.any().valid(true, false, 'control', 'implicit').optional(),
   secureOptions: nullable(Joi.object()),
@@ -39,7 +37,10 @@ const configScheme = {
     autoUpload: Joi.boolean().optional(),
     autoDelete: Joi.boolean().optional(),
   },
-};
+});
+
+// joi >=16 returns `error: undefined` (not null) when a value is valid.
+const validate = config => configScheme.validate(config, { convert: false });
 
 describe("validation config", () => {
   test("default config", () => {
@@ -75,10 +76,7 @@ describe("validation config", () => {
       ],
     };
 
-    const result = Joi.validate(config, configScheme, {
-      convert: false,
-    });
-    expect(result.error).toBe(null);
+    expect(validate(config).error).toBeUndefined();
   });
 
   test("partial config", () => {
@@ -101,16 +99,10 @@ describe("validation config", () => {
       ],
     };
 
-    let result = Joi.validate(config, configScheme, {
-      convert: false,
-    });
-    expect(result.error).toBe(null);
+    expect(validate(config).error).toBeUndefined();
 
     delete config.watcher;
-    result = Joi.validate(config, configScheme, {
-      convert: false,
-    });
-    expect(result.error).toBe(null);
+    expect(validate(config).error).toBeUndefined();
   });
 
   describe("key validaiton", () => {
@@ -144,10 +136,7 @@ describe("validation config", () => {
         ],
       };
 
-      const result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).not.toBe(null);
+      expect(validate(config).error).toBeDefined();
     });
 
     test("watcher files must be false or string", () => {
@@ -180,34 +169,19 @@ describe("validation config", () => {
         ],
       };
 
-      let result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).toBe(null);
+      expect(validate(config).error).toBeUndefined();
 
       config.watcher.files = '**/*.js';
-      result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).toBe(null);
+      expect(validate(config).error).toBeUndefined();
 
       config.watcher.files = null;
-      result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).toBe(null);
+      expect(validate(config).error).toBeUndefined();
 
       config.watcher.files = true;
-      result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).not.toBe(null);
+      expect(validate(config).error).toBeDefined();
 
       delete config.watcher;
-      result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).toBe(null);
+      expect(validate(config).error).toBeUndefined();
     });
 
     test("ignore must be an array of string", () => {
@@ -240,16 +214,10 @@ describe("validation config", () => {
         ],
       };
 
-      let result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).not.toBe(null);
+      expect(validate(config).error).toBeDefined();
 
       config.ignore = [];
-      result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).toBe(null);
+      expect(validate(config).error).toBeUndefined();
     });
 
     test("pass", () => {
@@ -282,16 +250,10 @@ describe("validation config", () => {
         ],
       };
 
-      let result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).toBe(null);
+      expect(validate(config).error).toBeUndefined();
 
       config.passphrase = false;
-      result = Joi.validate(config, configScheme, {
-        convert: false,
-      });
-      expect(result.error).not.toBe(null);
+      expect(validate(config).error).toBeDefined();
     });
   });
 });
