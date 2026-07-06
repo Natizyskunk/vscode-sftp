@@ -20,6 +20,8 @@ type FileHandlerContextMethodArg1<A, R = void> = (this: FileHandlerContext, a: A
 interface FileHandlerOption<T> {
   name: string;
   handle: FileHandlerContextMethodArg1<T, Promise<any>>;
+  // return false to abort before the handle runs (e.g. overwrite guard)
+  beforeHandle?: FileHandlerContextMethod<Promise<boolean>>;
   afterHandle?: FileHandlerContextMethod;
   config?: FileHandlerConfig;
   transformOption?: FileHandlerContextMethod<T>;
@@ -99,6 +101,13 @@ export default function createFileHandler<T>(
 
     if (invokeOption.ignore && invokeOption.ignore(target.localFsPath)) {
       return;
+    }
+
+    if (handlerOption.beforeHandle) {
+      const proceed = await handlerOption.beforeHandle.call(handleCtx);
+      if (proceed === false) {
+        return;
+      }
     }
 
     logger.trace(`handle ${handlerOption.name} for`, target.localFsPath);

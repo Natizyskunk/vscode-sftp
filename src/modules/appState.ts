@@ -1,28 +1,16 @@
+// ponytail: was a global profile holder; profile is now per-FileService.
+// This stays as a tiny "UI needs refresh" signal (status bar + remote explorer).
 class AppState {
-  private _profile: string | null = null;
-  private _observer: (x: any) => void;
+  private _observer: () => void = () => {
+    /* no-op until subscribed */
+  };
 
-  get profile(): string | null {
-    return this._profile;
-  }
-
-  set profile(newProfile: string | null) {
-    if (this._profile === newProfile) {
-      return;
-    }
-
-    this._profile = newProfile;
-    this._observer(this.getStateSnapshot());
-  }
-
-  getStateSnapshot() {
-    return {
-      profile: this._profile,
-    };
-  }
-
-  subscribe(observer) {
+  subscribe(observer: () => void) {
     this._observer = observer;
+  }
+
+  notify() {
+    this._observer();
   }
 }
 

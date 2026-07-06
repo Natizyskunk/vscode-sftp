@@ -48,6 +48,13 @@ export default class StatusBarItem {
     this._render();
   }
 
+  // red background while a protected (prod) profile is active on the current file
+  setBackground(isError: boolean) {
+    this.statusBarItem.backgroundColor = isError
+      ? new vscode.ThemeColor('statusBarItem.errorBackground')
+      : undefined;
+  }
+
   getText() {
     return this.statusBarItem.text;
   }

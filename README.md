@@ -160,7 +160,11 @@ You can see the full list of configuration options [here](https://github.com/Nat
 
 _Note：_ `context` and `watcher` are only available at root level.
 
-Use `SFTP: Set Profile` to switch profile.
+Use `SFTP: Set Profile` to switch profile. The active profile is tracked **per
+context**: when you have multiple contexts (see below), `SFTP: Set Profile` first
+asks which context to change (or all of them), so each folder/submodule can stay on
+its own profile at the same time (e.g. `api` on `prod` while `web` is on `dev`). The
+status bar shows the context and active profile of the file you're currently editing.
 
 ### Multiple Context
 The context must **not be same**.
@@ -186,6 +190,52 @@ The context must **not be same**.
 ```
 
 _Note：_ `name` is required in this mode.
+
+### Git submodules → one server per submodule
+When your repo uses git submodules and each submodule deploys to a **different
+server**, use the array form above with one entry per submodule: set `context` to the
+submodule's path and give it its own `host`/credentials/`remotePath`. SFTP routes each
+file to the right server by its local path, so saving inside a submodule only uploads
+to that submodule's server.
+```json
+[
+  { "name": "api",  "context": "modules/api",  "host": "api.example.com",  "username": "u", "remotePath": "/var/www/api" },
+  { "name": "web",  "context": "modules/web",  "host": "web.example.com",  "username": "u", "remotePath": "/var/www/web" },
+  { "name": "auth", "context": "modules/auth", "host": "auth.example.com", "username": "u", "remotePath": "/srv/auth" }
+]
+```
+Each entry can also define its own `profiles` (e.g. `dev`/`prod`); since the active
+profile is per context, you can run, say, `api` against `prod` while `web` stays on
+`dev`.
+
+### Uploading with rsync (when the server restricts the SFTP subsystem)
+Some servers reject writes through the **SFTP subsystem** (`Error: Failure` when
+uploading) even though the same user can write fine over the **shell** (which is what
+`rsync`/`scp` use). For those contexts, set `"uploadMethod": "rsync"` and uploads will
+shell out to your local `rsync` over SSH instead of SFTP:
+
+```jsonc
+{
+  "name": "web",
+  "context": "modules/web",
+  "host": "...",
+  "username": "...",
+  "privateKeyPath": "~/.ssh/id_rsa",
+  "remotePath": "/var/www/web",
+  "uploadMethod": "rsync",
+  "uploadOnSave": true
+}
+```
+
+- Requires **`rsync` installed locally** and SSH **key/agent** auth (`privateKeyPath` or
+  ssh-agent). If rsync is missing you get a clear message with install hints
+  (`brew install rsync` on macOS, `sudo apt install rsync` on Debian/Ubuntu, WSL/Git
+  Bash/`choco install rsync` on Windows). Password auth would need `sshpass`.
+- Applies to **all uploads** of that context (on-save, manual, and the Git Changes
+  panel). Reads (list/diff/freshness) and downloads still use SFTP.
+- The output channel logs `rsync upload ➞ host:path` (no username or key path); the full
+  command is only shown when SFTP debug logging is enabled.
+- Not supported in rsync mode: connection hopping (`hop`) and `ignore` patterns (yet).
 
 ### Connection Hopping
 You can connect to a target server through a proxy with ssh protocol.

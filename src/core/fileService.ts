@@ -36,7 +36,12 @@ interface Host {
 interface ServiceOption {
   protocol: string;
   remote?: string;
+  uploadMethod: string;
   uploadOnSave: boolean;
+  uploadGuard: boolean;
+  protectedProfiles: string[];
+  showRemoteFreshness: boolean;
+  remoteWatchInterval: number;
   useTempFile: boolean;
   openSsh: boolean;
   downloadOnOpen: boolean | 'confirm';
@@ -115,7 +120,7 @@ interface TransferScheduler {
   stop(): void;
 }
 
-type ConfigValidator = (x: any) => { message: string };
+type ConfigValidator = (x: any) => { message: string } | undefined | null;
 
 const DEFAULT_SSHCONFIG_FILE = '~/.ssh/config';
 
@@ -372,6 +377,7 @@ export default class FileService {
   private _name: string;
   private _watcherConfig: WatcherConfig;
   private _profiles: string[];
+  private _activeProfile: string | null = null;
   private _pendingTransferTasks: Set<TransferTask> = new Set();
   private _transferSchedulers: TransferScheduler[] = [];
   private _config: FileServiceConfig;
@@ -422,6 +428,14 @@ export default class FileService {
 
   getAvailableProfiles(): string[] {
     return this._profiles || [];
+  }
+
+  getActiveProfile(): string | null {
+    return this._activeProfile;
+  }
+
+  setActiveProfile(profile: string | null) {
+    this._activeProfile = profile;
   }
 
   getPendingTransferTasks(): TransferTask[] {
@@ -519,7 +533,7 @@ export default class FileService {
     return createRemoteIfNoneExist(getHostInfo(config));
   }
 
-  getConfig(useProfile = app.state.profile): ServiceConfig {
+  getConfig(useProfile = this._activeProfile): ServiceConfig {
     let config = this._config;
     const hasProfile =
       config.profiles && Object.keys(config.profiles).length > 0;
@@ -542,7 +556,7 @@ export default class FileService {
     if (error) {
       let errorMsg = `Config validation fail: ${error.message}.`;
       // tslint:disable-next-line triple-equals
-      if (hasProfile && app.state.profile == null) {
+      if (hasProfile && this._activeProfile == null) {
         errorMsg += ' You might want to set a profile first.';
       }
       throw new Error(errorMsg);

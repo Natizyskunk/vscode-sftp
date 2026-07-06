@@ -12,7 +12,8 @@ import {
   disposeFileService,
 } from './serviceManager';
 import { reportError, isValidFile, isConfigFile, isInWorkspace } from '../helper';
-import { downloadFile, uploadFile } from '../fileHandlers';
+import { downloadFile, uploadFile, handleCtxFromUri } from '../fileHandlers';
+import { rememberRemoteVersion } from './overwriteGuard';
 
 let workspaceWatcher: vscode.Disposable;
 
@@ -52,7 +53,7 @@ async function handleFileSave(uri: vscode.Uri) {
     try {
       await uploadFile(uri);
     } catch (error) {
-      logger.error(error, `download ${fspath}`);
+      logger.error(error, `upload ${fspath}`);
       app.sftpBarItem.updateStatus(StatusBarItem.Status.error);
     }
   }
@@ -66,6 +67,17 @@ async function downloadOnOpen(uri: vscode.Uri) {
 
   const config = fileService.getConfig();
   if (config.downloadOnOpen) {
+    // don't clobber unsaved local edits without asking
+    const openDoc = vscode.workspace.textDocuments.find(
+      doc => doc.uri.fsPath === uri.fsPath
+    );
+    if (openDoc && openDoc.isDirty) {
+      const keep = await showConfirmMessage(
+        'This file has unsaved changes. Downloading the remote version will overwrite them. Continue?'
+      );
+      if (!keep) return;
+    }
+
     if (config.downloadOnOpen === 'confirm') {
       const isConfirm = await showConfirmMessage('Do you want SFTP to download this file?');
       if (!isConfirm) return;
@@ -79,6 +91,16 @@ async function downloadOnOpen(uri: vscode.Uri) {
       logger.error(error, `download ${fspath}`);
       app.sftpBarItem.updateStatus(StatusBarItem.Status.error);
     }
+  }
+}
+
+// record the remote version when a file is opened so the overwrite guard has a
+// baseline to compare against on the next upload (no-op unless `uploadGuard` is on)
+async function rememberOnOpen(uri: vscode.Uri) {
+  try {
+    await rememberRemoteVersion(handleCtxFromUri(uri));
+  } catch (e) {
+    // no service for this file / remote unreachable -> ignore
   }
 }
 
@@ -120,6 +142,7 @@ function init() {
     }
 
     downloadOnOpen(doc.uri);
+    rememberOnOpen(doc.uri);
   });
 
   watchWorkspace({

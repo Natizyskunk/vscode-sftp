@@ -23,11 +23,9 @@ const configScheme = {
   agent: nullable(Joi.string()),
   privateKeyPath: nullable(Joi.string()),
   passphrase: nullable(Joi.string().allow(true)),
-  interactiveAuth: Joi.alternatives([
-    Joi.boolean(),
-    Joi.array()
-      .items(Joi.string()),
-  ]).optional(),
+  interactiveAuth: Joi.alternatives()
+    .try(Joi.boolean(), Joi.array().items(Joi.string()))
+    .optional(),
   algorithms: Joi.any(),
   sshConfigPath: Joi.string(),
   sshCustomParams: Joi.string(),
@@ -37,7 +35,14 @@ const configScheme = {
   passive: Joi.boolean(),
 
   remotePath: Joi.string().required(),
+  uploadMethod: Joi.any().valid('sftp', 'rsync'),
   uploadOnSave: Joi.boolean(),
+  uploadGuard: Joi.boolean(),
+  protectedProfiles: Joi.array()
+    .min(0)
+    .items(Joi.string()),
+  showRemoteFreshness: Joi.boolean(),
+  remoteWatchInterval: Joi.number().integer(),
   useTempFile: Joi.boolean(),
   openSsh: Joi.boolean(),
   downloadOnOpen: Joi.boolean().allow('confirm'),
@@ -74,6 +79,10 @@ const defaultConfig = {
   // name: undefined,
   remotePath: './',
   uploadOnSave: false,
+  uploadGuard: false,
+  protectedProfiles: [],
+  showRemoteFreshness: false,
+  remoteWatchInterval: 0,
   useTempFile: false,
   openSsh: false,
   downloadOnOpen: false,
@@ -88,6 +97,7 @@ const defaultConfig = {
   // limitOpenFilesOnRemote: false
 
   protocol: 'sftp',
+  uploadMethod: 'sftp',
 
   // server common
   // host,
@@ -125,15 +135,12 @@ function getConfigPath(basePath) {
   return path.join(basePath, CONFIG_PATH);
 }
 
+const compiledScheme = Joi.object(configScheme);
+
 export function validateConfig(config) {
-  const { error } = Joi.validate(config, configScheme, {
+  const { error } = compiledScheme.validate(config, {
     allowUnknown: true,
     convert: false,
-    language: {
-      object: {
-        child: '!!prop "{{!child}}" fails because {{reason}}',
-      },
-    },
   });
   return error;
 }

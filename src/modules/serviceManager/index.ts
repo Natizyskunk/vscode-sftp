@@ -5,6 +5,8 @@ import logger from '../../logger';
 import { simplifyPath, reportError } from '../../helper';
 import { UResource, FileService, TransferTask } from '../../core';
 import { validateConfig } from '../config';
+import { getStoredProfile } from '../profileStore';
+import { warnIfRsyncMissing } from '../../core/rsync';
 import watcherService from '../fileWatcher';
 import Trie from './trie';
 
@@ -86,12 +88,18 @@ export function getBasePath(context: string, workspace: string) {
 }
 
 export function createFileService(config: any, workspace: string) {
-  if (config.defaultProfile) {
-    app.state.profile = config.defaultProfile;
-  }
-
   const normalizedBasePath = getBasePath(config.context, workspace);
   const service = new FileService(normalizedBasePath, workspace, config);
+  // if this context uploads via rsync, verify rsync is installed (warn early)
+  if (config.uploadMethod === 'rsync') {
+    warnIfRsyncMissing();
+  }
+  // per-context profile: restore the one persisted for this context, else the
+  // configured default (not global: each submodule keeps its own)
+  const storedProfile = getStoredProfile(normalizedBasePath);
+  service.setActiveProfile(
+    storedProfile !== undefined ? storedProfile : config.defaultProfile || null
+  );
 
   logger.info(`config at ${normalizedBasePath}`, maskConfig(config));
 
