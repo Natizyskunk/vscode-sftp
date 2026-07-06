@@ -1,25 +1,16 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es6",
+        "target": "es2018",
         "outDir": "out",
         "lib": [
-            "es6"
+            "es2018"
         ],
         "sourceMap": true,
         "rootDir": ".",
         "noUnusedLocals": true,
         "strictNullChecks": true,
-        "plugins": [
-          {
-            "name": "typescript-tslint-plugin",
-            "alwaysShowRuleFailuresAsWarnings": false,
-            "ignoreDefinitionFiles": true,
-            "suppressWhileTypeErrorsPresent": false,
-            "mockTypeScriptVersion": false,
-            "configFile": "./tslint.json"
-          }
-        ]
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",
