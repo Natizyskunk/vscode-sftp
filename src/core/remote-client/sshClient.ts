@@ -301,8 +301,10 @@ export default class SSHClient extends RemoteClient {
         .on('error', err => {
           reject(new Error(`[${option.host}]: ${err.message}`));
         })
-        .on('close', this.end())
-        .on('end', this.end())
+        // pass a function, don't invoke end() here: `this.end()` ran immediately
+        // and registered its return value (undefined) as the listener.
+        .on('close', () => this.end())
+        .on('end', () => this.end())
         .connect({
           keepaliveInterval: 1000 * 30, // 30 secs, original
           // keepaliveInterval: 1000 * 600, // 10 mins

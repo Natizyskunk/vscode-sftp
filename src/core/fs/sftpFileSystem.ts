@@ -20,7 +20,7 @@ interface WriteStream extends Writable {
   path: string;
   flags: string;
   mode: number;
-  destroy(): void;
+  destroy(error?: Error): this;
   close(): void;
 }
 
