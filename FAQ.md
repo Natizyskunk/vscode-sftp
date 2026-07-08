@@ -9,6 +9,7 @@
 - [How can I upload files as root?](#how-can-i-upload-files-as-root)
 - [Automatically sync both ways without user interaction](#automatically-sync-both-ways-without-user-interaction)
 - [Show dotfiles/hidden files in remote explorer](#show-dotfileshidden-files-in-remote-explorer)
+- [What do the SSH connection error messages mean?](#what-do-the-ssh-connection-error-messages-mean)
 
 ## Error: Failure
 
@@ -176,3 +177,14 @@ ListOptions 		"-la"
 [...]
 </Global>
 ```
+
+## What do the SSH connection error messages mean?
+
+As of 1.16.5, common SSH connection failures are mapped to plain-language messages instead of raw `ssh2` error text:
+
+- **Connection refused** — nothing is listening on the host/port you configured, or a firewall is blocking it.
+- **Connection timed out** — the host is unreachable (wrong address, network/VPN issue, or a firewall silently dropping packets).
+- **Host not found** — the hostname couldn't be resolved; check for typos or a DNS issue.
+- **Authentication failed** — your username, password, or private key was rejected by the server.
+
+If a connection drops mid-session, the underlying error is now logged (see [Debug](./README.md#debug)) instead of being silently discarded, so check the `sftp` output channel for details.

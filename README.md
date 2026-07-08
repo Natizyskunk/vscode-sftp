@@ -20,6 +20,8 @@ The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is
 
 `npm test` is fixed too — `test/preprocessor.js` now returns the `{ code }` shape Jest 28+ requires, and `memfs` (used only in tests) is patched via `patch-package` for a couple of stream-close bugs that were silently breaking file-transfer tests. 4/4 suites, 42/42 tests passing.
 
+The status bar now shows a live transfer progress counter ("Transferring X/Y files") during bulk uploads/downloads — click it to cancel all in-flight transfers. SSH connection failures (auth errors, connection refused, timeouts, unreachable hosts, DNS issues) also now surface actionable messages instead of raw `ssh2` error text.
+
 <details>
 <summary>History from the previous maintainer (Natizyskunk)</summary>
 
