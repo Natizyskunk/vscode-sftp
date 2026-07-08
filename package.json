@@ -696,6 +696,7 @@
     ]
   },
   "scripts": {
+    "postinstall": "patch-package",
     "vscode:prepublish": "npm run compile",
     "compile": "webpack --mode production",
     "dev": "webpack --mode development --watch",
@@ -717,6 +718,7 @@
     "memfs": "^2.15.5",
     "merge": ">=2.1.1",
     "node-notifier": ">=8.0.1",
+    "patch-package": "^8.0.1",
     "rimraf": "^2.7.1",
     "set-value": "^4.0.1",
     "ts-loader": "^9.4.1",

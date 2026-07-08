@@ -1,0 +1,14 @@
+diff --git a/node_modules/ssh2/lib/protocol/SFTP.js b/node_modules/ssh2/lib/protocol/SFTP.js
+index 7715053..bf95abd 100644
+--- a/node_modules/ssh2/lib/protocol/SFTP.js
++++ b/node_modules/ssh2/lib/protocol/SFTP.js
+@@ -7,7 +7,8 @@ const {
+   Readable: ReadableStream,
+   Writable: WritableStream
+ } = require('stream');
+-const { inherits, isDate } = require('util');
++const { inherits } = require('util');
++const isDate = (v) => v instanceof Date;
+
+ const FastBuffer = Buffer[Symbol.species];
+
