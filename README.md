@@ -18,7 +18,7 @@ The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is
 
 `npm run compile` now succeeds on `develop` — fixed a missing import of `COMMAND_UPLOAD_FILE_TO_ALL_PROFILES`/`COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES`, a `vscode-uri` default-export mismatch, and a `string`/`URI` type mismatch in `getFileSystemPath`.
 
-Known issue: the test suite (`npm test`) is separately broken — `test/preprocessor.js` uses a Jest transformer API removed in Jest 28, failing 3 of 4 suites. Not yet fixed.
+`npm test` is fixed too — `test/preprocessor.js` now returns the `{ code }` shape Jest 28+ requires, and `memfs` (used only in tests) is patched via `patch-package` for a couple of stream-close bugs that were silently breaking file-transfer tests. 4/4 suites, 42/42 tests passing.
 
 <details>
 <summary>History from the previous maintainer (Natizyskunk)</summary>
