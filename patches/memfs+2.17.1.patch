@@ -1,0 +1,54 @@
+diff --git a/node_modules/memfs/lib/volume.js b/node_modules/memfs/lib/volume.js
+index 8bf057c..2d780bd 100644
+--- a/node_modules/memfs/lib/volume.js
++++ b/node_modules/memfs/lib/volume.js
+@@ -854,7 +854,13 @@ var Volume = /** @class */ (function () {
+     };
+     Volume.prototype.close = function (fd, callback) {
+         validateFd(fd);
+-        this.wrapAsync(this.closeSync, [fd], callback);
++        this.wrapAsync(this.closeSync, [fd], function (er) {
++            if (er && er.code === 'EBADF') {
++                callback();
++                return;
++            }
++            callback(er);
++        });
+     };
+     Volume.prototype.openFileOrGetById = function (id, flagsNum, modeNum) {
+         if (typeof id === 'number') {
+@@ -1948,16 +1954,16 @@ FsReadStream.prototype.close = function (cb) {
+     var _this = this;
+     if (cb)
+         this.once('close', cb);
+-    if (this.closed || typeof this.fd !== 'number') {
++    if (this._fsClosed || typeof this.fd !== 'number') {
+         if (typeof this.fd !== 'number') {
+             this.once('open', closeOnOpen);
+             return;
+         }
+         return process_1.default.nextTick(function () { return _this.emit('close'); });
+     }
+-    this.closed = true;
++    this._fsClosed = true;
+     this._vol.close(this.fd, function (er) {
+-        if (er)
++        if (er && er.code !== 'EBADF')
+             _this.emit('error', er);
+         else
+             _this.emit('close');
+@@ -2068,7 +2074,13 @@ FsWriteStream.prototype._writev = function (data, cb) {
+     if (this.pos !== undefined)
+         this.pos += size;
+ };
+-FsWriteStream.prototype._destroy = FsReadStream.prototype._destroy;
++FsWriteStream.prototype._destroy = function (err, cb) {
++    if (!this.autoClose) {
++        cb(err);
++        return;
++    }
++    FsReadStream.prototype._destroy.call(this, err, cb);
++};
+ FsWriteStream.prototype.close = FsReadStream.prototype.close;
+ // There is no shutdown() for files.
+ FsWriteStream.prototype.destroySoon = FsWriteStream.prototype.end;
