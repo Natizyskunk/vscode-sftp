@@ -8,6 +8,14 @@ New maintained and updated version by [@Natizyskunk](https://github.com/Natizysk
 
 ✳ I would be more than happy to have you participate in one way or another to this project. You can do so by simply following the [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose) when you open a new issue or a new pull request.
 
+## 🔧 This fork ([@jmwerk](https://github.com/jmwerk))
+
+Patches a crash in the bundled `ssh2` dependency: `TypeError: isDate is not a function`, thrown from `ssh2/lib/protocol/SFTP.js` when opening a read/write stream (e.g. on file upload/download). Node removed `util.isDate`, which `ssh2@1.13.0` still relies on.
+
+The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is applied automatically via [patch-package](https://github.com/ds300/patch-package) on `npm install` (see the `postinstall` script in `package.json`). No manual `node_modules` edits needed.
+
+Note: `develop` currently has some pre-existing build errors unrelated to this fix (undefined `COMMAND_UPLOAD_*_TO_ALL_PROFILES` constants, a `vscode-uri` import mismatch) that block `npm run compile`.
+
 ## ℹ INFOS - 2025/03/13
 I've tried to keep this extension up-to-date as much as I can and added a lot of new relevant features. Saddly, for the last year and a half I wasn't really able to work on the project because of personal reasons and I'm really not sure if and when I'll be able to get more time to work on it again. So for now consider the [v1.16.3](https://github.com/Natizyskunk/vscode-sftp/releases/tag/v1.16.3) as the latest official stable release available.
 
