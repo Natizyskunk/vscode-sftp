@@ -5,6 +5,7 @@ import localFs from '../localFs';
 import { FileSystem, RemoteFileSystem, SFTPFileSystem } from '../fs';
 import logger from '../../logger';
 import CustomError from '../customError';
+import { describeConnectError } from '../../helper/error';
 
 let MAX_OPEN_FD_NUM = 222;
 
@@ -299,7 +300,7 @@ export default class SSHClient extends RemoteClient {
       client
         .on('ready', resolve)
         .on('error', err => {
-          reject(new Error(`[${option.host}]: ${err.message}`));
+          reject(describeConnectError(err, option.host));
         })
         .on('close', () => this.end())
         .on('end', () => this.end())

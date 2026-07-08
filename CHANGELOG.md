@@ -1,3 +1,7 @@
+## 1.16.5 - 2026-07-08
+* Fix : Surface actionable error messages for common SSH connection failures (auth failure, connection refused, timeout, host unreachable, DNS resolution) instead of raw ssh2 error text.
+* Fix : Preserve the underlying error when a remote connection drops unexpectedly, so it's logged instead of silently discarded.
+
 ## 1.16.3 - 2023-06-16
 * [#356] New Feature : Upload to all profiles (Pull request [#313](https://github.com/Natizyskunk/vscode-sftp/pull/313) from @wewawa vscode-sftp:create_multi_command).
 * [#357] Fix : Correcting Typo 'avaliable' => 'available' (Pull request [#343](https://github.com/Natizyskunk/vscode-sftp/pull/343) from @kjo-sdds vscode-sftp:develop).

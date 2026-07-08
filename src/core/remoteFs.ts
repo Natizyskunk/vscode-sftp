@@ -98,7 +98,10 @@ class KeepAliveRemoteFs {
     return this.pendingPromise;
   }
 
-  invalid(reason: string) {
+  invalid(reason: string, err?: Error) {
+    if (err) {
+      logger.error(`connection ${reason}: ${err.message}`);
+    }
     this.pendingPromise = null;
     this.fs.end();
     this.isValid = false;
