@@ -16,7 +16,9 @@ First fix shipped: a crash in the bundled `ssh2` dependency — `TypeError: isDa
 
 The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is applied automatically via [patch-package](https://github.com/ds300/patch-package) on `npm install` (see the `postinstall` script in `package.json`). No manual `node_modules` edits needed.
 
-Known issue: `develop` currently has some pre-existing build errors unrelated to the above fix (undefined `COMMAND_UPLOAD_*_TO_ALL_PROFILES` constants, a `vscode-uri` import mismatch, an `lru-cache` typings mismatch) that block `npm run compile`. Tracked for cleanup.
+`npm run compile` now succeeds on `develop` — fixed a missing import of `COMMAND_UPLOAD_FILE_TO_ALL_PROFILES`/`COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES`, a `vscode-uri` default-export mismatch, and a `string`/`URI` type mismatch in `getFileSystemPath`.
+
+Known issue: the test suite (`npm test`) is separately broken — `test/preprocessor.js` uses a Jest transformer API removed in Jest 28, failing 3 of 4 suites. Not yet fixed.
 
 <details>
 <summary>History from the previous maintainer (Natizyskunk)</summary>
