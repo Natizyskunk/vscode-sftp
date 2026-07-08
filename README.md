@@ -1,20 +1,25 @@
-# sftp sync extension for VS Code
+# SFTPresso
 
-New maintained and updated version by [@Natizyskunk](https://github.com/Natizyskunk/) 😀 <!-- and [@satiromarra](https://github.com/satiromarra) --> <br>
-(Forked from the no longer maintained [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git))
+SFTP/FTP sync extension for VS Code — actively maintained by [@jmwerk](https://github.com/jmwerk). <br>
+(Forked from [Natizyskunk's vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which itself continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp.git) after it went unmaintained)
 
-- VS Code marketplace : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp <br>
-- VSIX release : https://github.com/Natizyskunk/vscode-sftp/releases/
+- Repository: https://github.com/jmwerk/vscode-sftp <br>
+- VS Code marketplace: not yet published under this name — for now, install from a built VSIX (see [Debug](#debug)/build instructions below)
 
-✳ I would be more than happy to have you participate in one way or another to this project. You can do so by simply following the [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose) when you open a new issue or a new pull request.
+✳ Issues and pull requests welcome — this project is under active maintenance again.
 
-## 🔧 This fork ([@jmwerk](https://github.com/jmwerk))
+## 🔧 Maintenance notes
 
-Patches a crash in the bundled `ssh2` dependency: `TypeError: isDate is not a function`, thrown from `ssh2/lib/protocol/SFTP.js` when opening a read/write stream (e.g. on file upload/download). Node removed `util.isDate`, which `ssh2@1.13.0` still relies on.
+**2026 — Taken over by [@jmwerk](https://github.com/jmwerk).** Natizyskunk's upstream repo had gone quiet (see their note below), so this fork is now where fixes and updates land going forward.
+
+First fix shipped: a crash in the bundled `ssh2` dependency — `TypeError: isDate is not a function`, thrown from `ssh2/lib/protocol/SFTP.js` when opening a read/write stream (e.g. on file upload/download). Node removed `util.isDate`, which `ssh2@1.13.0` still relies on.
 
 The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is applied automatically via [patch-package](https://github.com/ds300/patch-package) on `npm install` (see the `postinstall` script in `package.json`). No manual `node_modules` edits needed.
 
-Note: `develop` currently has some pre-existing build errors unrelated to this fix (undefined `COMMAND_UPLOAD_*_TO_ALL_PROFILES` constants, a `vscode-uri` import mismatch) that block `npm run compile`.
+Known issue: `develop` currently has some pre-existing build errors unrelated to the above fix (undefined `COMMAND_UPLOAD_*_TO_ALL_PROFILES` constants, a `vscode-uri` import mismatch, an `lru-cache` typings mismatch) that block `npm run compile`. Tracked for cleanup.
+
+<details>
+<summary>History from the previous maintainer (Natizyskunk)</summary>
 
 ## ℹ INFOS - 2025/03/13
 I've tried to keep this extension up-to-date as much as I can and added a lot of new relevant features. Saddly, for the last year and a half I wasn't really able to work on the project because of personal reasons and I'm really not sure if and when I'll be able to get more time to work on it again. So for now consider the [v1.16.3](https://github.com/Natizyskunk/vscode-sftp/releases/tag/v1.16.3) as the latest official stable release available.
@@ -26,6 +31,8 @@ There are also other forks that are available. Feel free to try them.
 A lot of work as been brought to fix bugs, add new features and more than 50 updates have been released with a lot of improvements and stability fixes for almost two years now. 😎
 
 I've been working hard to fix a lot of things and I've updated more than 50 new releases with a lot of improvements and stability fixes and I've brought new features for almost three years now. 
+
+</details>
 
 ---
 
@@ -48,10 +55,7 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
 ## Installation
 
 ### Method 1 (Recommended : Auto update)
-1. Select Extensions (Ctrl + Shift + X).
-2. Uninstall current sftp extension from @liximomo.
-3. Install new extension directly from VS Code Marketplace : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp.
-4. Voilà!
+> SFTPresso isn't published to the VS Code Marketplace yet. Until it is, build/install from source — see [Debug](#debug) below — or grab a VSIX from [Releases](https://github.com/jmwerk/vscode-sftp/releases) once available.
 
 ### Method 2 (Manual update)
 To install just follow these steps from within VSCode:
@@ -284,7 +288,7 @@ In sftp.json:
 ```
 
 ## Remote Explorer
-![remote-explorer-preview](https://raw.githubusercontent.com/Natizyskunk/vscode-sftp/master/assets/showcase/remote-explorer.png)
+![remote-explorer-preview](https://raw.githubusercontent.com/jmwerk/vscode-sftp/develop/assets/showcase/remote-explorer.png)
 
 Remote Explorer lets you explore files in remote. You can open Remote Explorer by:
 
@@ -320,13 +324,6 @@ In sftp.json:
 ## FAQ
 You can see all the Frequently Asked Questions [here](./FAQ.md).
 
-## Donation
-If this project helped you reduce development time and you wish to contribute financially
+## Credits
 
-### Buy Me a Coffee
-[![Buy Me A Coffee](https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png)](https://www.buymeacoffee.com/Natizyskunk)
-
-### PayPal
-<!-- [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BY89QD47D7MPS&source=url) -->
-[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate?business=DELD7APHHM3BC&no_recurring=0&currency_code=EUR)
-[![PayPal Me](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/natanfourie)
+This project builds on the work of [@Natizyskunk](https://github.com/Natizyskunk) and [@liximomo](https://github.com/liximomo). If their earlier work helped you, their original donation links are in the [upstream README](https://github.com/Natizyskunk/vscode-sftp#donation).
