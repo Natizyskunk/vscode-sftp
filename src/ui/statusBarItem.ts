@@ -56,6 +56,10 @@ export default class StatusBarItem {
     this.statusBarItem.show();
   }
 
+  hide() {
+    this.statusBarItem.hide();
+  }
+
   isSpinning() {
     return this.spinnerTimer !== null;
   }

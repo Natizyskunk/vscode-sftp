@@ -361,6 +361,7 @@ function mergeProfile(
 }
 
 enum Event {
+  QUEUE_TRANSFER = 'QUEUE_TRANSFER',
   BEFORE_TRANSFER = 'BEFORE_TRANSFER',
   AFTER_TRANSFER = 'AFTER_TRANSFER',
 }
@@ -443,6 +444,10 @@ export default class FileService {
     this._pendingTransferTasks.clear();
   }
 
+  onQueueTransfer(listener: (task: TransferTask) => void) {
+    this._eventEmitter.on(Event.QUEUE_TRANSFER, listener);
+  }
+
   beforeTransfer(listener: (task: TransferTask) => void) {
     this._eventEmitter.on(Event.BEFORE_TRANSFER, listener);
   }
@@ -481,6 +486,7 @@ export default class FileService {
           return;
         }
 
+        fileService._eventEmitter.emit(Event.QUEUE_TRANSFER, task);
         scheduler.add(task);
       },
       run() {

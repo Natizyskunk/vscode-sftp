@@ -11,6 +11,32 @@ import Trie from './trie';
 const WIN_DRIVE_REGEX = /^([a-zA-Z]):/;
 const isWindows = process.platform === 'win32';
 
+// tracks aggregate upload/download progress across all file services for the status bar
+let queuedTransferCount = 0;
+let doneTransferCount = 0;
+
+export function resetTransferProgress() {
+  queuedTransferCount = 0;
+  doneTransferCount = 0;
+  app.transferBarItem.hide();
+}
+
+function updateTransferProgress() {
+  if (queuedTransferCount === 0) {
+    return;
+  }
+
+  if (doneTransferCount >= queuedTransferCount) {
+    queuedTransferCount = 0;
+    doneTransferCount = 0;
+    app.transferBarItem.hide();
+    return;
+  }
+
+  app.transferBarItem.showMsg(`Transferring ${doneTransferCount}/${queuedTransferCount} files`);
+  app.transferBarItem.show();
+}
+
 const serviceManager = new Trie<FileService>(
   {},
   {
@@ -99,6 +125,10 @@ export function createFileService(config: any, workspace: string) {
   service.name = config.name;
   service.setConfigValidator(validateConfig);
   service.setWatcherService(watcherService);
+  service.onQueueTransfer(() => {
+    queuedTransferCount++;
+    updateTransferProgress();
+  });
   service.beforeTransfer(task => {
     const { localFsPath, transferType } = task;
     app.sftpBarItem.showMsg(
@@ -122,6 +152,8 @@ export function createFileService(config: any, workspace: string) {
       logger.info(`${transferType} ${localFsPath}`);
       app.sftpBarItem.showMsg(`done ${filename}`, filepath, 2000 * 2);
     }
+    doneTransferCount++;
+    updateTransferProgress();
   });
 
   return service;
