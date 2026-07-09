@@ -1,3 +1,6 @@
+## 1.16.7 - 2026-07-09
+* New Feature : Add `Compare Folders with Remote` command — recursively diffs a local folder against its remote counterpart and lists new-local, new-remote, and modified files in a QuickPick, with per-file actions to open a diff or upload/download.
+
 ## 1.16.5 - 2026-07-08
 * Fix : Surface actionable error messages for common SSH connection failures (auth failure, connection refused, timeout, host unreachable, DNS resolution) instead of raw ssh2 error text.
 * Fix : Preserve the underlying error when a remote connection drops unexpectedly, so it's logged instead of silently discarded.
