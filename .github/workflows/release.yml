@@ -17,8 +17,14 @@ jobs:
       contents: write
 
     steps:
+      - name: Resolve tag
+        id: tag
+        run: echo "tag=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -33,10 +39,11 @@ jobs:
         run: npm run compile
 
       - name: Package extension
-        run: npx vsce package --out sftpresso-${{ github.ref_name }}.vsix
+        run: npx vsce package --out sftpresso-${{ steps.tag.outputs.tag }}.vsix
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: sftpresso-${{ github.ref_name }}.vsix
+          tag_name: ${{ steps.tag.outputs.tag }}
+          files: sftpresso-${{ steps.tag.outputs.tag }}.vsix
           generate_release_notes: true
