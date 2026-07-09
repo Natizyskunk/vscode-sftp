@@ -1,5 +1,7 @@
 # Home
 
+- **[Complete Wiki (single page)](./WIKI.md)** — overview, installation, full command & configuration reference, workflows, troubleshooting, and FAQ in one document.
+
 1. [Setting](./setting.md)
 2. [Config](./configuration.md)
     - [Common](./common_configuration.md)

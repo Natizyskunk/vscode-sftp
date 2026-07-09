@@ -57,7 +57,7 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
   - Multiple configurations
   - Switchable profiles
   - Temp File support
-- [Commands](https://github.com/Natizyskunk/vscode-sftp/wiki/Commands)
+- [Commands](https://github.com/jmwerk/vscode-sftp/wiki#3-command-reference)
 - [Debug](#debug)
 - [FAQ](#FAQ)
 
@@ -76,12 +76,12 @@ To install just follow these steps from within VSCode:
 6. Voilà!
 
 ## Documentation
-- [Home](https://github.com/Natizyskunk/vscode-sftp/wiki)
-- [Settings](https://github.com/Natizyskunk/vscode-sftp/wiki/Setting)
-- [Common configuration](https://github.com/Natizyskunk/vscode-sftp/wiki/Common-Configuration)
-- [SFTP configuration](https://github.com/Natizyskunk/vscode-sftp/wiki/SFTP-only-Configuration)
-- [FTP confriguration](https://github.com/Natizyskunk/vscode-sftp/wiki/FTP(s)-only-Configuration)
-- [Commands](https://github.com/Natizyskunk/vscode-sftp/wiki/Commands)
+Full documentation lives on the [project wiki](https://github.com/jmwerk/vscode-sftp/wiki), kept in sync from [docs/WIKI.md](docs/WIKI.md) in this repo:
+- [Installation and setup](https://github.com/jmwerk/vscode-sftp/wiki#2-installation-and-setup)
+- [Command reference](https://github.com/jmwerk/vscode-sftp/wiki#3-command-reference)
+- [Configuration reference (`sftp.json`)](https://github.com/jmwerk/vscode-sftp/wiki#4-configuration-reference-sftpjson)
+- [Usage examples and common workflows](https://github.com/jmwerk/vscode-sftp/wiki#5-usage-examples-and-common-workflows)
+- [Troubleshooting and known issues](https://github.com/jmwerk/vscode-sftp/wiki#7-troubleshooting-and-known-issues)
 
 ## Usage
 If the latest files are already on a remote server, you can start with an empty local folder,
@@ -116,10 +116,10 @@ _Note：_ backslashes and other special characters must be escaped with a backsl
 8. Done - you can now edit locally and after each save it will upload to sync your remote file with the local copy.
 9. Enjoy!
 
-For detailed explanations please go to [wiki](https://github.com/Natizyskunk/vscode-sftp/wiki).
+For detailed explanations please go to the [wiki](https://github.com/jmwerk/vscode-sftp/wiki).
 
 ## Example configurations
-You can see the full list of configuration options [here](https://github.com/Natizyskunk/vscode-sftp/wiki/configuration).
+You can see the full list of configuration options [here](https://github.com/jmwerk/vscode-sftp/wiki#4-configuration-reference-sftpjson).
 
 - [sftp sync extension for VS Code](#sftp-sync-extension-for-vs-code)
   - [Installation](#installation)
