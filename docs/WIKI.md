@@ -1141,7 +1141,7 @@ Highlights of the codebase:
 - `schema/` — the JSON schema that validates `.vscode/sftp.json`
 - `patches/` — `patch-package` fixes applied on install
 
-See also [CONTRIBUTING.md](../CONTRIBUTING.md), the [CHANGELOG](../CHANGELOG.md), and the standalone [FAQ](../FAQ.md).
+See also [CONTRIBUTING.md](../CONTRIBUTING.md) and the [CHANGELOG](../CHANGELOG.md).
 
 ## 10. Credits
 

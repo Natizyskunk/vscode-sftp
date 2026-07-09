@@ -8,4 +8,4 @@
     - [SFTP](./sftp_configuration.md)
     - [FTP(s)](./ftp_configuration.md)
 3. [Commands](./commands.md)
-4. [FAQ](./../FAQ.md)
+4. [FAQ](./WIKI.md#8-frequently-asked-questions)

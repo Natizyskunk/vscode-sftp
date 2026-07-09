@@ -331,7 +331,7 @@ In sftp.json:
 3. View the logs in `View > Output > sftp`.
 
 ## FAQ
-You can see all the Frequently Asked Questions [here](./FAQ.md).
+You can see all the Frequently Asked Questions [on the wiki](https://github.com/jmwerk/vscode-sftp/wiki#8-frequently-asked-questions), along with [troubleshooting and known issues](https://github.com/jmwerk/vscode-sftp/wiki#7-troubleshooting-and-known-issues).
 
 ## Credits
 
