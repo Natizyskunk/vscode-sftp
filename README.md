@@ -76,7 +76,7 @@ To install just follow these steps from within VSCode:
 6. Voilà!
 
 ## Documentation
-Full documentation lives on the [project wiki](https://github.com/jmwerk/vscode-sftp/wiki), kept in sync from [docs/WIKI.md](docs/WIKI.md) in this repo:
+Full documentation lives on the [project wiki](https://github.com/jmwerk/vscode-sftp/wiki), kept in sync from [docs/home.md](docs/home.md) in this repo:
 - [Installation and setup](https://github.com/jmwerk/vscode-sftp/wiki#2-installation-and-setup)
 - [Command reference](https://github.com/jmwerk/vscode-sftp/wiki#3-command-reference)
 - [Configuration reference (`sftp.json`)](https://github.com/jmwerk/vscode-sftp/wiki#4-configuration-reference-sftpjson)

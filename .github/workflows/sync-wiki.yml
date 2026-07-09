@@ -1,13 +1,13 @@
 name: Sync wiki
 
-# Keeps the GitHub wiki's Home page in sync with docs/WIKI.md.
-# docs/WIKI.md is the source of truth: edits made directly on the
+# Keeps the GitHub wiki's Home page in sync with docs/home.md.
+# docs/home.md is the source of truth: edits made directly on the
 # wiki will be overwritten by the next sync.
 
 on:
   push:
     branches: [ develop ]
-    paths: [ docs/WIKI.md ]
+    paths: [ docs/home.md ]
   workflow_dispatch:
 
 permissions:
@@ -24,8 +24,8 @@ jobs:
       - name: Clone wiki
         run: git clone "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
 
-      - name: Render Home.md from docs/WIKI.md
-        run: bash scripts/sync-wiki.sh docs/WIKI.md wiki/Home.md
+      - name: Render Home.md from docs/home.md
+        run: bash scripts/sync-wiki.sh docs/home.md wiki/Home.md
 
       - name: Commit and push if changed
         run: |
@@ -36,5 +36,5 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898084+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Sync wiki from docs/WIKI.md (${{ github.sha }})"
+          git commit -am "Sync wiki from docs/home.md (${{ github.sha }})"
           git push
