@@ -48,6 +48,7 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
   - [Browser remote with Remote Explorer](#remote-explorer)
   - Diff local and remote
   - Compare folders (recursive local/remote diff)
+  - Test Connection (verify the active profile can connect, from a command or CodeLens on `sftp.json`)
   - Sync directory
   - Upload/Download
   - Transfers view with per-file progress and cancellation

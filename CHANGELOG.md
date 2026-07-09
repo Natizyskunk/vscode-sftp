@@ -1,3 +1,6 @@
+## 1.16.9 - 2026-07-09
+* New Feature : Add `sftp.testConnection` command — connects to the active profile's remote using the current `.vscode/sftp.json` config and reports success/failure, with a "Test Connection" CodeLens shown at the top of the config file.
+
 ## 1.16.8 - 2026-07-09
 * New Feature : Add a `Transfers` view to the SFTP sidebar showing live per-file status (queued/transferring/failed) during folder upload/download/sync operations, with a per-file cancel button in addition to the existing `Cancel All Transfers` command.
 

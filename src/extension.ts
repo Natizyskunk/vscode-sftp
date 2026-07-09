@@ -11,6 +11,8 @@ import { getAllFileService, createFileService, disposeFileService } from './modu
 import { getWorkspaceFolders, setContextValue } from './host';
 import RemoteExplorer from './modules/remoteExplorer';
 import TransferView from './modules/transferView';
+import TestConnectionCodeLensProvider from './modules/testConnectionCodeLensProvider';
+import { CONGIF_FILENAME } from './constants';
 
 async function setupWorkspaceFolder(dir) {
   const configs = await tryLoadConfigs(dir);
@@ -34,6 +36,13 @@ export async function activate(context: vscode.ExtensionContext) {
   } catch (error) {
     reportError(error, 'initCommands');
   }
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeLensProvider(
+      { pattern: `**/.vscode/${CONGIF_FILENAME}` },
+      new TestConnectionCodeLensProvider()
+    )
+  );
 
   const workspaceFolders = getWorkspaceFolders();
   if (!workspaceFolders) {
