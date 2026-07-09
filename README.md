@@ -22,6 +22,8 @@ The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is
 
 The status bar now shows a live transfer progress counter ("Transferring X/Y files") during bulk uploads/downloads — click it to cancel all in-flight transfers. SSH connection failures (auth errors, connection refused, timeouts, unreachable hosts, DNS issues) also now surface actionable messages instead of raw `ssh2` error text.
 
+A new **Transfers** view in the SFTP sidebar shows live per-file status (queued/transferring/failed) during folder upload/download/sync operations, with a cancel button on each in-flight file in addition to the existing `Cancel All Transfers` command.
+
 <details>
 <summary>History from the previous maintainer (Natizyskunk)</summary>
 
@@ -48,6 +50,7 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
   - Compare folders (recursive local/remote diff)
   - Sync directory
   - Upload/Download
+  - Transfers view with per-file progress and cancellation
   - Upload on save
   - File Watcher
   - Multiple configurations

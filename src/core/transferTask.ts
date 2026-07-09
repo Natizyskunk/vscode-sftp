@@ -1,8 +1,11 @@
 import { Readable } from 'stream';
+import { CancellationTokenSource, CancellationToken } from 'vscode';
 import * as fileOperations from './fileBaseOperations';
 import { FileSystem, FileType } from './fs';
 import { Task } from './scheduler';
 import logger from '../logger';
+
+let taskId = 0;
 
 let hasWarnedModifedTimePermission = false;
 
@@ -29,6 +32,7 @@ export interface TransferOption {
 }
 
 export default class TransferTask implements Task {
+  readonly id: number;
   readonly fileType: FileType;
   private readonly _srcFsPath: string;
   private readonly _targetFsPath: string;
@@ -36,6 +40,7 @@ export default class TransferTask implements Task {
   private readonly _targetFs: FileSystem;
   private readonly _transferDirection: TransferDirection;
   private readonly _TransferOption: TransferOption;
+  private readonly _cancelTokenSource: CancellationTokenSource = new CancellationTokenSource();
   private _handle: Readable;
   private _cancelled: boolean;
   // private _fileStatus: FileStatus;
@@ -49,6 +54,7 @@ export default class TransferTask implements Task {
       transferOption: TransferOption;
     }
   ) {
+    this.id = ++taskId;
     this._srcFsPath = src.fsPath;
     this._targetFsPath = target.fsPath;
     this._srcFs = src.fileSystem;
@@ -78,7 +84,16 @@ export default class TransferTask implements Task {
     return this._transferDirection;
   }
 
+  get token(): CancellationToken {
+    return this._cancelTokenSource.token;
+  }
+
   async run() {
+    if (this._cancelled) {
+      // cancelled while still queued, never started transferring
+      return;
+    }
+
     const src = this._srcFsPath;
     const target = this._targetFsPath;
     const srcFs = this._srcFs;
@@ -102,14 +117,22 @@ export default class TransferTask implements Task {
   }
 
   cancel() {
-    if (this._handle && !this._cancelled) {
-      this._cancelled = true;
+    if (this._cancelled) {
+      return;
+    }
+    this._cancelled = true;
+    this._cancelTokenSource.cancel();
+    if (this._handle) {
       FileSystem.abortReadableStream(this._handle);
     }
   }
 
   isCancelled(): boolean {
     return this._cancelled;
+  }
+
+  dispose() {
+    this._cancelTokenSource.dispose();
   }
 
   private async _transferFile() {

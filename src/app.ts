@@ -3,6 +3,7 @@ import StatusBarItem from './ui/statusBarItem';
 import { COMMAND_TOGGLE_OUTPUT, COMMAND_CANCEL_ALL_TRANSFER } from './constants';
 import AppState from './modules/appState';
 import RemoteExplorer from './modules/remoteExplorer';
+import TransferView from './modules/transferView';
 
 interface App {
   fsCache: LRU.Cache<string, string>;
@@ -10,6 +11,7 @@ interface App {
   sftpBarItem: StatusBarItem;
   transferBarItem: StatusBarItem;
   remoteExplorer: RemoteExplorer;
+  transferView: TransferView;
 }
 
 const app: App = Object.create(null);

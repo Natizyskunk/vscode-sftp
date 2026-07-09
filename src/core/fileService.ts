@@ -469,6 +469,7 @@ export default class FileService {
     scheduler.onTaskDone((err, task) => {
       this._pendingTransferTasks.delete(task as TransferTask);
       this._eventEmitter.emit(Event.AFTER_TRANSFER, err, task);
+      (task as TransferTask).dispose();
     });
 
     let runningPromise: Promise<void> | null = null;

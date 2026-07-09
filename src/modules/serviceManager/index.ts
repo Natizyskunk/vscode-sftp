@@ -1,4 +1,4 @@
-import { Uri } from 'vscode';
+import { Uri, EventEmitter } from 'vscode';
 import * as path from 'path';
 import app from '../../app';
 import logger from '../../logger';
@@ -7,6 +7,17 @@ import { UResource, FileService, TransferTask } from '../../core';
 import { validateConfig } from '../config';
 import watcherService from '../fileWatcher';
 import Trie from './trie';
+
+export type TransferEventType = 'queued' | 'start' | 'done';
+
+export interface TransferEvent {
+  type: TransferEventType;
+  task: TransferTask;
+  error?: Error | null;
+}
+
+const transferEventEmitter = new EventEmitter<TransferEvent>();
+export const onTransferEvent = transferEventEmitter.event;
 
 const WIN_DRIVE_REGEX = /^([a-zA-Z]):/;
 const isWindows = process.platform === 'win32';
@@ -125,9 +136,10 @@ export function createFileService(config: any, workspace: string) {
   service.name = config.name;
   service.setConfigValidator(validateConfig);
   service.setWatcherService(watcherService);
-  service.onQueueTransfer(() => {
+  service.onQueueTransfer(task => {
     queuedTransferCount++;
     updateTransferProgress();
+    transferEventEmitter.fire({ type: 'queued', task });
   });
   service.beforeTransfer(task => {
     const { localFsPath, transferType } = task;
@@ -135,6 +147,7 @@ export function createFileService(config: any, workspace: string) {
       `${transferType} ${path.basename(localFsPath)}`,
       simplifyPath(localFsPath)
     );
+    transferEventEmitter.fire({ type: 'start', task });
   });
   service.afterTransfer((error, task) => {
     const { localFsPath, transferType } = task;
@@ -154,6 +167,7 @@ export function createFileService(config: any, workspace: string) {
     }
     doneTransferCount++;
     updateTransferProgress();
+    transferEventEmitter.fire({ type: 'done', task, error });
   });
 
   return service;

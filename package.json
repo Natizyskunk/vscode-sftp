@@ -2,7 +2,7 @@
   "name": "sftpresso",
   "displayName": "SFTPresso",
   "description": "SFTP/FTP sync — actively maintained fork of vscode-sftp",
-  "version": "1.16.7",
+  "version": "1.16.8",
   "publisher": "jmwerk",
   "author": "Joe Werkheiser <j.m.werkheiser@gmail.com> (https://github.com/jmwerk)",
   "engines": {
@@ -48,6 +48,11 @@
           "id": "remoteExplorer",
           "name": "Explorer",
           "when": "sftp.enabled"
+        },
+        {
+          "id": "sftpTransfers",
+          "name": "Transfers",
+          "when": "sftp.enabled"
         }
       ]
     },
@@ -92,6 +97,12 @@
         "command": "sftp.cancelAllTransfer",
         "title": "Cancel All Transfers",
         "category": "SFTP"
+      },
+      {
+        "command": "sftp.cancelTransfer",
+        "title": "Cancel Transfer",
+        "category": "SFTP",
+        "icon": "$(close)"
       },
       {
         "command": "sftp.upload.file",
@@ -311,6 +322,10 @@
         {
           "command": "sftp.cancelAllTransfer",
           "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.cancelTransfer",
+          "when": "false"
         },
         {
           "command": "sftp.upload.activeFile",
@@ -573,9 +588,19 @@
           "command": "sftp.remoteExplorer.refresh",
           "when": "view == remoteExplorer",
           "group": "navigation"
+        },
+        {
+          "command": "sftp.cancelAllTransfer",
+          "when": "view == sftpTransfers",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
+        {
+          "command": "sftp.cancelTransfer",
+          "group": "inline",
+          "when": "view == sftpTransfers && viewItem == activeTransfer"
+        },
         {
           "command": "sftp.openConnectInTerminal",
           "group": "navigation",
