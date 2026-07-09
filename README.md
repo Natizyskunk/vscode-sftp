@@ -4,7 +4,7 @@ SFTP/FTP sync extension for VS Code — actively maintained by [@jmwerk](https:/
 (Forked from [Natizyskunk's vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which itself continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp.git) after it went unmaintained)
 
 - Repository: https://github.com/jmwerk/vscode-sftp <br>
-- VS Code marketplace: not yet published under this name — for now, install from a built VSIX (see [Debug](#debug)/build instructions below)
+- VS Code marketplace: not yet published under this name — for now, install from a built VSIX (see [Installation](#installation) below)
 
 ✳ Issues and pull requests welcome — this project is under active maintenance again.
 
@@ -59,12 +59,12 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
   - Temp File support
 - [Commands](https://github.com/jmwerk/vscode-sftp/wiki#3-command-reference)
 - [Debug](#debug)
-- [FAQ](#FAQ)
+- [FAQ](#faq)
 
 ## Installation
 
 ### Method 1 (Recommended : Auto update)
-> SFTPresso isn't published to the VS Code Marketplace yet. Until it is, build/install from source — see [Debug](#debug) below — or grab a VSIX from [Releases](https://github.com/jmwerk/vscode-sftp/releases) once available.
+> SFTPresso isn't published to the VS Code Marketplace yet. Until it is, build/install from source — see [build instructions on the wiki](https://github.com/jmwerk/vscode-sftp/wiki#9-development-and-contributing) — or grab a VSIX from [Releases](https://github.com/jmwerk/vscode-sftp/releases) once available.
 
 ### Method 2 (Manual update)
 To install just follow these steps from within VSCode:
@@ -120,29 +120,6 @@ For detailed explanations please go to the [wiki](https://github.com/jmwerk/vsco
 
 ## Example configurations
 You can see the full list of configuration options [here](https://github.com/jmwerk/vscode-sftp/wiki#4-configuration-reference-sftpjson).
-
-- [sftp sync extension for VS Code](#sftp-sync-extension-for-vs-code)
-  - [Installation](#installation)
-    - [Method 1 (Recommended : Auto update)](#method-1-recommended--auto-update)
-    - [Method 2 (Manual update)](#method-2-manual-update)
-  - [Documentation](#documentation)
-  - [Usage](#usage)
-  - [Example configurations](#example-configurations)
-    - [Simple](#simple)
-    - [Profiles](#profiles)
-    - [Multiple Context](#multiple-context)
-    - [Connection Hopping](#connection-hopping)
-      - [Single Hop](#single-hop)
-      - [Multiple Hop](#multiple-hop)
-    - [Configuration in User Setting](#configuration-in-user-setting)
-  - [Remote Explorer](#remote-explorer)
-    - [Multiple Select](#multiple-select)
-    - [Order](#order)
-  - [Debug](#debug)
-  - [FAQ](#faq)
-  - [Donation](#donation)
-    - [Buy Me a Coffee](#buy-me-a-coffee)
-    - [PayPal](#paypal)
 
 ### Simple
 ```json
