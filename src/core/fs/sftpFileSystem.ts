@@ -20,12 +20,11 @@ interface WriteStream extends Writable {
   path: string;
   flags: string;
   mode: number;
-  destroy(): void;
   close(): void;
 }
 
 function toSimpleFileMode(mode: number) {
-  return mode & parseInt('777', 8); // tslint:disable-line:no-bitwise
+  return mode & parseInt('777', 8);
 }
 
 export default class SFTPFileSystem extends RemoteFileSystem {
@@ -36,7 +35,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
   toFileStat(stat): FileStats {
     return {
       type: FileSystem.getFileTypecharacter(stat),
-      mode: toSimpleFileMode(stat.mode), // tslint:disable-line:no-bitwise
+      mode: toSimpleFileMode(stat.mode),
       size: stat.size,
       mtime: this.toLocalTime(stat.mtime * 1000),
       atime: this.toLocalTime(stat.atime * 1000),

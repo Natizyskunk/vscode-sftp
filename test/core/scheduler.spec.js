@@ -133,7 +133,6 @@ describe('scheduler', () => {
 
   test('onIdle', done => {
     const queue = new Scheduler({ concurrency: 1 });
-    const task = { run: () => Promise.reject(new Error('error')) };
     const result = [];
     queue.add(wrapTask(() => delay(10).then(_ => result.push(1))));
     queue.add(wrapTask(() => delay(20).then(_ => result.push(2))));

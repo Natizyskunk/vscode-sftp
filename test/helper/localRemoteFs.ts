@@ -4,7 +4,7 @@ import FileSystem, { FileStats } from '../../src/core/fs/fileSystem';
 import localfs from '../../src/core/localFs';
 import RemoteFileSystem from '../../src/core/fs/remoteFileSystem';
 
-// @ts-ignore
+// @ts-expect-error abstract members are attached below via Object.defineProperty
 export default class LocalRemoteFileSystem extends RemoteFileSystem {
   _createClient() {
     return {};
@@ -14,7 +14,7 @@ export default class LocalRemoteFileSystem extends RemoteFileSystem {
     return {
       type: FileSystem.getFileTypecharacter(stat),
       size: stat.size,
-      mode: stat.mode & parseInt('777', 8), // tslint:disable-line:no-bitwise
+      mode: stat.mode & parseInt('777', 8),
       mtime: this.toLocalTime(stat.mtime.getTime()),
       atime: this.toLocalTime(stat.atime.getTime()),
     };

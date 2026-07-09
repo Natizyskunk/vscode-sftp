@@ -1,4 +1,3 @@
-// tslint:disable-next-line
 // modified from https://raw.githubusercontent.com/sindresorhus/p-queue/a202b25d3e2f8d0472f85d501f7f558a7fa89b56/index.js
 
 import { EventEmitter } from 'events';
@@ -10,7 +9,6 @@ function lowerBound<T>(array: T[], value: T, comp: (a: T, b: T) => number) {
   let count = array.length;
 
   while (count > 0) {
-    // tslint:disable-next-line no-bitwise
     const step = (count / 2) | 0;
     let it = first + step;
 

@@ -9,8 +9,7 @@ export const createRemoteFile = createFileHandler<FileHandleOption & { skipDir?:
     const remoteFs = await this.fileService.getRemoteFileSystem(this.config);
     const { remoteFsPath } = this.target;
 
-    let promise;
-    promise = fileOperations.createFile(remoteFsPath, remoteFs, {});
+    const promise = fileOperations.createFile(remoteFsPath, remoteFs, {});
 
     /*
     const stat = await remoteFs.lstat(remoteFsPath);
@@ -48,8 +47,7 @@ export const createRemoteFolder = createFileHandler<FileHandleOption & { skipDir
     const remoteFs = await this.fileService.getRemoteFileSystem(this.config);
     const { remoteFsPath } = this.target;
 
-    let promise;
-    promise = fileOperations.createDir(remoteFsPath, remoteFs, {});
+    const promise = fileOperations.createDir(remoteFsPath, remoteFs, {});
 
     /*
     const stat = await remoteFs.lstat(remoteFsPath);

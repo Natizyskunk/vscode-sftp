@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { EXTENSION_NAME } from './constants';
 
-export function getOpenTextDocuments(): vscode.TextDocument[] {
+export function getOpenTextDocuments(): readonly vscode.TextDocument[] {
   return vscode.workspace.textDocuments;
 }
 

@@ -1,3 +1,8 @@
+## Unreleased
+* Internal : Modernize the toolchain — build with esbuild (replacing webpack + ts-loader), TypeScript 3.9 → 5.9, TSLint → ESLint (typescript-eslint), tests via ts-jest, CI on Node 22/24 (16/18 are EOL), and dependabot coverage for GitHub Actions.
+* Internal : Raise the minimum supported VS Code version to 1.75 and align `@types/vscode` with it; declare `vscode-uri` as a real dependency (it was previously resolved only by accident through dev dependencies).
+* Fix : Register command modules from an explicit index instead of webpack's `require.context`, which would silently register no commands under any non-webpack bundler.
+
 ## 1.16.9 - 2026-07-09
 * New Feature : Add `sftp.testConnection` command — connects to the active profile's remote using the current `.vscode/sftp.json` config and reports success/failure, with a "Test Connection" CodeLens shown at the top of the config file.
 

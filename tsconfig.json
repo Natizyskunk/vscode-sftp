@@ -1,29 +1,22 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es6",
-        "outDir": "out",
+        "target": "ES2022",
         "lib": [
-            "es6"
+            "ES2022"
         ],
-        "sourceMap": true,
+        "outDir": "out",
         "rootDir": ".",
+        "sourceMap": true,
         "noUnusedLocals": true,
         "strictNullChecks": true,
-        "plugins": [
-          {
-            "name": "typescript-tslint-plugin",
-            "alwaysShowRuleFailuresAsWarnings": false,
-            "ignoreDefinitionFiles": true,
-            "suppressWhileTypeErrorsPresent": false,
-            "mockTypeScriptVersion": false,
-            "configFile": "./tslint.json"
-          }
-        ]
+        "esModuleInterop": true,
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",
         ".vscode-test",
-        "test"
+        "dist",
+        "out"
     ]
 }

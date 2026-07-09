@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, SourceControlInputBox, Event, CancellationToken } from 'vscode';
+import { Uri, Event } from 'vscode';
 
 export interface Git {
 	readonly path: string;
@@ -13,7 +13,7 @@ export interface InputBox {
 	value: string;
 }
 
-export const enum RefType {
+export enum RefType {
 	Head,
 	RemoteHead,
 	Tag
@@ -56,7 +56,7 @@ export interface Remote {
 	readonly isReadOnly: boolean;
 }
 
-export const enum Status {
+export enum Status {
 	INDEX_MODIFIED,
 	INDEX_ADDED,
 	INDEX_DELETED,
@@ -182,7 +182,7 @@ export interface GitExtension {
 	getAPI(version: 1): API;
 }
 
-export const enum GitErrorCodes {
+export enum GitErrorCodes {
 	BadConfigFile = 'BadConfigFile',
 	AuthenticationFailed = 'AuthenticationFailed',
 	NoUserNameConfigured = 'NoUserNameConfigured',

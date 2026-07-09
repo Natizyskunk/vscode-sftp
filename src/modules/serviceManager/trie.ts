@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file ... */
 const defaultOption = {
   delimiter: '/',
 };
@@ -117,7 +116,6 @@ export default class Trie<T> {
     node.clearValue();
     let current = node;
     let parent;
-    // tslint:disable-next-line no-conditional-assignment
     while (!current.isLoaded() && current.getChildrenNum() <= 0 && (parent = current.getParent())) {
       parent.removeChild(current);
       current = parent;

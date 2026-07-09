@@ -1,4 +1,4 @@
-import * as LRU from 'lru-cache';
+import LRU = require('lru-cache');
 import StatusBarItem from './ui/statusBarItem';
 import { COMMAND_TOGGLE_OUTPUT, COMMAND_CANCEL_ALL_TRANSFER } from './constants';
 import AppState from './modules/appState';

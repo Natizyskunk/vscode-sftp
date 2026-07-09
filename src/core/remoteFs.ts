@@ -40,7 +40,6 @@ class KeepAliveRemoteFs {
     }
 
     const connectOption = Object.assign({}, option);
-    // tslint:disable variable-name
     let FsConstructor: typeof SFTPFileSystem | typeof FTPFileSystem;
     if (option.protocol === 'sftp') {
       connectOption.debug = function debug(str) {

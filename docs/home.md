@@ -1124,12 +1124,16 @@ Lower [`concurrency`](#concurrency) (some servers cap simultaneous operations) a
 
 Issues and pull requests are welcome — the project is under active maintenance again at [jmwerk/vscode-sftp](https://github.com/jmwerk/vscode-sftp).
 
+Development requires Node 22 or newer (see `.nvmrc`).
+
 ```sh
 git clone https://github.com/jmwerk/vscode-sftp.git
 cd vscode-sftp
 npm install        # applies patches (ssh2, memfs) via patch-package
-npm run compile    # production build (webpack)
+npm run compile    # production build (esbuild)
 npm run dev        # watch mode for development
+npm run typecheck  # TypeScript type check (tsc --noEmit)
+npm run lint       # ESLint
 npm test           # jest test suites
 npm run package    # build the .vsix
 ```

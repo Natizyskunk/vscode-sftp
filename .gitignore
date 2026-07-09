@@ -8,7 +8,7 @@ TODO.md
 INSTALL_DEBUG.md
 
 ### Extensions ###
-sftp-*.vsix
+*.vsix
 
 ### VS Code ###
 .vscode/**

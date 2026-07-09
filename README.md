@@ -18,7 +18,9 @@ The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is
 
 `npm run compile` now succeeds on `develop` — fixed a missing import of `COMMAND_UPLOAD_FILE_TO_ALL_PROFILES`/`COMMAND_UPLOAD_FOLDER_TO_ALL_PROFILES`, a `vscode-uri` default-export mismatch, and a `string`/`URI` type mismatch in `getFileSystemPath`.
 
-`npm test` is fixed too — `test/preprocessor.js` now returns the `{ code }` shape Jest 28+ requires, and `memfs` (used only in tests) is patched via `patch-package` for a couple of stream-close bugs that were silently breaking file-transfer tests. 4/4 suites, 42/42 tests passing.
+`npm test` is fixed too — tests now compile through [ts-jest](https://kulshekhar.github.io/ts-jest/) (the old hand-rolled `test/preprocessor.js` is gone), and `memfs` (used only in tests) is patched via `patch-package` for a couple of stream-close bugs that were silently breaking file-transfer tests. 4/4 suites, 42/42 tests passing.
+
+**July 2026 — toolchain modernization.** The extension now builds with [esbuild](https://esbuild.github.io/) (replacing webpack + ts-loader), type-checks on TypeScript 5, and lints with ESLint + typescript-eslint (replacing the long-deprecated TSLint). CI runs on Node 22/24 (16/18 are EOL), the minimum supported VS Code version is 1.75, and command modules are registered from an explicit index instead of webpack's `require.context` (which would silently register zero commands under any other bundler). Development requires Node 22+ (see `.nvmrc`).
 
 The status bar now shows a live transfer progress counter ("Transferring X/Y files") during bulk uploads/downloads — click it to cancel all in-flight transfers. SSH connection failures (auth errors, connection refused, timeouts, unreachable hosts, DNS issues) also now surface actionable messages instead of raw `ssh2` error text.
 
