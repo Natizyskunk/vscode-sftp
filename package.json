@@ -2,7 +2,7 @@
   "name": "sftpresso",
   "displayName": "SFTPresso",
   "description": "SFTP/FTP sync — actively maintained fork of vscode-sftp",
-  "version": "1.16.6",
+  "version": "1.16.7",
   "publisher": "jmwerk",
   "author": "Joe Werkheiser <j.m.werkheiser@gmail.com> (https://github.com/jmwerk)",
   "engines": {
@@ -221,6 +221,11 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.compareFolders",
+        "title": "Compare Folders with Remote",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.diff.activeFile",
         "title": "Diff Active File with Remote",
         "category": "SFTP"
@@ -360,6 +365,10 @@
           "when": "sftp.enabled"
         },
         {
+          "command": "sftp.compareFolders",
+          "when": "sftp.enabled"
+        },
+        {
           "command": "sftp.list",
           "when": "sftp.enabled"
         },
@@ -458,6 +467,11 @@
           "command": "sftp.diff",
           "group": "3_compare",
           "when": "sftp.enabled && !explorerResourceIsRoot && !explorerResourceIsFolder"
+        },
+        {
+          "command": "sftp.compareFolders",
+          "group": "3_compare",
+          "when": "sftp.enabled && explorerResourceIsFolder"
         },
         {
           "command": "sftp.sync.localToRemote",
