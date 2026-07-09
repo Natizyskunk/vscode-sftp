@@ -40,7 +40,7 @@ export default class TransferTask implements Task {
   private readonly _targetFs: FileSystem;
   private readonly _transferDirection: TransferDirection;
   private readonly _TransferOption: TransferOption;
-  private readonly _cancelTokenSource: CancellationTokenSource = new CancellationTokenSource();
+  private _cancelTokenSource: CancellationTokenSource | undefined;
   private _handle: Readable;
   private _cancelled: boolean;
   // private _fileStatus: FileStatus;
@@ -85,7 +85,7 @@ export default class TransferTask implements Task {
   }
 
   get token(): CancellationToken {
-    return this._cancelTokenSource.token;
+    return this._ensureCancelTokenSource().token;
   }
 
   async run() {
@@ -121,7 +121,9 @@ export default class TransferTask implements Task {
       return;
     }
     this._cancelled = true;
-    this._cancelTokenSource.cancel();
+    if (this._cancelTokenSource) {
+      this._cancelTokenSource.cancel();
+    }
     if (this._handle) {
       FileSystem.abortReadableStream(this._handle);
     }
@@ -132,7 +134,16 @@ export default class TransferTask implements Task {
   }
 
   dispose() {
-    this._cancelTokenSource.dispose();
+    if (this._cancelTokenSource) {
+      this._cancelTokenSource.dispose();
+    }
+  }
+
+  private _ensureCancelTokenSource(): CancellationTokenSource {
+    if (!this._cancelTokenSource) {
+      this._cancelTokenSource = new CancellationTokenSource();
+    }
+    return this._cancelTokenSource;
   }
 
   private async _transferFile() {
