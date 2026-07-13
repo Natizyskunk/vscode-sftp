@@ -116,6 +116,8 @@ For instance:
 The password parameter in `sftp.json` is optional — if left out you will be prompted for a password on sync, with an offer to remember it in VS Code's secret storage (OS keychain). You can also save it ahead of time with the `SFTP: Save Password` command (and remove it with `SFTP: Clear Password`), keeping the password out of `sftp.json` entirely.
 _Note：_ backslashes and other special characters must be escaped with a backslash.
 
+`sftp.json` is read as JSONC, so `// line comments`, `/* block comments */`, and trailing commas are allowed.
+
 4. Save and close the `sftp.json` file.
 5. `Ctrl+Shift+P` on Windows/Linux or `Cmd+Shift+P` on Mac open command palette.
 6. Type `sftp` and you'll now see a number of other commands. You can also access many of the commands from the project's file explorer context menus.

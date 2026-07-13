@@ -283,6 +283,8 @@ Example — a keybinding that switches straight to the `prod` profile:
 
 Configuration lives in `<workspace>/.vscode/sftp.json` — either a single object, or an **array of objects** for [multiple contexts](#multiple-contexts-array-config). Open it any time via `SFTP: Config`.
 
+The file is read as **JSONC**: `// line comments`, `/* block comments */`, and trailing commas are all allowed, so you can annotate a config or comment out options without breaking it. Parse errors are reported with their line and column.
+
 ### Common options
 
 Apply to both SFTP and FTP unless noted.

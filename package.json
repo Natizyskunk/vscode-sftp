@@ -744,6 +744,14 @@
         "when": "sftp.enabled"
       }
     ],
+    "languages": [
+      {
+        "id": "jsonc",
+        "filenamePatterns": [
+          "**/.vscode/sftp.json"
+        ]
+      }
+    ],
     "jsonValidation": [
       {
         "fileMatch": ".vscode/sftp.json",
@@ -792,6 +800,7 @@
     "fs-extra": "^10.1.0",
     "ignore": "^5.1.4",
     "joi": "^18.2.3",
+    "jsonc-parser": "^3.3.1",
     "lodash.debounce": "^4.0.8",
     "lru-cache": "^11.5.2",
     "ssh-config": "^1.1.3",

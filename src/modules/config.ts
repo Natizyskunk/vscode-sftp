@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as Joi from 'joi';
+import { parse as parseJsonc, printParseErrorCode, ParseError } from 'jsonc-parser';
 import { CONFIG_PATH } from '../constants';
 import logger from '../logger';
 import { reportError } from '../helper';
@@ -162,12 +163,40 @@ function warnPlaintextPassword(configPath: string, configs: any[]) {
   );
 }
 
-export function readConfigsFromFile(configPath): Promise<any[]> {
-  return fse.readJson(configPath).then(config => {
-    const configs = Array.isArray(config) ? config : [config];
-    warnPlaintextPassword(configPath, configs);
-    return configs.map(mergedDefault);
+function offsetToLineColumn(text: string, offset: number): { line: number; column: number } {
+  let line = 1;
+  let lineStart = 0;
+  for (let i = 0; i < offset && i < text.length; i++) {
+    if (text[i] === '\n') {
+      line++;
+      lineStart = i + 1;
+    }
+  }
+  return { line, column: offset - lineStart + 1 };
+}
+
+// the config is read as JSONC, so comments and trailing commas are allowed
+export async function readConfigsFromFile(configPath): Promise<any[]> {
+  const content = await fse.readFile(configPath, 'utf8');
+  const errors: ParseError[] = [];
+  const config = parseJsonc(content, errors, {
+    allowTrailingComma: true,
+    disallowComments: false,
   });
+  if (errors.length > 0) {
+    const { error, offset } = errors[0];
+    const { line, column } = offsetToLineColumn(content, offset);
+    throw new Error(
+      `Failed to parse ${configPath}: ${printParseErrorCode(error)} at line ${line}, column ${column}.`
+    );
+  }
+  if (config === undefined) {
+    throw new Error(`Failed to parse ${configPath}: the file is empty.`);
+  }
+
+  const configs = Array.isArray(config) ? config : [config];
+  warnPlaintextPassword(configPath, configs);
+  return configs.map(mergedDefault);
 }
 
 export function tryLoadConfigs(workspace): Promise<any[]> {
