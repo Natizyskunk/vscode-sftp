@@ -2,9 +2,11 @@
 // them statically (the previous require.context approach was webpack-only).
 import commandCancelAllTransfer from './commandCancelAllTransfer';
 import commandCancelTransfer from './commandCancelTransfer';
+import commandClearPassword from './commandClearPassword';
 import commandConfig from './commandConfig';
 import commandListActiveFolder from './commandListActiveFolder';
 import commandOpenSshConnection from './commandOpenSshConnection';
+import commandSavePassword from './commandSavePassword';
 import commandSetProfile from './commandSetProfile';
 import commandTestConnection from './commandTestConnection';
 import commandToggleOutputPanel from './commandToggleOutputPanel';
@@ -48,9 +50,11 @@ import fileMultiCommandUploadToAllProfiles from './fileMultiCommandUploadToAllPr
 export default {
   commandCancelAllTransfer,
   commandCancelTransfer,
+  commandClearPassword,
   commandConfig,
   commandListActiveFolder,
   commandOpenSshConnection,
+  commandSavePassword,
   commandSetProfile,
   commandTestConnection,
   commandToggleOutputPanel,

@@ -26,6 +26,8 @@ The status bar now shows a live transfer progress counter ("Transferring X/Y fil
 
 A new **Transfers** view in the SFTP sidebar shows live per-file status (queued/transferring/failed) during folder upload/download/sync operations, with a cancel button on each in-flight file in addition to the existing `Cancel All Transfers` command.
 
+Passwords can now be kept in VS Code's secret storage (backed by the OS keychain) instead of plaintext `sftp.json`: save one with `SFTP: Save Password`, or accept the "Remember password" offer after a successful password-prompted connection; remove it with `SFTP: Clear Password`. A one-time output-channel warning nudges configs that still contain a plaintext `password`.
+
 <details>
 <summary>History from the previous maintainer (Natizyskunk)</summary>
 
@@ -51,6 +53,7 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
   - Diff local and remote
   - Compare folders (recursive local/remote diff)
   - Test Connection (verify the active profile can connect, from a command or CodeLens on `sftp.json`)
+  - Secure password storage (`SFTP: Save Password` / `SFTP: Clear Password`, backed by the OS keychain)
   - Sync directory
   - Upload/Download
   - Transfers view with per-file progress and cancellation
@@ -108,7 +111,7 @@ For instance:
     "uploadOnSave": false
 }
 ```
-The password parameter in `sftp.json` is optional, if left out you will be prompted for a password on sync.
+The password parameter in `sftp.json` is optional — if left out you will be prompted for a password on sync, with an offer to remember it in VS Code's secret storage (OS keychain). You can also save it ahead of time with the `SFTP: Save Password` command (and remove it with `SFTP: Clear Password`), keeping the password out of `sftp.json` entirely.
 _Note：_ backslashes and other special characters must be escaped with a backslash.
 
 4. Save and close the `sftp.json` file.

@@ -99,6 +99,16 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.savePassword",
+        "title": "Save Password",
+        "category": "SFTP"
+      },
+      {
+        "command": "sftp.clearPassword",
+        "title": "Clear Password",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.cancelAllTransfer",
         "title": "Cancel All Transfers",
         "category": "SFTP"
@@ -326,6 +336,14 @@
         },
         {
           "command": "sftp.testConnection",
+          "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.savePassword",
+          "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.clearPassword",
           "when": "sftp.enabled"
         },
         {

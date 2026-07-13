@@ -86,6 +86,7 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 | Diff local ↔ remote | `SFTP: Diff with Remote` | Opens VS Code's diff view against the remote copy |
 | Compare Folders | `SFTP: Compare Folders with Remote` | Recursive local/remote diff with per-file actions — see [Comparing folders](#comparing-folders-with-the-remote) |
 | Test Connection | `SFTP: Test Connection` / CodeLens on `sftp.json` | Verifies the active profile can connect |
+| Secure password storage | `SFTP: Save Password` / `SFTP: Clear Password` | Keep passwords in VS Code's secret storage (OS keychain) instead of plaintext `sftp.json` — see [Storing passwords securely](#storing-passwords-securely) |
 | Upload on save | [`uploadOnSave`](#uploadonsave) | Mirrors every VS Code save to the server |
 | File watcher | [`watcher`](#watcher) | Reacts to changes made *outside* VS Code (build tools, git checkout, …) |
 | Multiple configurations | [Array config](#multiple-contexts-array-config) | Different servers per workspace subfolder |
@@ -141,13 +142,23 @@ npm run package      # produces sftpresso-<version>.vsix via vsce
 
 Notes:
 
-- `password` is optional — if omitted you'll be prompted when a connection is made. If you do store it, be aware it is **plain text** (see [Best Practices](#6-best-practices)).
+- `password` is optional — if omitted you'll be prompted when a connection is made, and offered to have the password remembered in VS Code's secret storage (see [Storing passwords securely](#storing-passwords-securely)). If you do store it in `sftp.json`, be aware it is **plain text** (see [Best Practices](#6-best-practices)).
 - Backslashes and other special characters in JSON values must be escaped with a backslash.
 - `sftp.json` gets schema-validated in the editor, so you get completions and warnings for unknown or mistyped option names.
 
 ### Verifying your connection
 
 Run **`SFTP: Test Connection`** from the Command Palette, or click the **Test Connection** CodeLens shown at the top of `sftp.json`. It connects using the active profile's settings and reports success or failure with an actionable message (see [SSH connection error messages](#ssh-connection-error-messages)).
+
+### Storing passwords securely
+
+Instead of writing `password` into `sftp.json` (which is plain text), you can keep it in VS Code's secret storage, which is backed by the operating system keychain:
+
+- Run **`SFTP: Save Password`**, pick the remote, and enter the password. Future connections use it automatically — no prompt, nothing in `sftp.json`.
+- Or just connect: when you're prompted for a password and the connection succeeds, the extension offers to **remember** it.
+- Run **`SFTP: Clear Password`** to delete a saved password (for example after it changed on the server).
+
+Saved passwords are keyed by `protocol://username@host:port`, so each server/user pair is stored independently (configs and profiles that point at the same server share one saved password). A saved password is only used when the config provides no other authentication — configs that set `password`, `privateKeyPath`, `agent`, or `interactiveAuth` behave exactly as before. If `sftp.json` still contains a plaintext `password`, the extension logs a one-time reminder in the output channel.
 
 ---
 
@@ -163,6 +174,8 @@ All commands live under the **SFTP** category in the Command Palette. Most are a
 | `SFTP: Set Profile` | `sftp.setProfile` | Switch the active [profile](#profiles-dev--prod). |
 | `SFTP: Test Connection` | `sftp.testConnection` | Connect to the active profile's remote and report success/failure. Also available as a CodeLens on `sftp.json`. |
 | `SFTP: Open SSH in Terminal` | `sftp.openConnectInTerminal` | Open a VS Code terminal auto-logged-in to the server. Extra CLI flags can be added via [`sshCustomParams`](#sshcustomparams). |
+| `SFTP: Save Password` | `sftp.savePassword` | Store a password for a remote in VS Code's secret storage (OS keychain). See [Storing passwords securely](#storing-passwords-securely). |
+| `SFTP: Clear Password` | `sftp.clearPassword` | Remove a saved password from secret storage. |
 
 ### Upload commands
 
@@ -322,9 +335,9 @@ Username for authentication.
 | `username` | string |
 
 #### password
-Password for password-based authentication. **Optional** — omit it to be prompted at connect time.
+Password for password-based authentication. **Optional** — omit it to use a password saved via `SFTP: Save Password`, or to be prompted at connect time (see [Storing passwords securely](#storing-passwords-securely)).
 
-> ⚠️ **Warning:** passwords in `sftp.json` are stored as **plain text**. Prefer [`privateKeyPath`](#privatekeypath) or [`agent`](#agent), and keep `sftp.json` out of version control. See [Best Practices](#6-best-practices).
+> ⚠️ **Warning:** passwords in `sftp.json` are stored as **plain text**. Prefer [`privateKeyPath`](#privatekeypath) or [`agent`](#agent) — or keep the password in [secret storage](#storing-passwords-securely) — and keep `sftp.json` out of version control. See [Best Practices](#6-best-practices).
 
 | Key | Type |
 | --- | --- |
@@ -967,7 +980,7 @@ Right-click any folder (or run **`SFTP: Compare Folders with Remote`**) to get a
 
 ## 6. Best Practices
 
-- **Don't commit credentials.** `password` and `passphrase` are stored in plain text in `sftp.json`. Prefer key-based auth ([`privateKeyPath`](#privatekeypath) or [`agent`](#agent)), set `"passphrase": true` for a prompt instead of a stored string, and add `.vscode/sftp.json` to `.gitignore` if it contains secrets.
+- **Don't commit credentials.** `password` and `passphrase` are stored in plain text in `sftp.json`. Prefer key-based auth ([`privateKeyPath`](#privatekeypath) or [`agent`](#agent)), keep passwords in [secret storage](#storing-passwords-securely) via `SFTP: Save Password`, set `"passphrase": true` for a prompt instead of a stored string, and add `.vscode/sftp.json` to `.gitignore` if it contains secrets.
 - **Ignore what you don't deploy.** Add `/.git`, `/.vscode`, `node_modules`, build caches, and OS junk (`.DS_Store`) to [`ignore`](#ignore) — transfers get faster and you avoid clobbering the server with noise. Use the [Force commands](#force-alt-commands) for one-off exceptions.
 - **Protect live sites with atomic uploads.** Enable [`useTempFile`](#usetempfile) (plus [`openSsh`](#openssh) on OpenSSH servers) so a visitor never receives a half-uploaded file.
 - **Pick one auto-upload mechanism.** Use either [`uploadOnSave`](#uploadonsave) or a broad [`watcher`](#watcher) (`"**/*"` with `autoUpload`), not both — doubling up causes redundant transfers.
@@ -1114,7 +1127,7 @@ ListOptions "-la"
 ```
 
 **Q: Do I have to store my password in `sftp.json`?**
-No — leave `password` out and you'll be prompted on connect. Better yet, use key-based auth (see [Best Practices](#6-best-practices)).
+No — leave `password` out and you'll be prompted on connect, with an offer to remember the password in VS Code's secret storage. You can also save it up front with `SFTP: Save Password` (see [Storing passwords securely](#storing-passwords-securely)). Better yet, use key-based auth (see [Best Practices](#6-best-practices)).
 
 **Q: What do the "Connection refused" / "Connection timed out" / "Host not found" / "Authentication failed" messages mean?**
 See [SSH connection error messages](#ssh-connection-error-messages).

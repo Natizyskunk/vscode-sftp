@@ -1,3 +1,4 @@
+import { ExtensionContext } from 'vscode';
 import { LRUCache } from 'lru-cache';
 import StatusBarItem from './ui/statusBarItem';
 import { COMMAND_TOGGLE_OUTPUT, COMMAND_CANCEL_ALL_TRANSFER } from './constants';
@@ -6,6 +7,7 @@ import RemoteExplorer from './modules/remoteExplorer';
 import TransferView from './modules/transferView';
 
 interface App {
+  vscodeContext: ExtensionContext;
   fsCache: LRUCache<string, string>;
   state: AppState;
   sftpBarItem: StatusBarItem;

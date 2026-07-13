@@ -1,9 +1,11 @@
 import * as path from 'path';
 import { Uri, window } from 'vscode';
 import { FileType } from '../core';
+import logger from '../logger';
 import { getAllFileService } from '../modules/serviceManager';
 import { ExplorerItem } from '../modules/remoteExplorer';
-import { getActiveTextEditor } from '../host';
+import { getActiveTextEditor, showInformationMessage } from '../host';
+import { connectionToken, ConnectIdentity } from '../credentialStore';
 import { listFiles, toLocalPath, simplifyPath } from '../helper';
 
 function configIngoreFilterCreator(config) {
@@ -73,6 +75,59 @@ export function selectContext(): Promise<Uri | undefined> {
         resolve(undefined);
       }, reject);
   });
+}
+
+// pick one remote server (including profiles) from all configured file services
+export async function selectRemoteConnection(): Promise<ConnectIdentity | undefined> {
+  const items: Array<{ label: string; description: string; identity: ConnectIdentity }> = [];
+  const seen = new Set<string>();
+  for (const service of getAllFileService()) {
+    let configs;
+    try {
+      configs =
+        service.getAvailableProfiles().length > 0
+          ? service.getAllConfig()
+          : [service.getConfig()];
+    } catch (error) {
+      logger.warn(`skip config at ${service.baseDir}: ${error.message}`);
+      continue;
+    }
+
+    for (const config of configs) {
+      if (config.protocol === 'local') {
+        continue;
+      }
+
+      const token = connectionToken(config);
+      if (seen.has(token)) {
+        continue;
+      }
+      seen.add(token);
+
+      items.push({
+        label: token,
+        description: config.name || '',
+        identity: {
+          protocol: config.protocol,
+          host: config.host,
+          port: config.port,
+          username: config.username,
+        },
+      });
+    }
+  }
+
+  if (items.length <= 0) {
+    showInformationMessage('No sftp/ftp remote found in the current workspace.');
+    return;
+  }
+
+  const picked =
+    items.length === 1
+      ? items[0]
+      : await window.showQuickPick(items, { placeHolder: 'Select a remote...' });
+
+  return picked ? picked.identity : undefined;
 }
 
 export function applySelector<T>(...selectors: ((...args: any[]) => T | Promise<T>)[]) {

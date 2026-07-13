@@ -1,7 +1,10 @@
+import logger from '../../logger';
+import { getStoredPassword, offerToRememberPassword } from '../../credentialStore';
 import CustomError from '../customError';
 
 export interface ConnectOption {
   // common
+  protocol?: string;
   host: string;
   port: number;
   username?: string;
@@ -53,6 +56,19 @@ export default abstract class RemoteClient {
       return this._doConnect(connectOption, config);
     }
 
+    const storedPassword = await getStoredPassword(connectOption);
+    if (storedPassword !== undefined) {
+      try {
+        return await this._doConnect({ ...connectOption, password: storedPassword }, config);
+      } catch (error) {
+        logger.warn(
+          `Connecting to ${connectOption.host} with the saved password failed.` +
+            ' Run "SFTP: Clear Password" to remove it if it is outdated.'
+        );
+        throw error;
+      }
+    }
+
     const password = await config.askForPasswd(`[${connectOption.host}]: Enter your password`);
 
     // cancel connect
@@ -60,7 +76,10 @@ export default abstract class RemoteClient {
       throw new CustomError(ErrorCode.CONNECT_CANCELLED, 'cancelled');
     }
 
-    return this._doConnect({ ...connectOption, password }, config);
+    await this._doConnect({ ...connectOption, password }, config);
+
+    // the password worked; saving it is optional so don't hold up the connection
+    offerToRememberPassword(connectOption, password);
   }
 
   onDisconnected(cb) {

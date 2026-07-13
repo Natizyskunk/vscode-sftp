@@ -3,6 +3,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as Joi from 'joi';
 import { CONFIG_PATH } from '../constants';
+import logger from '../logger';
 import { reportError } from '../helper';
 import { showTextDocument } from '../host';
 
@@ -131,9 +132,40 @@ export function validateConfig(config) {
   return error;
 }
 
+const plaintextPasswordWarned = new Set<string>();
+
+function hasPlaintextPassword(config): boolean {
+  if (typeof config.password === 'string' && config.password.length > 0) {
+    return true;
+  }
+
+  const profiles = config.profiles;
+  return (
+    !!profiles &&
+    Object.keys(profiles).some(name => {
+      const profile = profiles[name];
+      return profile && typeof profile.password === 'string' && profile.password.length > 0;
+    })
+  );
+}
+
+function warnPlaintextPassword(configPath: string, configs: any[]) {
+  if (plaintextPasswordWarned.has(configPath) || !configs.some(hasPlaintextPassword)) {
+    return;
+  }
+
+  plaintextPasswordWarned.add(configPath);
+  logger.warn(
+    `A plaintext password was found in ${configPath}.` +
+      ' Consider removing it and running the "SFTP: Save Password" command' +
+      " to keep the password in VS Code's secret storage instead."
+  );
+}
+
 export function readConfigsFromFile(configPath): Promise<any[]> {
   return fse.readJson(configPath).then(config => {
     const configs = Array.isArray(config) ? config : [config];
+    warnPlaintextPassword(configPath, configs);
     return configs.map(mergedDefault);
   });
 }
