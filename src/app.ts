@@ -1,7 +1,11 @@
 import { ExtensionContext } from 'vscode';
 import { LRUCache } from 'lru-cache';
 import StatusBarItem from './ui/statusBarItem';
-import { COMMAND_TOGGLE_OUTPUT, COMMAND_CANCEL_ALL_TRANSFER } from './constants';
+import {
+  COMMAND_TOGGLE_OUTPUT,
+  COMMAND_CANCEL_ALL_TRANSFER,
+  COMMAND_SET_PROFILE,
+} from './constants';
 import AppState from './modules/appState';
 import RemoteExplorer from './modules/remoteExplorer';
 import TransferView from './modules/transferView';
@@ -23,12 +27,18 @@ app.sftpBarItem = new StatusBarItem(
   () => {
     if (app.state.profile) {
       return `SFTP: ${app.state.profile}`;
+    } else if (app.state.availableProfiles.length > 0) {
+      return 'SFTP: (no profile)';
     } else {
       return 'SFTP';
     }
   },
-  'SFTPresso',
-  COMMAND_TOGGLE_OUTPUT
+  () =>
+    app.state.availableProfiles.length > 0
+      ? 'SFTPresso — click to switch profile'
+      : 'SFTPresso',
+  () =>
+    app.state.availableProfiles.length > 0 ? COMMAND_SET_PROFILE : COMMAND_TOGGLE_OUTPUT
 );
 app.transferBarItem = new StatusBarItem(
   () => '',

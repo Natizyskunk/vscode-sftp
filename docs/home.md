@@ -91,7 +91,7 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 | Upload on save | [`uploadOnSave`](#uploadonsave) | Mirrors every VS Code save to the server |
 | File watcher | [`watcher`](#watcher) | Reacts to changes made *outside* VS Code (build tools, git checkout, …) |
 | Multiple configurations | [Array config](#multiple-contexts-array-config) | Different servers per workspace subfolder |
-| Switchable profiles | [`profiles`](#profiles) + `SFTP: Set Profile` | One config, many targets |
+| Switchable profiles | [`profiles`](#profiles) + `SFTP: Set Profile` | One config, many targets — the status bar shows the active profile; click it to switch |
 | Temp-file / atomic uploads | [`useTempFile`](#usetempfile), [`openSsh`](#openssh) | Avoid serving half-written files |
 | Connection hopping | [`hop`](#connection-hopping-ssh-proxy--bastion) | Reach a target server through one or more SSH bastions |
 | Upload to all profiles | `SFTP: Upload … To All Profiles` | Push one file/folder/project to every profile at once |
@@ -768,6 +768,8 @@ If your site is live, add temp-file/atomic uploads so visitors never see a half-
 ### Profiles (dev / prod)
 
 One config, several environments. Profile values merge over the top-level config; switch with **`SFTP: Set Profile`**.
+
+When a config defines profiles, the status bar item shows the active profile (e.g. **`SFTP: dev`**, or **`SFTP: (no profile)`** when none is active), and clicking it opens the profile picker — same as running `SFTP: Set Profile`. Without profiles, the status bar keeps its usual behavior (shows `SFTP`, click to toggle the output panel).
 
 ```json
 {

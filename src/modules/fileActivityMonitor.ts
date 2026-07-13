@@ -10,6 +10,7 @@ import {
   getFileService,
   findAllFileService,
   disposeFileService,
+  reconcileActiveProfile,
 } from './serviceManager';
 import { reportError, isValidFile, isConfigFile, isInWorkspace } from '../helper';
 import { downloadFile, uploadFile } from '../fileHandlers';
@@ -34,6 +35,7 @@ async function handleConfigSave(uri: vscode.Uri) {
   } catch (error) {
     reportError(error);
   } finally {
+    reconcileActiveProfile();
     app.remoteExplorer.refresh();
   }
 }

@@ -16,8 +16,9 @@ enum Status {
 export default class StatusBarItem {
   static Status = Status;
 
-  private _name: () => string | string;
-  private tooltip: string;
+  private _name: string | (() => string);
+  private _tooltip: string | (() => string);
+  private _command: string | (() => string);
   private statusBarItem: vscode.StatusBarItem;
   private spinnerTimer: any = null;
   private resetTimer: any = null;
@@ -31,9 +32,10 @@ export default class StatusBarItem {
 
   constructor(name, tooltip, command) {
     this._name = name;
-    this.tooltip = tooltip;
+    this._tooltip = tooltip;
+    this._command = command;
     this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-    this.statusBarItem.command = command;
+    this.statusBarItem.command = this.command;
     this.spinner = spinners.dots;
     this.reset = this.reset.bind(this);
     this.reset();
@@ -41,6 +43,14 @@ export default class StatusBarItem {
 
   private get name() {
     return typeof this._name === 'function' ? this._name() : this._name;
+  }
+
+  private get tooltip() {
+    return typeof this._tooltip === 'function' ? this._tooltip() : this._tooltip;
+  }
+
+  private get command() {
+    return typeof this._command === 'function' ? this._command() : this._command;
   }
 
   updateStatus(status: Status) {
@@ -130,6 +140,7 @@ export default class StatusBarItem {
   reset() {
     this.text = this.name;
     this.statusBarItem.tooltip = this.tooltip;
+    this.statusBarItem.command = this.command;
     this._render();
   }
 }

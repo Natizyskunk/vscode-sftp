@@ -6,7 +6,12 @@ import { COMMAND_TEST_CONNECTION } from '../constants';
 import { replaceHomePath, reportError } from '../helper';
 import { executeCommand, showErrorMessage, showTextDocument } from '../host';
 import { getConfigPath, readConfigsFromFile, validateConfig } from './config';
-import { createFileService, disposeFileService, findAllFileService } from './serviceManager';
+import {
+  createFileService,
+  disposeFileService,
+  findAllFileService,
+  reconcileActiveProfile,
+} from './serviceManager';
 
 const AUTH_PASSWORD = 'Password';
 const AUTH_PRIVATE_KEY = 'Private Key';
@@ -165,6 +170,7 @@ async function reloadFileServices(basePath: string, configPath: string) {
 
   const configs = await readConfigsFromFile(configPath);
   configs.forEach(config => createFileService(config, basePath));
+  reconcileActiveProfile();
 
   if (app.remoteExplorer) {
     app.remoteExplorer.refresh();

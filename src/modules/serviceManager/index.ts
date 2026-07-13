@@ -122,6 +122,23 @@ export function getBasePath(context: string, workspace: string) {
   return normalizePathForTrie(dirpath);
 }
 
+function updateAvailableProfiles() {
+  const profiles = new Set<string>();
+  getAllFileService().forEach(service => {
+    service.getAvailableProfiles().forEach(profile => profiles.add(profile));
+  });
+  app.state.availableProfiles = Array.from(profiles);
+}
+
+// drop the active profile when it's no longer defined by any config.
+// call this after a config reload has recreated the file services --
+// checking during dispose would wrongly reset a still-valid profile.
+export function reconcileActiveProfile() {
+  if (app.state.profile && !app.state.availableProfiles.includes(app.state.profile)) {
+    app.state.profile = null;
+  }
+}
+
 export function createFileService(config: any, workspace: string) {
   if (config.defaultProfile) {
     app.state.profile = config.defaultProfile;
@@ -169,6 +186,7 @@ export function createFileService(config: any, workspace: string) {
     updateTransferProgress();
     transferEventEmitter.fire({ type: 'done', task, error });
   });
+  updateAvailableProfiles();
 
   return service;
 }
@@ -190,6 +208,7 @@ export function getFileService(uri: Uri): FileService {
 export function disposeFileService(fileService: FileService) {
   serviceManager.remove(fileService.baseDir);
   fileService.dispose();
+  updateAvailableProfiles();
 }
 
 export function findAllFileService(predictor: (x: FileService) => boolean): FileService[] {

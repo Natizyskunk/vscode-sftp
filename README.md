@@ -165,7 +165,7 @@ You can see the full list of configuration options [here](https://github.com/jmw
 
 _Note：_ `context` and `watcher` are only available at root level.
 
-Use `SFTP: Set Profile` to switch profile.
+Use `SFTP: Set Profile` to switch profile. When profiles are defined, the status bar shows the active one (e.g. `SFTP: dev`) and clicking it opens the profile picker.
 
 ### Multiple Context
 The context must **not be same**.
