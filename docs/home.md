@@ -86,6 +86,7 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 | Diff local ↔ remote | `SFTP: Diff with Remote` | Opens VS Code's diff view against the remote copy |
 | Compare Folders | `SFTP: Compare Folders with Remote` | Recursive local/remote diff with per-file actions — see [Comparing folders](#comparing-folders-with-the-remote) |
 | Test Connection | `SFTP: Test Connection` / CodeLens on `sftp.json` | Verifies the active profile can connect |
+| Guided config setup | `SFTP: Config` → **Quick setup** | Step-by-step wizard that generates `sftp.json` and tests the connection — see [First-time setup](#first-time-setup) |
 | Secure password storage | `SFTP: Save Password` / `SFTP: Clear Password` | Keep passwords in VS Code's secret storage (OS keychain) instead of plaintext `sftp.json` — see [Storing passwords securely](#storing-passwords-securely) |
 | Upload on save | [`uploadOnSave`](#uploadonsave) | Mirrors every VS Code save to the server |
 | File watcher | [`watcher`](#watcher) | Reacts to changes made *outside* VS Code (build tools, git checkout, …) |
@@ -123,7 +124,9 @@ npm run package      # produces sftpresso-<version>.vsix via vsce
 
 1. Open the local folder you want to sync (`File → Open Folder…`).
 2. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **`SFTP: Config`**.
-3. The extension creates `.vscode/sftp.json` with a starter template. Edit it with your server details:
+3. When no `sftp.json` exists yet, pick how to create it:
+   - **Quick setup** — a guided wizard that asks for the protocol (sftp/ftp), host, port (pre-filled 22 or 21 per protocol), username, authentication method, remote path, and whether to upload on save. For SFTP the auth choices are a password prompt at connect time (with an offer to remember it in secret storage), a private key file (`~` is expanded and the file is checked to exist), or a running ssh-agent. Answers are validated against the config schema, `sftp.json` is written, and **`SFTP: Test Connection`** runs immediately to confirm the connection works.
+   - **Edit JSON** — the extension creates `.vscode/sftp.json` with a starter template. Edit it with your server details:
 
 ```json
 {
@@ -170,7 +173,7 @@ All commands live under the **SFTP** category in the Command Palette. Most are a
 
 | Command | ID | Description |
 | --- | --- | --- |
-| `SFTP: Config` | `sftp.config` | Create a new `sftp.json` configuration file for the workspace. |
+| `SFTP: Config` | `sftp.config` | Create a new `sftp.json` for the workspace — via a guided quick-setup wizard or a starter template — or open the existing one. See [First-time setup](#first-time-setup). |
 | `SFTP: Set Profile` | `sftp.setProfile` | Switch the active [profile](#profiles-dev--prod). |
 | `SFTP: Test Connection` | `sftp.testConnection` | Connect to the active profile's remote and report success/failure. Also available as a CodeLens on `sftp.json`. |
 | `SFTP: Open SSH in Terminal` | `sftp.openConnectInTerminal` | Open a VS Code terminal auto-logged-in to the server. Extra CLI flags can be added via [`sshCustomParams`](#sshcustomparams). |

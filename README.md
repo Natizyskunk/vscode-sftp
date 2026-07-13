@@ -95,7 +95,9 @@ then download your project, and from that point sync.
 1. In `VS Code`, open a local directory you wish to sync to the remote server (or create an empty directory
 that you wish to first download the contents of a remote server folder in order to edit locally).
 2. `Ctrl+Shift+P` on Windows/Linux or `Cmd+Shift+P` on Mac open command palette, run `SFTP: config` command.
-3. A basic configuration file will appear named `sftp.json` under the `.vscode` directory, open and edit the configuration parameters with your remote server information.
+3. If no config exists yet, choose how to create it:
+   - **Quick setup** — a guided wizard asks for the protocol (sftp/ftp), host, port (pre-filled per protocol), username, authentication method (password prompt at connect, private key with `~` expansion, or ssh-agent), remote path, and whether to upload on save. It validates your answers, writes `sftp.json`, and runs `SFTP: Test Connection` right away so you know the connection works.
+   - **Edit JSON** — a basic configuration file will appear named `sftp.json` under the `.vscode` directory, open and edit the configuration parameters with your remote server information.
 
 For instance:
 ```json

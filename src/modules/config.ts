@@ -120,7 +120,7 @@ function mergedDefault(config) {
   };
 }
 
-function getConfigPath(basePath) {
+export function getConfigPath(basePath) {
   return path.join(basePath, CONFIG_PATH);
 }
 
