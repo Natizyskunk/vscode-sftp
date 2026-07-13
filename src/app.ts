@@ -1,4 +1,4 @@
-import LRU = require('lru-cache');
+import { LRUCache } from 'lru-cache';
 import StatusBarItem from './ui/statusBarItem';
 import { COMMAND_TOGGLE_OUTPUT, COMMAND_CANCEL_ALL_TRANSFER } from './constants';
 import AppState from './modules/appState';
@@ -6,7 +6,7 @@ import RemoteExplorer from './modules/remoteExplorer';
 import TransferView from './modules/transferView';
 
 interface App {
-  fsCache: LRU.Cache<string, string>;
+  fsCache: LRUCache<string, string>;
   state: AppState;
   sftpBarItem: StatusBarItem;
   transferBarItem: StatusBarItem;
@@ -33,6 +33,6 @@ app.transferBarItem = new StatusBarItem(
   'SFTPresso transfers (click to cancel)',
   COMMAND_CANCEL_ALL_TRANSFER
 );
-app.fsCache = LRU<string, string>({ max: 6 });
+app.fsCache = new LRUCache<string, string>({ max: 6 });
 
 export default app;

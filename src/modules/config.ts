@@ -8,7 +8,7 @@ import { showTextDocument } from '../host';
 
 const nullable = schema => schema.optional().allow(null);
 
-const configScheme = {
+const configScheme = Joi.object({
   name: Joi.string(),
 
   context: Joi.string(),
@@ -23,11 +23,9 @@ const configScheme = {
   agent: nullable(Joi.string()),
   privateKeyPath: nullable(Joi.string()),
   passphrase: nullable(Joi.string().allow(true)),
-  interactiveAuth: Joi.alternatives([
-    Joi.boolean(),
-    Joi.array()
-      .items(Joi.string()),
-  ]).optional(),
+  interactiveAuth: Joi.alternatives()
+    .try(Joi.boolean(), Joi.array().items(Joi.string()))
+    .optional(),
   algorithms: Joi.any(),
   sshConfigPath: Joi.string(),
   sshCustomParams: Joi.string(),
@@ -67,7 +65,7 @@ const configScheme = {
       .items(Joi.string()),
     order: Joi.number(),
   },
-};
+});
 
 const defaultConfig = {
   // common
@@ -126,14 +124,9 @@ function getConfigPath(basePath) {
 }
 
 export function validateConfig(config) {
-  const { error } = Joi.validate(config, configScheme, {
+  const { error } = configScheme.validate(config, {
     allowUnknown: true,
     convert: false,
-    language: {
-      object: {
-        child: '!!prop "{{!child}}" fails because {{reason}}',
-      },
-    },
   });
   return error;
 }
