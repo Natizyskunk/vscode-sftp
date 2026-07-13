@@ -477,6 +477,8 @@ Watches for file changes made **outside** the VS Code editor (build output, `git
 #### remoteTimeOffsetInHours
 Hours of clock difference between the remote server and your machine (**remote minus local**). Needed for accurate timestamp-based [sync](#sync-commands) when the server is in another timezone or its clock drifts.
 
+> **FTP note:** servers that support the `MLSD` command (e.g. pure-ftpd, ProFTPD) report exact UTC timestamps, so this option should normally stay `0` for them. It's mainly needed for FTP servers limited to `LIST` (e.g. vsftpd), whose listings carry only server-local, minute-precision dates, and for SFTP servers with a skewed clock.
+
 | Key | Type | Default |
 | --- | --- | --- |
 | `remoteTimeOffsetInHours` | number | `0` |
@@ -999,6 +1001,14 @@ As of 1.16.5, common SSH failures surface as plain-language messages instead of 
 | **Authentication failed** | Username, password, or private key was rejected by the server. |
 
 Check the `sftp` Output channel (see [Enabling debug logs](#enabling-debug-logs)) for the underlying detail.
+
+### FTPS transfers fail after connecting (TLS session reuse)
+
+With `secure: true`, some servers (notably pure-ftpd) require the data connection to reuse the control connection's TLS session, which can fail under TLS 1.3 with errors like *"Client network socket disconnected before secure TLS connection was established"* on every listing or transfer, even though the connection itself succeeds. Cap the TLS version via [`secureOptions`](#secureoptions):
+
+```json
+{ "secureOptions": { "maxVersion": "TLSv1.2" } }
+```
 
 ### Error: Failure
 

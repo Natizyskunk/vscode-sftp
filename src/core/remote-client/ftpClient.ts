@@ -1,92 +1,114 @@
-import Client from 'ftp';
+import { Client, FTPContext, FTPResponse } from 'basic-ftp';
+import { connect as netConnect } from 'net';
+import { ConnectionOptions as TLSConnectionOptions } from 'tls';
 import RemoteClient, { ConnectOption } from './remoteClient';
 
-Client.prototype._send = function(cmd: string, cb: (err: Error) => void, promote: boolean) {
-  clearTimeout(this._keepalive);
-  if (cmd !== undefined) {
-    if (promote) this._queue.unshift({ cmd: cmd, cb: cb });
-    else this._queue.push({ cmd: cmd, cb: cb });
-
-    if (cmd === 'ABOR') {
-      if (this._pasvSocket) this._pasvSocket.aborting = true;
-      if (this._debug) this._debug('[connection] > ' + cmd);
-      this._socket.write(cmd + '\r\n');
-      return;
-    }
+// Passive-mode transfer strategy that never upgrades the data connection
+// to TLS. basic-ftp's built-in strategy encrypts data connections whenever
+// the control connection is TLS, but with the legacy `secure: 'control'`
+// option (PROT C) the server expects clear-text data connections.
+async function enterPassiveModePlainData(ftp: FTPContext): Promise<FTPResponse> {
+  const res = await ftp.request('EPSV');
+  const match = res.message.match(/\(\|\|\|(\d+)\|\)/);
+  if (!match) {
+    throw new Error(`Can't parse response to 'EPSV': ${res.message}`);
   }
-  const queueLen = this._queue.length;
-  if (!this._curReq && queueLen && this._socket && this._socket.readable) {
-    this._curReq = this._queue.shift();
-    if (this._curReq.cmd !== 'ABOR') {
-      if (this._debug) this._debug('[connection] > ' + this._curReq.cmd);
-      this._socket.write(this._curReq.cmd + '\r\n');
-    }
-  } else if (!this._curReq && !queueLen && this._ending) this._reset();
-};
+  const port = parseInt(match[1], 10);
 
-Client.prototype.setLastMod = function(path: string, date: Date, cb) {
-  const dateStr =
-    date.getUTCFullYear() +
-    ('00' + (date.getUTCMonth() + 1)).slice(-2) +
-    ('00' + date.getUTCDate()).slice(-2) +
-    ('00' + date.getUTCHours()).slice(-2) +
-    ('00' + date.getUTCMinutes()).slice(-2) +
-    ('00' + date.getUTCSeconds()).slice(-2);
+  await new Promise<void>((resolve, reject) => {
+    const handleConnErr = (err: Error) => {
+      err.message = "Can't open data connection in passive mode: " + err.message;
+      reject(err);
+    };
+    const socket = netConnect({ host: ftp.socket.remoteAddress, port }, () => {
+      socket.removeListener('error', handleConnErr);
+      socket.removeListener('timeout', handleTimeout);
+      ftp.dataSocket = socket;
+      resolve();
+    });
+    const handleTimeout = () => {
+      socket.destroy();
+      reject(new Error(`Timeout when trying to open data connection on port ${port}`));
+    };
+    socket.setTimeout(ftp.timeout);
+    socket.on('error', handleConnErr);
+    socket.on('timeout', handleTimeout);
+  });
 
-  this._send('MFMT ' + dateStr + ' ' + path, cb);
-};
+  return res;
+}
 
 export default class FTPClient extends RemoteClient {
-  private connected: boolean = false;
+  private _disconnectListeners: Array<(reason: string, err?: Error) => void> = [];
+  private _disconnectNotified: boolean = false;
 
   _initClient() {
-    return new Client();
+    return new Client(this._option.connectTimeout || 10 * 1000);
   }
 
   _hasProvideAuth(connectOption: ConnectOption) {
     return connectOption.password != null;
   }
 
-  _doConnect(connectOption: ConnectOption): Promise<void> {
-    this.onDisconnected(() => {
-      this.connected = false;
+  async _doConnect(connectOption: ConnectOption): Promise<void> {
+    const { username, password, host, port, secure, secureOptions, debug } = connectOption;
+    const client: Client = this._client;
+
+    if (debug) {
+      // basic-ftp masks the PASS argument in its log output
+      client.ftp.log = debug;
+    }
+
+    await client.access({
+      host,
+      port,
+      user: username,
+      password,
+      secure: secure === true || secure === 'implicit' ? secure : secure === 'control' ? true : false,
+      secureOptions: secureOptions as TLSConnectionOptions,
     });
 
-    const { username, connectTimeout = 3 * 1000, ...option } = connectOption;
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        if (!this.connected) {
-          this.end();
-          reject(new Error('Timeout while connecting to server'));
-        }
-      }, connectTimeout);
+    // basic-ftp always requests PROT P for FTPS. The legacy `secure: 'control'`
+    // option means only the control connection is encrypted, so downgrade
+    // data connections back to clear text.
+    if (secure === 'control') {
+      await client.send('PROT C');
+      client.prepareTransfer = enterPassiveModePlainData;
+    }
 
-      this._client
-        .on('ready', () => {
-          this.connected = true;
-          if (option.passive) {
-            this._client._pasv(resolve);
-          } else {
-            resolve();
-          }
-        })
-        .on('error', err => {
-          reject(err);
-        })
-        .connect({
-          keepalive: 1000 * 10, // 10 secs, original
-          // keepalive: 1000 * 600, // 10 mins
-          // keepalive: 1000 * 1800, // 30 mins
-          pasvTimeout: connectTimeout,
-          ...option,
-          connTimeout: connectTimeout,
-          user: username,
-        });
-    });
+    // Pin the listing command for the whole connection. basic-ftp probes
+    // its candidates on every list() until one succeeds, and an FTP error
+    // (e.g. listing a directory that doesn't exist yet, which ensureDir
+    // does routinely) makes it fall back from MLSD to LIST — silently
+    // changing mtime precision and timezone semantics mid-session.
+    const features = await client.features();
+    client.availableListCommands = features.has('MLSD') ? ['MLSD'] : ['LIST'];
+
+    // basic-ftp's Client is not an EventEmitter; watch the control socket
+    // (attached after access() since a TLS upgrade replaces the socket)
+    client.ftp.socket
+      .once('end', () => this._notifyDisconnected('end'))
+      .once('close', () => this._notifyDisconnected('close'))
+      .once('error', err => this._notifyDisconnected('error', err));
+  }
+
+  onDisconnected(cb: (reason: string, err?: Error) => void) {
+    this._disconnectListeners.push(cb);
+  }
+
+  private _notifyDisconnected(reason: string, err?: Error) {
+    if (this._disconnectNotified) {
+      return;
+    }
+    this._disconnectNotified = true;
+    this._disconnectListeners.forEach(cb => cb(reason, err));
   }
 
   end() {
-    return this._client.end();
+    this._client.close();
+    // basic-ftp removes all socket listeners while closing, so the
+    // listeners attached in _doConnect never see this close
+    this._notifyDisconnected('end');
   }
 
   getFsClient() {

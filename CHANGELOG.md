@@ -1,4 +1,7 @@
 ## Unreleased
+* Internal : Replace the unmaintained `ftp` package with `basic-ftp` behind the existing FTP client abstraction, preserving `secure` / `passive` / `remoteTimeOffsetInHours` semantics (including clear-text data connections for `secure: "control"`). Verified against vsftpd and pure-ftpd Docker servers over plain FTP, explicit FTPS, and control-only TLS. The `p-queue` dependency is replaced by an internal serial queue.
+* Improvement : On FTP servers that support MLSD, directory listings now report exact second-precision UTC timestamps, making timestamp-based sync more reliable (`remoteTimeOffsetInHours` is typically only needed for servers limited to `LIST` now). The listing command is pinned per connection so timestamp semantics can't silently change mid-session.
+* Internal : FTP connections no longer send periodic NOOP keepalives; if the server closes an idle connection, the extension reconnects automatically on the next operation.
 * Internal : Upgrade `joi` 10 → 18 (config validation) and `lru-cache` 4 → 11 (dropping `@types/lru-cache`).
 * Internal : Modernize the toolchain — build with esbuild (replacing webpack + ts-loader), TypeScript 3.9 → 5.9, TSLint → ESLint (typescript-eslint), tests via ts-jest, CI on Node 22/24 (16/18 are EOL), and dependabot coverage for GitHub Actions.
 * Internal : Raise the minimum supported VS Code version to 1.75 and align `@types/vscode` with it; declare `vscode-uri` as a real dependency (it was previously resolved only by accident through dev dependencies).
