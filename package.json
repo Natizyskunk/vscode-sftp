@@ -2,7 +2,7 @@
   "name": "sftpresso",
   "displayName": "SFTPresso",
   "description": "SFTP/FTP sync — actively maintained fork of vscode-sftp",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "publisher": "jmwerk",
   "author": "Joe Werkheiser <j.m.werkheiser@gmail.com> (https://github.com/jmwerk)",
   "engines": {
