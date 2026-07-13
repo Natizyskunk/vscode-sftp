@@ -1,3 +1,6 @@
+## 1.19.1 - 2026-07-13
+* Fix : The 1.19.0 package failed to load ("Cannot find module './impl/format'"), breaking every command. esbuild bundled `jsonc-parser`'s UMD entry, whose inner requires can't be inlined; the bundle now uses the package's ESM build. If you installed 1.19.0, update — no other changes.
+
 ## 1.19.0 - 2026-07-13
 * New Feature : `sftp.json` is now read as JSONC — `//` line comments, `/* block */` comments, and trailing commas are allowed (parsed with `jsonc-parser`), and the editor treats the file as JSONC so comments aren't flagged as errors. Malformed configs now report the parse error with its line and column instead of a raw exception.
 * New Feature : Show the active profile in the status bar. When `sftp.json` defines `profiles`, the status bar item reads `SFTP: <profile>` (or `SFTP: (no profile)` when none is active) and clicking it opens the `SFTP: Set Profile` picker; the text updates immediately on profile switch and resets when a config reload removes the active profile. Configs without profiles keep the previous behavior (`SFTP`, click to toggle the output panel).
