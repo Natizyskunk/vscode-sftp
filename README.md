@@ -18,7 +18,7 @@ Actively maintained by [@jmwerk](https://github.com/jmwerk). Forked from [Natizy
 - **Upload/Download** files, folders, or the whole project — optionally to all profiles at once
 - **Upload on save** and a **file watcher** for changes made outside the editor
 - **Transfers view** with byte-level per-file progress, cancellation, and retry
-- **Test Connection** from a command or a CodeLens on `sftp.json`
+- **Test Connection** from a command or a CodeLens on `sftp.json`, plus a **connection-status indicator** in the status bar
 - **Secure password storage** backed by the OS keychain (`SFTP: Save Password` / `Clear Password`)
 - **Multiple configurations**, switchable **profiles**, SSH **connection hopping**, and temp-file/atomic uploads
 

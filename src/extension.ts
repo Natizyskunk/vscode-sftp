@@ -53,6 +53,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   setContextValue('enabled', true);
   app.sftpBarItem.show();
+  app.connectionBarItem.show();
+  context.subscriptions.push(app.connectionBarItem);
   app.state.subscribe(_ => {
     const currentText = app.sftpBarItem.getText();
     // current is showing profile

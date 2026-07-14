@@ -1,6 +1,7 @@
 import { ExtensionContext } from 'vscode';
 import { LRUCache } from 'lru-cache';
 import StatusBarItem from './ui/statusBarItem';
+import ConnectionStatusBar from './ui/connectionStatusBar';
 import {
   COMMAND_TOGGLE_OUTPUT,
   COMMAND_CANCEL_ALL_TRANSFER,
@@ -15,6 +16,7 @@ interface App {
   fsCache: LRUCache<string, string>;
   state: AppState;
   sftpBarItem: StatusBarItem;
+  connectionBarItem: ConnectionStatusBar;
   transferBarItem: StatusBarItem;
   remoteExplorer: RemoteExplorer;
   transferView: TransferView;
@@ -40,6 +42,7 @@ app.sftpBarItem = new StatusBarItem(
   () =>
     app.state.availableProfiles.length > 0 ? COMMAND_SET_PROFILE : COMMAND_TOGGLE_OUTPUT
 );
+app.connectionBarItem = new ConnectionStatusBar();
 app.transferBarItem = new StatusBarItem(
   () => '',
   'SFTPresso transfers (click to cancel)',
