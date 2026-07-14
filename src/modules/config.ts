@@ -59,6 +59,7 @@ const configScheme = Joi.object({
     ignoreExisting: Joi.boolean(),
     update: Joi.boolean(),
   },
+  syncConfirm: Joi.boolean(),
   remoteTimeOffsetInHours: Joi.number(),
 
   remoteExplorer: {

@@ -96,6 +96,10 @@
           }
         }
       },
+      "syncConfirm": {
+        "type": "boolean",
+        "description": "Show a dry-run preview (uploads / overwrites / deletions) and ask for confirmation before a Sync command runs. Defaults to true when syncOption.delete is enabled, false otherwise."
+      },
       "ignore": {
         "type": "array",
         "description": "Files to ignore. Same behavior as gitignore.",

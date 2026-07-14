@@ -10,6 +10,10 @@ export interface CompareResult {
   status: CompareStatus;
   localFsPath: string;
   remoteFsPath: string;
+  // last-modified times in ms; 0 when the side is absent. Used by the sync
+  // preview to honor `syncOption.update` (only overwrite when src is newer).
+  localMtime: number;
+  remoteMtime: number;
 }
 
 function isFileModified(a: FileEntry, b: FileEntry): boolean {
@@ -64,6 +68,8 @@ async function walk(
         status: isFileModified(localEntry, remoteEntry) ? 'modified' : 'same',
         localFsPath: localEntry.fspath,
         remoteFsPath: remoteEntry.fspath,
+        localMtime: localEntry.mtime,
+        remoteMtime: remoteEntry.mtime,
       });
     } else if (localEntry) {
       results.push({
@@ -73,6 +79,8 @@ async function walk(
         status: 'localOnly',
         localFsPath: localEntry.fspath,
         remoteFsPath: remoteFs.pathResolver.join(remoteDir, name),
+        localMtime: localEntry.mtime,
+        remoteMtime: 0,
       });
     } else if (remoteEntry) {
       results.push({
@@ -82,6 +90,8 @@ async function walk(
         status: 'remoteOnly',
         localFsPath: localFs.pathResolver.join(localDir, name),
         remoteFsPath: remoteEntry.fspath,
+        localMtime: 0,
+        remoteMtime: remoteEntry.mtime,
       });
     }
   }

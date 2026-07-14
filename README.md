@@ -54,7 +54,7 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
   - Compare folders (recursive local/remote diff)
   - Test Connection (verify the active profile can connect, from a command or CodeLens on `sftp.json`)
   - Secure password storage (`SFTP: Save Password` / `SFTP: Clear Password`, backed by the OS keychain)
-  - Sync directory
+  - Sync directory (with an optional dry-run preview/confirmation via `syncConfirm`)
   - Upload/Download
   - Transfers view with per-file progress and cancellation
   - Upload on save

@@ -1,5 +1,6 @@
 import { refreshRemoteExplorer } from '../shared';
 import createFileHandler, { FileHandlerContext } from '../createFileHandler';
+import { confirmSyncOrProceed } from '../syncPreview';
 import { transfer, sync, TransferOption, SyncOption, TransferDirection } from './transfer';
 
 function createTransferHandle(direction: TransferDirection) {
@@ -43,6 +44,11 @@ const downloadHandle = createTransferHandle(TransferDirection.REMOTE_TO_LOCAL);
 export const sync2Remote = createFileHandler<SyncOption>({
   name: 'sync local ➞ remote',
   async handle(option) {
+    // Dry-run preview + confirmation (gated by syncConfirm). Cancelling here
+    // leaves everything untouched.
+    if (!(await confirmSyncOrProceed(this, TransferDirection.LOCAL_TO_REMOTE, option))) {
+      return;
+    }
     const remoteFs = await this.fileService.getRemoteFileSystem(this.config);
     const localFs = this.fileService.getLocalFileSystem();
     const { localFsPath, remoteFsPath } = this.target;
@@ -86,6 +92,11 @@ export const sync2Remote = createFileHandler<SyncOption>({
 export const sync2Local = createFileHandler<SyncOption>({
   name: 'sync remote ➞ local',
   async handle(option) {
+    // Dry-run preview + confirmation (gated by syncConfirm). Cancelling here
+    // leaves everything untouched.
+    if (!(await confirmSyncOrProceed(this, TransferDirection.REMOTE_TO_LOCAL, option))) {
+      return;
+    }
     const remoteFs = await this.fileService.getRemoteFileSystem(this.config);
     const localFs = this.fileService.getLocalFileSystem();
     const { localFsPath, remoteFsPath } = this.target;

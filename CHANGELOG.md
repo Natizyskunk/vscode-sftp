@@ -1,3 +1,6 @@
+## Unreleased
+* New Feature : Dry-run preview before syncs. A new `syncConfirm` config option shows a modal summary of exactly what a Sync command would do — e.g. "Sync Local → Remote: 3 uploads, 1 overwrite, 2 deletions. Proceed?" — with the affected files listed, computed from the local/remote diff and honoring `syncOption` (`delete` / `skipCreate` / `ignoreExisting` / `update`). Cancelling leaves everything untouched; confirming runs the sync unchanged; a sync with no differences reports "nothing to do" and does not run. `syncConfirm` defaults to `true` when `syncOption.delete` is enabled (the destructive case) and `false` otherwise.
+
 ## 1.19.1 - 2026-07-13
 * Fix : The 1.19.0 package failed to load ("Cannot find module './impl/format'"), breaking every command. esbuild bundled `jsonc-parser`'s UMD entry, whose inner requires can't be inlined; the bundle now uses the package's ESM build. If you installed 1.19.0, update — no other changes.
 

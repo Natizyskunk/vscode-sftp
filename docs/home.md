@@ -202,7 +202,7 @@ All commands live under the **SFTP** category in the Command Palette. Most are a
 
 ### Sync commands
 
-Sync compares timestamps and transfers only what differs; behavior is tuned with [`syncOption`](#syncoption).
+Sync compares timestamps and transfers only what differs; behavior is tuned with [`syncOption`](#syncoption). Enable [`syncConfirm`](#syncconfirm) to preview and confirm exactly what a sync will upload, overwrite, and delete before it runs.
 
 | Command | ID | Description |
 | --- | --- | --- |
@@ -437,6 +437,21 @@ Tunes the [Sync commands](#sync-commands).
 ```
 
 > `Sync Both Directions` honors only `skipCreate` and `ignoreExisting`.
+
+#### syncConfirm
+Show a dry-run preview before a [Sync command](#sync-commands) runs. The extension walks the local/remote diff, computes exactly what the sync would do — respecting [`syncOption`](#syncoption) — and shows a modal summary such as *"Sync Local → Remote: 3 uploads, 1 overwrite, 2 deletions. Proceed?"* with the affected files listed. **Cancel** leaves everything untouched; **Proceed** runs the sync unchanged. If nothing differs, an info message is shown and no sync runs.
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `syncConfirm` | boolean | `true` when [`syncOption.delete`](#syncoption) is enabled, otherwise `false` |
+
+The default is deliberately conservative: syncs that can delete files on the destination prompt by default, while non-destructive syncs don't. Set it explicitly to always (or never) confirm.
+
+```json
+{
+  "syncConfirm": true
+}
+```
 
 #### ignore
 Files/folders excluded from transfers and sync. Gitignore-style patterns (wildcards with `*`), relative to the config's [`context`](#context). Bypass with the [Force commands](#force-alt-commands).
@@ -991,7 +1006,7 @@ Right-click any folder (or run **`SFTP: Compare Folders with Remote`**) to get a
 - **Ignore what you don't deploy.** Add `/.git`, `/.vscode`, `node_modules`, build caches, and OS junk (`.DS_Store`) to [`ignore`](#ignore) — transfers get faster and you avoid clobbering the server with noise. Use the [Force commands](#force-alt-commands) for one-off exceptions.
 - **Protect live sites with atomic uploads.** Enable [`useTempFile`](#usetempfile) (plus [`openSsh`](#openssh) on OpenSSH servers) so a visitor never receives a half-uploaded file.
 - **Pick one auto-upload mechanism.** Use either [`uploadOnSave`](#uploadonsave) or a broad [`watcher`](#watcher) (`"**/*"` with `autoUpload`), not both — doubling up causes redundant transfers.
-- **Be careful with `syncOption.delete` and `watcher.autoDelete`.** They remove files on the destination. Run a [Compare Folders](#comparing-folders-with-the-remote) first if you're unsure what a sync will do.
+- **Be careful with `syncOption.delete` and `watcher.autoDelete`.** They remove files on the destination. Leave [`syncConfirm`](#syncconfirm) on (its default when `delete` is enabled) to preview and confirm deletions before they happen, or run a [Compare Folders](#comparing-folders-with-the-remote) first if you're unsure what a sync will do.
 - **Set `remoteTimeOffsetInHours` when clocks differ** — otherwise timestamp-based sync may copy in the wrong direction (see [`remoteTimeOffsetInHours`](#remotetimeoffsetinhours)).
 - **Tune `concurrency` down for picky servers.** Shared hosts often cap concurrent SFTP operations; `"concurrency": 1–3` trades speed for reliability.
 - **Verify early.** After editing `sftp.json`, run [`SFTP: Test Connection`](#verifying-your-connection) rather than discovering an auth typo mid-upload.
