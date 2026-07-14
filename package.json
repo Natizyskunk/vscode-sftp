@@ -2,7 +2,7 @@
   "name": "sftpresso",
   "displayName": "SFTPresso",
   "description": "SFTP/FTP sync — actively maintained fork of vscode-sftp",
-  "version": "1.20.0",
+  "version": "1.20.1",
   "publisher": "jmwerk",
   "author": "Joe Werkheiser <j.m.werkheiser@gmail.com> (https://github.com/jmwerk)",
   "engines": {
@@ -791,6 +791,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src test",
     "test": "jest",
+    "test:integration": "jest --config test/integration/jest.config.js",
+    "test:integration:up": "docker compose -f test/integration/docker-compose.yml up -d --wait",
+    "test:integration:down": "docker compose -f test/integration/docker-compose.yml down -v",
     "package": "vsce package",
     "pub:debug": "rm -rf _debug && mkdir _debug && vsce package --out _debug/sftp-debug.vsix && cd _debug && git init && git commit --allow-empty -m 'update debug package' && git checkout -b debug-pacakge && cp ../INSTALL_DEBUG.md README.md  && git add . && git commit -am 'update debug package' && git push git@github.com:jmwerk/vscode-sftp.git debug-pacakge --force"
   },

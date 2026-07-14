@@ -1,0 +1,57 @@
+# FTP servers used only by the integration suite (test/integration/*.spec.ts).
+# Both images are multi-arch (amd64 + arm64) so the stack runs the same on CI
+# (ubuntu/amd64) and on Apple Silicon. Credentials and certs here are throwaway
+# and must never be reused outside these tests.
+#
+#   docker compose -f test/integration/docker-compose.yml up -d --wait
+#   npm run test:integration
+#   docker compose -f test/integration/docker-compose.yml down -v
+#
+# See CONTRIBUTING.md for the full workflow.
+
+services:
+  # Plain FTP, no MLSD -> exercises the legacy LIST parsing / rawModifiedAt path.
+  # Not chrooted: the test user logs in at /ftp/testuser.
+  vsftpd:
+    image: delfer/alpine-ftp-server:latest
+    environment:
+      USERS: "testuser|testpass|/ftp/testuser"
+      ADDRESS: "127.0.0.1"
+      MIN_PORT: "21000"
+      MAX_PORT: "21010"
+    ports:
+      - "2121:21"
+      - "21000-21010:21000-21010"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "netstat -ltn | grep -q ':21 '"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  # Explicit FTPS (AUTH TLS) with MLSD -> exercises the TLS control channel,
+  # clear-text data for secure:"control", and second-precision UTC timestamps.
+  # Virtual user is chrooted, logging in at /.
+  pure-ftpd:
+    image: crazymax/pure-ftpd:latest
+    environment:
+      # SECURE_MODE=false drops --norename and the dotfile prohibitions so the
+      # rename / recursive-delete tests work.
+      SECURE_MODE: "false"
+      PASSIVE_IP: "127.0.0.1"
+      PASSIVE_PORT_RANGE: "30000:30009"
+      FTP_USER: "testuser"
+      FTP_PASSWORD: "testpass"
+    ports:
+      - "2101:2100"
+      - "30000-30009:30000-30009"
+    volumes:
+      # Runs before the image's own 01-config.sh: generates the self-signed
+      # cert, enables --tls 1, and creates the virtual user.
+      - ./pure-ftpd/00-setup.sh:/etc/cont-init.d/00-setup.sh
+    healthcheck:
+      test: ["CMD", "sh", "-c", "netstat -ltn | grep -q ':2100 '"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 5s

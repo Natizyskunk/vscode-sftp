@@ -22,6 +22,8 @@ The fix lives in [`patches/ssh2+1.13.0.patch`](patches/ssh2+1.13.0.patch) and is
 
 **July 2026 — toolchain modernization.** The extension now builds with [esbuild](https://esbuild.github.io/) (replacing webpack + ts-loader), type-checks on TypeScript 5, and lints with ESLint + typescript-eslint (replacing the long-deprecated TSLint). CI runs on Node 22/24 (16/18 are EOL), the minimum supported VS Code version is 1.75, and command modules are registered from an explicit index instead of webpack's `require.context` (which would silently register zero commands under any other bundler). Development requires Node 22+ (see `.nvmrc`).
 
+The `basic-ftp` client layer now has Dockerized integration coverage in CI (`test/integration/`): a jest suite drives the FTP client directly against a plain vsftpd and an explicit-FTPS pure-ftpd, covering connect/disconnect (`secure: false` / `true` / `"control"`), transfers, listing, MLSD second-precision UTC timestamps, and idle reconnect. It runs in its own `integration-tests` GitHub Actions job and is excluded from `npm test`; see [CONTRIBUTING.md](CONTRIBUTING.md) for how to run it locally.
+
 The status bar now shows a live transfer progress counter ("Transferring X/Y files") during bulk uploads/downloads — click it to cancel all in-flight transfers. SSH connection failures (auth errors, connection refused, timeouts, unreachable hosts, DNS issues) also now surface actionable messages instead of raw `ssh2` error text.
 
 A new **Transfers** view in the SFTP sidebar shows live per-file status (queued/transferring/failed) during folder upload/download/sync operations, with a cancel button on each in-flight file in addition to the existing `Cancel All Transfers` command.

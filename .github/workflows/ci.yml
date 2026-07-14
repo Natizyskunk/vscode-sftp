@@ -38,3 +38,31 @@ jobs:
 
       - name: Test
         run: npm test
+
+  integration-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start FTP servers
+        # --wait blocks until both containers report healthy (compose
+        # healthchecks), so no fixed sleeps are needed.
+        run: docker compose -f test/integration/docker-compose.yml up -d --wait
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Stop FTP servers
+        if: always()
+        run: docker compose -f test/integration/docker-compose.yml down -v
