@@ -1,3 +1,6 @@
+## 1.20.2 - 2026-07-14
+* Internal : Publish tagged releases to the VS Code Marketplace and Open VSX automatically. A new `.github/workflows/publish.yml` fires on every `v*` tag (and via manual `workflow_dispatch` with a tag input), runs `typecheck` + `test`, packages a single `sftpresso-<tag>.vsix` with `vsce`, then publishes that same artifact to the Marketplace (`vsce publish`, auth via the `VSCE_PAT` secret) and Open VSX (`ovsx publish`, auth via the `OVSX_PAT` secret). Runs alongside the existing `release.yml` (GitHub Release) rather than replacing it. From this release on, installs no longer require sideloading a VSIX.
+
 ## 1.20.1 - 2026-07-14
 * Internal : Add Dockerized FTP integration tests (vsftpd + pure-ftpd) covering the basic-ftp client layer in CI.
 

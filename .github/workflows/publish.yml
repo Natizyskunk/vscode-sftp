@@ -1,0 +1,62 @@
+name: Publish
+
+# Publishes the extension to the VS Code Marketplace and Open VSX on a
+# version tag. Runs in parallel with release.yml (which builds the GitHub
+# Release); this job handles the two marketplaces.
+#
+# Requires two repository secrets:
+#   - VSCE_PAT : Azure DevOps PAT for the `jmwerk` Marketplace publisher
+#   - OVSX_PAT : Open VSX access token for the `jmwerk` namespace
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish (e.g. v1.20.2)'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve tag
+        id: tag
+        run: echo "tag=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Package extension
+        run: npx @vscode/vsce package --out sftpresso-${{ steps.tag.outputs.tag }}.vsix
+
+      # Publish the exact same .vsix to both registries so the artifacts match.
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx @vscode/vsce publish --packagePath sftpresso-${{ steps.tag.outputs.tag }}.vsix
+
+      - name: Publish to Open VSX
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx ovsx publish sftpresso-${{ steps.tag.outputs.tag }}.vsix -p "$OVSX_PAT"

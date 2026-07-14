@@ -4,7 +4,7 @@
 
 > **SFTPresso** — SFTP/FTP sync for Visual Studio Code. Actively maintained fork of `vscode-sftp`.
 >
-> - **Publisher:** `jmwerk` · **Current version:** 1.19.1 · **License:** MIT
+> - **Publisher:** `jmwerk` · **Current version:** 1.20.2 · **License:** MIT
 > - **Repository:** https://github.com/jmwerk/vscode-sftp
 > - **Requires:** VS Code `^1.64.2`
 > - **Lineage:** forked from [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp) after it went unmaintained.
@@ -102,7 +102,15 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 
 ### Installing the extension
 
-SFTPresso is **not yet published to the VS Code Marketplace** under its new name. Until it is, install from a VSIX package:
+As of **v1.20.2**, every tagged release is published automatically to both the **VS Code Marketplace** and **Open VSX** by [`.github/workflows/publish.yml`](https://github.com/jmwerk/vscode-sftp/blob/develop/.github/workflows/publish.yml), so you can install it straight from your editor:
+
+1. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
+2. If you still have an older `sftp` extension installed (from `@liximomo` or `@Natizyskunk`), uninstall it first to avoid command conflicts.
+3. Search for **SFTPresso** and install it — or run `ext install jmwerk.sftpresso` from the Command Palette.
+
+Listings: [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=jmwerk.sftpresso) · [Open VSX](https://open-vsx.org/extension/jmwerk/sftpresso) (for VSCodium, Gitpod, Eclipse Theia, and other editors that use Open VSX).
+
+To sideload a specific build instead, install from a VSIX package:
 
 1. Grab a `.vsix` from [GitHub Releases](https://github.com/jmwerk/vscode-sftp/releases) — or build one from source (see [Development and Contributing](#9-development-and-contributing)).
 2. In VS Code, open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
