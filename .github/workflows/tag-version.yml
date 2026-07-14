@@ -36,6 +36,9 @@ jobs:
           git tag -a "$TAG" -m "Release $TAG"
           git push origin "$TAG"
 
+      # Tags pushed with the default GITHUB_TOKEN don't trigger `on: push` /
+      # `on: tags` workflows (GitHub's anti-recursion rule), so release.yml and
+      # publish.yml are dispatched explicitly here instead.
       - name: Trigger release workflow
         if: success()
         env:
@@ -44,4 +47,14 @@ jobs:
         run: |
           if git rev-parse "$TAG" >/dev/null 2>&1 && ! gh release view "$TAG" >/dev/null 2>&1; then
             gh workflow run release.yml --ref "$TAG" -f tag="$TAG"
+          fi
+
+      - name: Trigger publish workflow
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.version.outputs.version }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            gh workflow run publish.yml --ref "$TAG" -f tag="$TAG"
           fi
