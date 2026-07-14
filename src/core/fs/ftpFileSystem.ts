@@ -239,16 +239,28 @@ export default class FTPFileSystem extends RemoteFileSystem {
     return await this.atomicSite(command);
   }
 
-  async put(input: Readable, path, _option?: FileOption): Promise<void> {
+  async put(input: Readable, path, option?: FileOption): Promise<void> {
     let inputError: Error | undefined;
     input.once('error', err => {
       inputError = err;
     });
 
+    const onProgress = option && option.onProgress;
     try {
       // basic-ftp watches the source stream and aborts the transfer itself
       // when the source errors
-      await this.atomic(() => this.ftp.uploadFrom(input, path));
+      await this.atomic(() => {
+        // transfers are serialized through atomic(), so a single tracker
+        // reports for exactly this upload; info.bytes is cumulative
+        if (onProgress) {
+          this.ftp.trackProgress(info => onProgress(info.bytes));
+        }
+        return this.ftp.uploadFrom(input, path).finally(() => {
+          if (onProgress) {
+            this.ftp.trackProgress(); // stop tracking
+          }
+        });
+      });
     } catch (error) {
       throw inputError || error;
     }

@@ -8,7 +8,7 @@ import { validateConfig } from '../config';
 import watcherService from '../fileWatcher';
 import Trie from './trie';
 
-export type TransferEventType = 'queued' | 'start' | 'done';
+export type TransferEventType = 'queued' | 'start' | 'done' | 'progress';
 
 export interface TransferEvent {
   type: TransferEventType;
@@ -165,6 +165,9 @@ export function createFileService(config: any, workspace: string) {
       simplifyPath(localFsPath)
     );
     transferEventEmitter.fire({ type: 'start', task });
+  });
+  service.onProgressTransfer(task => {
+    transferEventEmitter.fire({ type: 'progress', task });
   });
   service.afterTransfer((error, task) => {
     const { localFsPath, transferType } = task;

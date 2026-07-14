@@ -29,7 +29,13 @@ export interface TransferOption {
   perserveTargetMode: boolean;
   useTempFile?: boolean;
   openSsh?: boolean;
+  // total size of the file in bytes, used to render transfer progress.
+  // undefined when unknown (progress then degrades to bytes-only).
+  size?: number;
 }
+
+// throttle progress reporting to ~2 updates/sec per task
+const PROGRESS_REPORT_INTERVAL = 500;
 
 export default class TransferTask implements Task {
   readonly id: number;
@@ -44,6 +50,12 @@ export default class TransferTask implements Task {
   private _handle: Readable;
   private _cancelled: boolean;
   // private _fileStatus: FileStatus;
+
+  // progress state, read by the Transfers view
+  transferredBytes: number = 0;
+  readonly totalBytes: number | undefined;
+  private _progressListener: (() => void) | undefined;
+  private _lastProgressReportAt: number = 0;
 
   constructor(
     src: FileHandle,
@@ -62,6 +74,36 @@ export default class TransferTask implements Task {
     this._TransferOption = option.transferOption;
     this._transferDirection = option.transferDirection;
     this.fileType = option.fileType;
+    this.totalBytes = option.transferOption.size;
+  }
+
+  // called by the scheduler wiring to receive throttled progress updates
+  setProgressListener(listener: () => void) {
+    this._progressListener = listener;
+  }
+
+  // reset transient state so this task can be re-run (used by Retry)
+  reset() {
+    this._cancelled = false;
+    this._handle = undefined as any;
+    this.transferredBytes = 0;
+    this._lastProgressReportAt = 0;
+    if (this._cancelTokenSource) {
+      this._cancelTokenSource.dispose();
+    }
+    this._cancelTokenSource = undefined;
+  }
+
+  private _reportProgress(transferred: number) {
+    this.transferredBytes = transferred;
+    if (!this._progressListener) {
+      return;
+    }
+    const now = Date.now();
+    if (now - this._lastProgressReportAt >= PROGRESS_REPORT_INTERVAL) {
+      this._lastProgressReportAt = now;
+      this._progressListener();
+    }
   }
 
   get localFsPath() {
@@ -212,6 +254,7 @@ export default class TransferTask implements Task {
         mode,
         fd: uploadFd,
         autoClose: false,
+        onProgress: transferred => this._reportProgress(transferred),
       });
       if (atime && mtime) {
         try {

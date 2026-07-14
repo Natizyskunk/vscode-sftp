@@ -6,6 +6,7 @@ import commandClearPassword from './commandClearPassword';
 import commandConfig from './commandConfig';
 import commandListActiveFolder from './commandListActiveFolder';
 import commandOpenSshConnection from './commandOpenSshConnection';
+import commandRetryTransfer from './commandRetryTransfer';
 import commandSavePassword from './commandSavePassword';
 import commandSetProfile from './commandSetProfile';
 import commandTestConnection from './commandTestConnection';
@@ -54,6 +55,7 @@ export default {
   commandConfig,
   commandListActiveFolder,
   commandOpenSshConnection,
+  commandRetryTransfer,
   commandSavePassword,
   commandSetProfile,
   commandTestConnection,

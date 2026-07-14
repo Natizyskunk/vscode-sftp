@@ -120,6 +120,12 @@
         "icon": "$(close)"
       },
       {
+        "command": "sftp.retryTransfer",
+        "title": "Retry Transfer",
+        "category": "SFTP",
+        "icon": "$(refresh)"
+      },
+      {
         "command": "sftp.upload.file",
         "title": "Upload File",
         "category": "SFTP"
@@ -352,6 +358,10 @@
         },
         {
           "command": "sftp.cancelTransfer",
+          "when": "false"
+        },
+        {
+          "command": "sftp.retryTransfer",
           "when": "false"
         },
         {
@@ -627,6 +637,11 @@
           "command": "sftp.cancelTransfer",
           "group": "inline",
           "when": "view == sftpTransfers && viewItem == activeTransfer"
+        },
+        {
+          "command": "sftp.retryTransfer",
+          "group": "inline",
+          "when": "view == sftpTransfers && viewItem == failedTransfer"
         },
         {
           "command": "sftp.openConnectInTerminal",

@@ -1,4 +1,5 @@
 ## Unreleased
+* New Feature : The Transfers view now shows byte-level progress for each in-flight file — e.g. "42% — 3.1 MB / 7.4 MB" in the item description (bytes only when the total size is unknown), refreshed at most ~2×/sec per file. Failed transfers keep their row with an inline **Retry** button (`sftp.retryTransfer`) that re-queues just that file with its original direction and options and resets its status to queued. Per-file cancel and the status-bar counter are unchanged.
 * New Feature : Dry-run preview before syncs. A new `syncConfirm` config option shows a modal summary of exactly what a Sync command would do — e.g. "Sync Local → Remote: 3 uploads, 1 overwrite, 2 deletions. Proceed?" — with the affected files listed, computed from the local/remote diff and honoring `syncOption` (`delete` / `skipCreate` / `ignoreExisting` / `update`). Cancelling leaves everything untouched; confirming runs the sync unchanged; a sync with no differences reports "nothing to do" and does not run. `syncConfirm` defaults to `true` when `syncOption.delete` is enabled (the destructive case) and `false` otherwise.
 
 ## 1.19.1 - 2026-07-13

@@ -99,6 +99,7 @@ async function transferFolder(
             ...config.transferOption,
             mtime: file.mtime,
             atime: file.atime,
+            size: file.size,
           },
           srcFsPath: file.fspath,
           targetFsPath: targetFs.pathResolver.join(targetFsPath, file.name),
@@ -279,6 +280,7 @@ async function _sync(
                   mode: to.mode, // prefer target mode
                   mtime: from.mtime,
                   atime: from.atime,
+                  size: from.size,
                 },
               ]);
             }
@@ -310,6 +312,7 @@ async function _sync(
               fallbackMode: srcFile.mode,
               mtime: srcFile.mtime,
               atime: srcFile.atime,
+              size: srcFile.size,
             },
           ]);
           break;
@@ -339,6 +342,7 @@ async function _sync(
                   fallbackMode: file.mode,
                   mtime: file.mtime,
                   atime: file.atime,
+                  size: file.size,
                 },
               ]);
               break;
@@ -432,7 +436,8 @@ export async function transfer(
     mtime: stat.mtime,
     atime: stat.atime,
     filePerm: config?.filePerm,
-    dirPerm: config?.dirPerm
+    dirPerm: config?.dirPerm,
+    size: stat.size,
   };
   await transferWithType({ ...config, transferOption, ensureDirExist: true }, stat.type, collect);
 }

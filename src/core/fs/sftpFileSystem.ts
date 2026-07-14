@@ -394,6 +394,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
       mode?: number;
       autoClose?: boolean;
       handle?: FileHandle;
+      onProgress?: (transferred: number) => void;
     }
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -404,6 +405,16 @@ export default class SFTPFileSystem extends RemoteFileSystem {
         reject(err);
         writer.end();
       });
+      // count bytes as they flow; attached right before pipe so no chunk is
+      // consumed away from the writer
+      if (option && option.onProgress) {
+        const onProgress = option.onProgress;
+        let transferred = 0;
+        input.on('data', (chunk: Buffer) => {
+          transferred += chunk.length;
+          onProgress(transferred);
+        });
+      }
       input.pipe(writer);
     });
   }

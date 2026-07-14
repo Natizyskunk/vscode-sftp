@@ -56,7 +56,7 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
   - Secure password storage (`SFTP: Save Password` / `SFTP: Clear Password`, backed by the OS keychain)
   - Sync directory (with an optional dry-run preview/confirmation via `syncConfirm`)
   - Upload/Download
-  - Transfers view with per-file progress and cancellation
+  - Transfers view with byte-level per-file progress, cancellation, and retry for failed transfers
   - Upload on save
   - File Watcher
   - Multiple configurations

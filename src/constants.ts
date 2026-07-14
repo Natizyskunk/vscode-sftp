@@ -18,6 +18,7 @@ export const COMMAND_CONFIG = 'sftp.config';
 export const COMMAND_SET_PROFILE = 'sftp.setProfile';
 export const COMMAND_CANCEL_ALL_TRANSFER = 'sftp.cancelAllTransfer';
 export const COMMAND_CANCEL_TRANSFER = 'sftp.cancelTransfer';
+export const COMMAND_RETRY_TRANSFER = 'sftp.retryTransfer';
 export const COMMAND_OPEN_CONNECTION_IN_TERMINAL = 'sftp.openConnectInTerminal';
 export const COMMAND_TEST_CONNECTION = 'sftp.testConnection';
 export const COMMAND_SAVE_PASSWORD = 'sftp.savePassword';

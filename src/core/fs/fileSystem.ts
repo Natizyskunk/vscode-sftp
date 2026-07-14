@@ -22,6 +22,9 @@ export interface FileOption {
   mode?: number;
   autoClose?: boolean;
   fd?: FileHandle;
+  // called as bytes stream through put(), with the cumulative number of
+  // bytes transferred so far for this file. Used to drive the Transfers view.
+  onProgress?: (transferred: number) => void;
 }
 
 export interface FileStats {

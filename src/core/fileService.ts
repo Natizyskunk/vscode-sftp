@@ -364,6 +364,7 @@ enum Event {
   QUEUE_TRANSFER = 'QUEUE_TRANSFER',
   BEFORE_TRANSFER = 'BEFORE_TRANSFER',
   AFTER_TRANSFER = 'AFTER_TRANSFER',
+  PROGRESS_TRANSFER = 'PROGRESS_TRANSFER',
 }
 
 let id = 0;
@@ -456,6 +457,10 @@ export default class FileService {
     this._eventEmitter.on(Event.AFTER_TRANSFER, listener);
   }
 
+  onProgressTransfer(listener: (task: TransferTask) => void) {
+    this._eventEmitter.on(Event.PROGRESS_TRANSFER, listener);
+  }
+
   createTransferScheduler(concurrency): TransferScheduler {
     const fileService = this;
     const scheduler = new Scheduler({
@@ -463,7 +468,11 @@ export default class FileService {
       concurrency,
     });
     scheduler.onTaskStart(task => {
-      this._pendingTransferTasks.add(task as TransferTask);
+      const transferTask = task as TransferTask;
+      this._pendingTransferTasks.add(transferTask);
+      transferTask.setProgressListener(() =>
+        this._eventEmitter.emit(Event.PROGRESS_TRANSFER, transferTask)
+      );
       this._eventEmitter.emit(Event.BEFORE_TRANSFER, task);
     });
     scheduler.onTaskDone((err, task) => {
