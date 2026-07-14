@@ -4,7 +4,7 @@ SFTP/FTP sync extension for VS Code — actively maintained by [@jmwerk](https:/
 (Forked from [Natizyskunk's vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which itself continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp.git) after it went unmaintained)
 
 - Repository: https://github.com/jmwerk/vscode-sftp <br>
-- VS Code marketplace: not yet published under this name — for now, install from a built VSIX (see [Installation](#installation) below)
+- Install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=jmwerk.sftpresso) or [Open VSX](https://open-vsx.org/extension/jmwerk/sftpresso) (see [Installation](#installation) below)
 
 ✳ Issues and pull requests welcome — this project is under active maintenance again.
 
@@ -70,11 +70,18 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
 
 ## Installation
 
-### Method 1 (Recommended : Auto update)
-> SFTPresso isn't published to the VS Code Marketplace yet. Until it is, build/install from source — see [build instructions on the wiki](https://github.com/jmwerk/vscode-sftp/wiki#9-development-and-contributing) — or grab a VSIX from [Releases](https://github.com/jmwerk/vscode-sftp/releases) once available.
+As of v1.20.2, each tagged release is published automatically to both the VS Code Marketplace and Open VSX (via [`.github/workflows/publish.yml`](.github/workflows/publish.yml)), so you can install from within your editor and get updates automatically.
 
-### Method 2 (Manual update)
-To install just follow these steps from within VSCode:
+### Method 1 (Recommended : Marketplace / Open VSX)
+1. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
+2. Uninstall any older `sftp` extension from `@liximomo` or `@Natizyskunk` to avoid command conflicts.
+3. Search for **SFTPresso** and install it — or run `ext install jmwerk.sftpresso` from the Command Palette.
+
+- VS Code / VSCodium and other VS Code–based editors: [Marketplace listing](https://marketplace.visualstudio.com/items?itemName=jmwerk.sftpresso)
+- Open VSX (VSCodium, Gitpod, Eclipse Theia, …): [Open VSX listing](https://open-vsx.org/extension/jmwerk/sftpresso)
+
+### Method 2 (Manual : install from VSIX)
+Prefer to sideload a specific build? Grab a `.vsix` from [Releases](https://github.com/jmwerk/vscode-sftp/releases) (or build one with `npm run package`), then:
 1. Select Extensions (Ctrl + Shift + X).
 2. Uninstall current sftp extension from @liximomo.
 3. Open "More Action" menu(ellipsis on the top) and click "Install from VSIX…".
