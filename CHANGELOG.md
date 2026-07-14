@@ -1,3 +1,6 @@
+## 1.21.0 - 2026-07-14
+* New Feature : A connection-status indicator in the status bar. Since FTP connections reconnect lazily on the next operation (1.17.0), silent reconnects and auth failures previously gave no signal; a dedicated item now shows the remote connection state — `$(plug) SFTP` when idle, `$(sync~spin) SFTP` while connecting or reconnecting, `$(vm-active) SFTP` when connected, and `$(error) SFTP` with an error background on failure. When several remotes are live the most urgent state wins (connecting → error → connected → idle). Clicking it runs `SFTP: Test Connection`. Shown only when the extension is enabled, alongside the existing profile and transfer items.
+
 ## 1.20.2 - 2026-07-14
 * Internal : Publish tagged releases to the VS Code Marketplace and Open VSX automatically. A new `.github/workflows/publish.yml` fires on every `v*` tag (and via manual `workflow_dispatch` with a tag input), runs `typecheck` + `test`, packages a single `sftpresso-<tag>.vsix` with `vsce`, then publishes that same artifact to the Marketplace (`vsce publish`, auth via the `VSCE_PAT` secret) and Open VSX (`ovsx publish`, auth via the `OVSX_PAT` secret). Runs alongside the existing `release.yml` (GitHub Release) rather than replacing it. From this release on, installs no longer require sideloading a VSIX.
 

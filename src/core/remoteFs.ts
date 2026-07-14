@@ -2,6 +2,7 @@ import upath from './upath';
 import { promptForPassword } from '../host';
 import logger from '../logger';
 import app from '../app';
+import { ConnectionState } from '../ui/connectionStatusBar';
 import { ConnectOption } from './remote-client/remoteClient';
 import {
   FileSystem,
@@ -20,9 +21,13 @@ function hashOption(opiton) {
 class KeepAliveRemoteFs {
   private isValid: boolean = false;
 
+  private hasConnected: boolean = false;
+
   private pendingPromise: Promise<RemoteFileSystem> | null;
 
   private fs: RemoteFileSystem;
+
+  constructor(private readonly id: string) {}
 
   async getFs(
     option: ConnectOption & {
@@ -70,6 +75,10 @@ class KeepAliveRemoteFs {
     this.fs.onDisconnected(this.invalid.bind(this));
 
     app.sftpBarItem.showMsg('connecting...', connectOption.connectTimeout);
+    app.connectionBarItem.setState(
+      this.id,
+      this.hasConnected ? ConnectionState.Reconnecting : ConnectionState.Connecting
+    );
     this.pendingPromise = this.fs
       .connect(connectOption, {
         askForPasswd: promptForPassword,
@@ -78,6 +87,8 @@ class KeepAliveRemoteFs {
         () => {
           app.sftpBarItem.reset();
           this.isValid = true;
+          this.hasConnected = true;
+          app.connectionBarItem.setState(this.id, ConnectionState.Connected);
           return this.fs;
         },
         err => {
@@ -97,10 +108,15 @@ class KeepAliveRemoteFs {
     this.pendingPromise = null;
     this.fs.end();
     this.isValid = false;
+    app.connectionBarItem.setState(
+      this.id,
+      reason === 'error' ? ConnectionState.Error : ConnectionState.Idle
+    );
   }
 
   end() {
     this.fs.end();
+    app.connectionBarItem.clear(this.id);
   }
 }
 
@@ -123,7 +139,7 @@ export function createRemoteIfNoneExist(option): Promise<FileSystem> {
     return fs.getFs(option);
   }
 
-  const fsInstance = new KeepAliveRemoteFs();
+  const fsInstance = new KeepAliveRemoteFs(identity);
   fsTable[identity] = fsInstance;
   return fsInstance.getFs(option);
 }

@@ -4,7 +4,7 @@
 
 > **SFTPresso** — SFTP/FTP sync for Visual Studio Code. Actively maintained fork of `vscode-sftp`.
 >
-> - **Publisher:** `jmwerk` · **Current version:** 1.20.2 · **License:** MIT
+> - **Publisher:** `jmwerk` · **Current version:** 1.21.0 · **License:** MIT
 > - **Repository:** https://github.com/jmwerk/vscode-sftp
 > - **Requires:** VS Code `^1.64.2`
 > - **Lineage:** forked from [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp) after it went unmaintained.
@@ -86,6 +86,7 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 | Diff local ↔ remote | `SFTP: Diff with Remote` | Opens VS Code's diff view against the remote copy |
 | Compare Folders | `SFTP: Compare Folders with Remote` | Recursive local/remote diff with per-file actions — see [Comparing folders](#comparing-folders-with-the-remote) |
 | Test Connection | `SFTP: Test Connection` / CodeLens on `sftp.json` | Verifies the active profile can connect |
+| Connection status | Status bar (when enabled) | An icon reflects the live remote connection state — idle, connecting/reconnecting, connected, or error; click it to run `SFTP: Test Connection` |
 | Guided config setup | `SFTP: Config` → **Quick setup** | Step-by-step wizard that generates `sftp.json` and tests the connection — see [First-time setup](#first-time-setup) |
 | Secure password storage | `SFTP: Save Password` / `SFTP: Clear Password` | Keep passwords in VS Code's secret storage (OS keychain) instead of plaintext `sftp.json` — see [Storing passwords securely](#storing-passwords-securely) |
 | Upload on save | [`uploadOnSave`](#uploadonsave) | Mirrors every VS Code save to the server |
@@ -160,6 +161,8 @@ Notes:
 ### Verifying your connection
 
 Run **`SFTP: Test Connection`** from the Command Palette, or click the **Test Connection** CodeLens shown at the top of `sftp.json`. It connects using the active profile's settings and reports success or failure with an actionable message (see [SSH connection error messages](#ssh-connection-error-messages)).
+
+A **connection-status indicator** in the status bar reflects the live state of the remote connection at a glance: a plug icon when idle, a spinner while connecting or reconnecting, an active-VM icon when connected, and an error icon (with a highlighted background) when a connection fails. Because connections reconnect lazily on the next operation, this makes silent reconnects and authentication failures visible. Clicking it runs **`SFTP: Test Connection`**.
 
 ### Storing passwords securely
 
