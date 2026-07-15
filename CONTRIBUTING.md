@@ -1,8 +1,8 @@
-# Contributing to vscode-sftp
+# Contributing to SFTPresso
 
 After you've created a branch on your fork with your changes, [open a pull request][pr-link]. 
 
-*Please follow the guidelines given below while making a Pull Request to the vscode-sftp*
+*Please follow the guidelines given below while making a Pull Request to the SFTPresso*
 
 ## Pull Request Guidelines
 
@@ -12,7 +12,7 @@ After you've created a branch on your fork with your changes, [open a pull reque
 * Search previous Pull Requests or Issues before making a new one, as yours may be a duplicate.
 * Please make sure the feature has proper documentation.
 * Please make sure you squash all commits together before opening a pull request. If your pull request requires changes upon review, please be sure to squash all additional commits as well. [This wiki page][squash-link] outlines the squash process.
-* Target your Pull Request to the `develop` branch of the `vscode-sftp`
+* Target your Pull Request to the `develop` branch of the `SFTPresso`
 
 Once you've submitted a pull request, the collaborators can review your proposed changes and decide whether or not to incorporate (pull in) your changes.
 

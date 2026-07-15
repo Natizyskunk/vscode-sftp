@@ -9,7 +9,7 @@ assignees: ''
 
 **Do you read the FAQ?**
 - [ ] Yes.
-- [ ] [I am going to read now.](https://github.com/jmwerk/vscode-sftp/wiki#8-frequently-asked-questions)
+- [ ] [I am going to read now.](https://github.com/jmwerk/SFTPresso/wiki#8-frequently-asked-questions)
 
 **Describe the bug**
 A clear and concise description of what the bug is.

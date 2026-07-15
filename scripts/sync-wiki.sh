@@ -9,7 +9,7 @@ set -euo pipefail
 
 src=${1:-docs/home.md}
 dest=${2:-wiki/Home.md}
-repo_url="https://github.com/jmwerk/vscode-sftp/blob/develop"
+repo_url="https://github.com/jmwerk/SFTPresso/blob/develop"
 
 sed \
   -e "s#](\.\./#](${repo_url}/#g" \

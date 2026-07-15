@@ -3,8 +3,8 @@
 Sync files between a local folder and a remote server over **SFTP (SSH)** or **FTP/FTPS**, right from VS Code. Edit locally in a familiar environment and mirror your changes to a web server, staging box, or embedded device — on every save, on demand, or continuously. The most basic setup is a few lines of config; a wide range of options covers multi-server, profile, and bastion-hop workflows.
 
 - **Install:** [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=jmwerk.sftpresso) · [Open VSX](https://open-vsx.org/extension/jmwerk/sftpresso) — see [Installation](#installation)
-- **Docs:** [project wiki](https://github.com/jmwerk/vscode-sftp/wiki)
-- **Repository:** https://github.com/jmwerk/vscode-sftp
+- **Docs:** [project wiki](https://github.com/jmwerk/SFTPresso/wiki)
+- **Repository:** https://github.com/jmwerk/SFTPresso
 
 Actively maintained by [@jmwerk](https://github.com/jmwerk). Forked from [Natizyskunk's vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp) after it went unmaintained. Issues and pull requests welcome.
 
@@ -22,7 +22,7 @@ Actively maintained by [@jmwerk](https://github.com/jmwerk). Forked from [Natizy
 - **Secure password storage** backed by the OS keychain (`SFTP: Save Password` / `Clear Password`)
 - **Multiple configurations**, switchable **profiles**, SSH **connection hopping**, and temp-file/atomic uploads
 
-See the [command reference](https://github.com/jmwerk/vscode-sftp/wiki#3-command-reference) for the full list.
+See the [command reference](https://github.com/jmwerk/SFTPresso/wiki#3-command-reference) for the full list.
 
 ## Installation
 
@@ -38,7 +38,7 @@ Listings: [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemN
 
 ### From a VSIX (manual)
 
-Prefer to sideload a specific build? Grab a `.vsix` from [Releases](https://github.com/jmwerk/vscode-sftp/releases) (or build one with `npm run package`), then open the **⋯ (More Actions)** menu at the top of the Extensions view, choose **Install from VSIX…**, select the file, and reload VS Code.
+Prefer to sideload a specific build? Grab a `.vsix` from [Releases](https://github.com/jmwerk/SFTPresso/releases) (or build one with `npm run package`), then open the **⋯ (More Actions)** menu at the top of the Extensions view, choose **Install from VSIX…**, select the file, and reload VS Code.
 
 ## Quick start
 
@@ -64,14 +64,14 @@ Prefer to sideload a specific build? Grab a `.vsix` from [Releases](https://gith
 4. To pull an existing remote project into an empty folder, run **`SFTP: Download Project`**.
 5. Edit locally — with `uploadOnSave` on, every save syncs to the remote.
 
-Full setup, all configuration options, usage examples, troubleshooting, and FAQ live in the **[project wiki](https://github.com/jmwerk/vscode-sftp/wiki)**:
+Full setup, all configuration options, usage examples, troubleshooting, and FAQ live in the **[project wiki](https://github.com/jmwerk/SFTPresso/wiki)**:
 
-- [Installation and setup](https://github.com/jmwerk/vscode-sftp/wiki#2-installation-and-setup)
-- [Command reference](https://github.com/jmwerk/vscode-sftp/wiki#3-command-reference)
-- [Configuration reference (`sftp.json`)](https://github.com/jmwerk/vscode-sftp/wiki#4-configuration-reference-sftpjson)
-- [Usage examples and common workflows](https://github.com/jmwerk/vscode-sftp/wiki#5-usage-examples-and-common-workflows)
-- [Troubleshooting and known issues](https://github.com/jmwerk/vscode-sftp/wiki#7-troubleshooting-and-known-issues)
-- [FAQ](https://github.com/jmwerk/vscode-sftp/wiki#8-frequently-asked-questions)
+- [Installation and setup](https://github.com/jmwerk/SFTPresso/wiki#2-installation-and-setup)
+- [Command reference](https://github.com/jmwerk/SFTPresso/wiki#3-command-reference)
+- [Configuration reference (`sftp.json`)](https://github.com/jmwerk/SFTPresso/wiki#4-configuration-reference-sftpjson)
+- [Usage examples and common workflows](https://github.com/jmwerk/SFTPresso/wiki#5-usage-examples-and-common-workflows)
+- [Troubleshooting and known issues](https://github.com/jmwerk/SFTPresso/wiki#7-troubleshooting-and-known-issues)
+- [FAQ](https://github.com/jmwerk/SFTPresso/wiki#8-frequently-asked-questions)
 
 ## Contributing
 

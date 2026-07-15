@@ -5,7 +5,7 @@
 > **SFTPresso** — SFTP/FTP sync for Visual Studio Code. Actively maintained fork of `vscode-sftp`.
 >
 > - **Publisher:** `jmwerk` · **Current version:** 1.21.0 · **License:** MIT
-> - **Repository:** https://github.com/jmwerk/vscode-sftp
+> - **Repository:** https://github.com/jmwerk/SFTPresso
 > - **Requires:** VS Code `^1.64.2`
 > - **Lineage:** forked from [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp) after it went unmaintained.
 
@@ -103,7 +103,7 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 
 ### Installing the extension
 
-As of **v1.20.2**, every tagged release is published automatically to both the **VS Code Marketplace** and **Open VSX** by [`.github/workflows/publish.yml`](https://github.com/jmwerk/vscode-sftp/blob/develop/.github/workflows/publish.yml), so you can install it straight from your editor:
+As of **v1.20.2**, every tagged release is published automatically to both the **VS Code Marketplace** and **Open VSX** by [`.github/workflows/publish.yml`](https://github.com/jmwerk/SFTPresso/blob/develop/.github/workflows/publish.yml), so you can install it straight from your editor:
 
 1. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 2. If you still have an older `sftp` extension installed (from `@liximomo` or `@Natizyskunk`), uninstall it first to avoid command conflicts.
@@ -113,7 +113,7 @@ Listings: [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemN
 
 To sideload a specific build instead, install from a VSIX package:
 
-1. Grab a `.vsix` from [GitHub Releases](https://github.com/jmwerk/vscode-sftp/releases) — or build one from source (see [Development and Contributing](#9-development-and-contributing)).
+1. Grab a `.vsix` from [GitHub Releases](https://github.com/jmwerk/SFTPresso/releases) — or build one from source (see [Development and Contributing](#9-development-and-contributing)).
 2. In VS Code, open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 3. If you still have an older `sftp` extension installed (from `@liximomo` or `@Natizyskunk`), uninstall it first to avoid command conflicts.
 4. Open the **⋯ (More Actions)** menu at the top of the Extensions view and choose **Install from VSIX…**.
@@ -123,7 +123,7 @@ To sideload a specific build instead, install from a VSIX package:
 To build the VSIX yourself:
 
 ```sh
-git clone https://github.com/jmwerk/vscode-sftp.git
+git clone https://github.com/jmwerk/SFTPresso.git
 cd vscode-sftp
 npm install          # also applies bundled patches via patch-package
 npm run package      # produces sftpresso-<version>.vsix via vsce
@@ -1181,13 +1181,13 @@ Lower [`concurrency`](#concurrency) (some servers cap simultaneous operations) a
 
 ## 9. Development and Contributing
 
-Issues and pull requests are welcome — the project is under active maintenance again at [jmwerk/vscode-sftp](https://github.com/jmwerk/vscode-sftp).
+Issues and pull requests are welcome — the project is under active maintenance again at [jmwerk/SFTPresso](https://github.com/jmwerk/SFTPresso).
 
 Development requires Node 22 or newer (see `.nvmrc`).
 
 ```sh
-git clone https://github.com/jmwerk/vscode-sftp.git
-cd vscode-sftp
+git clone https://github.com/jmwerk/SFTPresso.git
+cd SFTPresso
 npm install        # applies patches (ssh2, memfs) via patch-package
 npm run compile    # production build (esbuild)
 npm run dev        # watch mode for development

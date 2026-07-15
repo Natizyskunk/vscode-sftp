@@ -10,12 +10,12 @@
     "node": ">=22"
   },
   "bugs": {
-    "url": "https://github.com/jmwerk/vscode-sftp/issues"
+    "url": "https://github.com/jmwerk/SFTPresso/issues"
   },
-  "homepage": "https://github.com/jmwerk/vscode-sftp/blob/develop/README.md",
+  "homepage": "https://github.com/jmwerk/SFTPresso/blob/develop/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jmwerk/vscode-sftp.git"
+    "url": "https://github.com/jmwerk/SFTPresso.git"
   },
   "license": "MIT",
   "categories": [
@@ -795,7 +795,7 @@
     "test:integration:up": "docker compose -f test/integration/docker-compose.yml up -d --wait",
     "test:integration:down": "docker compose -f test/integration/docker-compose.yml down -v",
     "package": "vsce package",
-    "pub:debug": "rm -rf _debug && mkdir _debug && vsce package --out _debug/sftp-debug.vsix && cd _debug && git init && git commit --allow-empty -m 'update debug package' && git checkout -b debug-pacakge && cp ../INSTALL_DEBUG.md README.md  && git add . && git commit -am 'update debug package' && git push git@github.com:jmwerk/vscode-sftp.git debug-pacakge --force"
+    "pub:debug": "rm -rf _debug && mkdir _debug && vsce package --out _debug/sftp-debug.vsix && cd _debug && git init && git commit --allow-empty -m 'update debug package' && git checkout -b debug-pacakge && cp ../INSTALL_DEBUG.md README.md  && git add . && git commit -am 'update debug package' && git push git@github.com:jmwerk/SFTPresso.git debug-pacakge --force"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
