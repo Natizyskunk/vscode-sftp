@@ -1,10 +1,25 @@
 import { refreshRemoteExplorer } from '../shared';
 import createFileHandler, { FileHandlerContext } from '../createFileHandler';
 import { confirmSyncOrProceed } from '../syncPreview';
+import { diff } from '../diff';
+import { confirmUpload, updateBaselineAfterTransfer } from './conflictCheck';
 import { transfer, sync, TransferOption, SyncOption, TransferDirection } from './transfer';
 
 function createTransferHandle(direction: TransferDirection) {
   return async function handle(this: FileHandlerContext, option) {
+    // Stale-remote guard (gated by conflictCheck). Anything but "proceed"
+    // leaves the remote untouched.
+    if (direction === TransferDirection.LOCAL_TO_REMOTE) {
+      const decision = await confirmUpload(this);
+      if (decision === 'diff') {
+        await diff(this);
+        return;
+      }
+      if (decision === 'cancel') {
+        return;
+      }
+    }
+
     const remoteFs = await this.fileService.getRemoteFileSystem(this.config);
     const localFs = this.fileService.getLocalFileSystem();
     const { localFsPath, remoteFsPath } = this.target;
@@ -35,6 +50,10 @@ function createTransferHandle(direction: TransferDirection) {
     // todo: abort at here. we should stop collect task
     await transfer(transferConfig, t => scheduler.add(t));
     await scheduler.run();
+
+    // Both directions leave us with a known-good remote to compare against next
+    // time — a download is what establishes the baseline for later uploads.
+    await updateBaselineAfterTransfer(this);
   };
 }
 

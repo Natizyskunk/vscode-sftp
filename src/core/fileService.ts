@@ -40,6 +40,7 @@ interface ServiceOption {
   useTempFile: boolean;
   openSsh: boolean;
   downloadOnOpen: boolean | 'confirm';
+  conflictCheck: boolean;
   filePerm?: number;
   dirPerm?: number;
   syncOption: {
@@ -152,6 +153,7 @@ function getHostInfo(config) {
     'useTempFile',
     'openSsh',
     'downloadOnOpen',
+    'conflictCheck',
     'ignore',
     'ignoreFile',
     'watcher',

@@ -60,6 +60,7 @@ const configScheme = Joi.object({
     update: Joi.boolean(),
   },
   syncConfirm: Joi.boolean(),
+  conflictCheck: Joi.boolean(),
   remoteTimeOffsetInHours: Joi.number(),
 
   remoteExplorer: {
@@ -78,6 +79,7 @@ const defaultConfig = {
   useTempFile: false,
   openSsh: false,
   downloadOnOpen: false,
+  conflictCheck: false,
   ignore: [],
   // ignoreFile: undefined,
   // watcher: {

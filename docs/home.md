@@ -4,7 +4,7 @@
 
 > **SFTPresso** — SFTP/FTP sync for Visual Studio Code. Actively maintained fork of `vscode-sftp`.
 >
-> - **Publisher:** `jmwerk` · **Current version:** 1.21.0 · **License:** MIT
+> - **Publisher:** `jmwerk` · **Current version:** 1.22.0 · **License:** MIT
 > - **Repository:** https://github.com/jmwerk/SFTPresso
 > - **Requires:** VS Code `^1.64.2`
 > - **Lineage:** forked from [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp) after it went unmaintained.
@@ -90,6 +90,7 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 | Guided config setup | `SFTP: Config` → **Quick setup** | Step-by-step wizard that generates `sftp.json` and tests the connection — see [First-time setup](#first-time-setup) |
 | Secure password storage | `SFTP: Save Password` / `SFTP: Clear Password` | Keep passwords in VS Code's secret storage (OS keychain) instead of plaintext `sftp.json` — see [Storing passwords securely](#storing-passwords-securely) |
 | Upload on save | [`uploadOnSave`](#uploadonsave) | Mirrors every VS Code save to the server |
+| Upload conflict check | [`conflictCheck`](#conflictcheck) | Prompts before an upload overwrites a remote file someone else changed |
 | File watcher | [`watcher`](#watcher) | Reacts to changes made *outside* VS Code (build tools, git checkout, …) |
 | Multiple configurations | [Array config](#multiple-contexts-array-config) | Different servers per workspace subfolder |
 | Switchable profiles | [`profiles`](#profiles) + `SFTP: Set Profile` | One config, many targets — the status bar shows the active profile; click it to switch |
@@ -192,6 +193,8 @@ All commands live under the **SFTP** category in the Command Palette. Most are a
 | `SFTP: Clear Password` | `sftp.clearPassword` | Remove a saved password from secret storage. |
 
 ### Upload commands
+
+Uploads overwrite the remote copy unconditionally. Enable [`conflictCheck`](#conflictcheck) to be warned first when the remote file changed since you last downloaded or uploaded it.
 
 | Command | ID | Description |
 | --- | --- | --- |
@@ -464,6 +467,29 @@ The default is deliberately conservative: syncs that can delete files on the des
   "syncConfirm": true
 }
 ```
+
+#### conflictCheck
+Guard against uploads that would silently overwrite someone else's work. Before a file upload replaces an existing remote file, the extension checks whether the remote copy changed since you last downloaded or uploaded it. If it did, a modal shows both timestamps and offers **Overwrite**, **Open Diff**, or **Cancel** — **Open Diff** opens the local/remote [diff](#diff-and-compare-commands) and leaves the remote untouched.
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `conflictCheck` | boolean | `false` |
+
+```json
+{
+  "uploadOnSave": true,
+  "conflictCheck": true
+}
+```
+
+This is not just a local-vs-remote timestamp comparison. After each transfer of a file, the extension records what the remote looked like at that moment, and compares the remote against *that*. It matters because once you edit a file locally, your local copy is the newest one — so a plain timestamp check would call the upload safe even when a teammate changed the remote in the meantime. Until a file has a recorded baseline (nothing has been transferred yet this workspace), the check falls back to flagging a remote that is newer than your local copy.
+
+Scope and caveats:
+
+- Applies to **single-file uploads**, including [`uploadOnSave`](#uploadonsave). Folder uploads and the [Sync commands](#sync-commands) are not checked — a folder upload would mean prompting per file mid-transfer; use [`syncConfirm`](#syncconfirm) to review a whole tree before it runs.
+- Enabling it costs one extra `stat` round-trip per file transfer (to read the remote back). It is off by default partly for that reason.
+- Baselines are remembered per workspace. Uploading the same file from a **second machine** leaves the first machine's baseline stale, so the next upload there may prompt once; choose **Overwrite** and it re-syncs.
+- On FTP servers that cannot set a file's modification time (no `MFMT`), the remote mtime is the upload time rather than your file's, which makes conflicts likelier to be reported. See [`remoteTimeOffsetInHours`](#remotetimeoffsetinhours) if local and remote clocks disagree.
 
 #### ignore
 Files/folders excluded from transfers and sync. Gitignore-style patterns (wildcards with `*`), relative to the config's [`context`](#context). Bypass with the [Force commands](#force-alt-commands).
@@ -793,6 +819,15 @@ If your site is live, add temp-file/atomic uploads so visitors never see a half-
 ```
 
 (See [`useTempFile`](#usetempfile) and [`openSsh`](#openssh).)
+
+If others deploy to the same server, add [`conflictCheck`](#conflictcheck) so a save can't quietly overwrite a change you never pulled down:
+
+```json
+{
+  "uploadOnSave": true,
+  "conflictCheck": true
+}
+```
 
 ### Profiles (dev / prod)
 
