@@ -2,7 +2,15 @@ import * as vscode from 'vscode';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as Joi from 'joi';
-import { parse as parseJsonc, printParseErrorCode, ParseError } from 'jsonc-parser';
+import {
+  parse as parseJsonc,
+  parseTree,
+  modify,
+  applyEdits,
+  printParseErrorCode,
+  ParseError,
+  JSONPath,
+} from 'jsonc-parser';
 import { CONFIG_PATH } from '../constants';
 import logger from '../logger';
 import { reportError } from '../helper';
@@ -200,6 +208,43 @@ export async function readConfigsFromFile(configPath): Promise<any[]> {
   const configs = Array.isArray(config) ? config : [config];
   warnPlaintextPassword(configPath, configs);
   return configs.map(mergedDefault);
+}
+
+// Writes a top-level option into an sftp.json file without disturbing the
+// surrounding comments or formatting (jsonc-parser rewrites only the edited
+// span). When the file holds an array of configs, `matchConfig` selects which
+// element to edit; if nothing matches (or no matcher is given) the first one is
+// used.
+export async function writeConfigValue(
+  configPath: string,
+  key: string,
+  value: any,
+  matchConfig?: (config: any) => boolean
+): Promise<void> {
+  const text = await fse.readFile(configPath, 'utf8');
+  const root = parseTree(text, [], { allowTrailingComma: true });
+  if (!root) {
+    throw new Error(`Failed to parse ${configPath}.`);
+  }
+
+  let jsonPath: JSONPath = [key];
+  if (root.type === 'array') {
+    const configs = parseJsonc(text, [], { allowTrailingComma: true });
+    let index = 0;
+    if (matchConfig && Array.isArray(configs)) {
+      const found = configs.findIndex(matchConfig);
+      if (found >= 0) {
+        index = found;
+      }
+    }
+    jsonPath = [index, key];
+  }
+
+  const edits = modify(text, jsonPath, value, {
+    formattingOptions: { insertSpaces: true, tabSize: 4 },
+  });
+  const updated = applyEdits(text, edits);
+  await fse.writeFile(configPath, updated, 'utf8');
 }
 
 export function tryLoadConfigs(workspace): Promise<any[]> {

@@ -16,7 +16,7 @@ Actively maintained by [@jmwerk](https://github.com/jmwerk). Forked from [Natizy
 - **Diff** a local file against its remote copy, or **Compare Folders** for a recursive diff
 - **Sync** in either or both directions, with an optional dry-run preview (`syncConfirm`)
 - **Upload/Download** files, folders, or the whole project — optionally to all profiles at once
-- **Upload on save** and a **file watcher** for changes made outside the editor
+- **Upload on save** — with a one-click **`SFTP: Toggle Upload on Save`** command and a status-bar indicator — and a **file watcher** for changes made outside the editor
 - **Conflict check** (`conflictCheck`) to catch uploads that would overwrite a remote changed by someone else
 - **Transfers view** with byte-level per-file progress, cancellation, and retry
 - **Test Connection** from a command or a CodeLens on `sftp.json`, plus a **connection-status indicator** in the status bar

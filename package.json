@@ -2,7 +2,7 @@
   "name": "sftpresso",
   "displayName": "SFTPresso",
   "description": "SFTP/FTP sync — actively maintained fork of vscode-sftp",
-  "version": "1.22.0",
+  "version": "1.23.0",
   "publisher": "jmwerk",
   "author": "Joe Werkheiser <j.m.werkheiser@gmail.com> (https://github.com/jmwerk)",
   "engines": {
@@ -96,6 +96,11 @@
       {
         "command": "sftp.testConnection",
         "title": "Test Connection",
+        "category": "SFTP"
+      },
+      {
+        "command": "sftp.toggleUploadOnSave",
+        "title": "Toggle Upload on Save",
         "category": "SFTP"
       },
       {

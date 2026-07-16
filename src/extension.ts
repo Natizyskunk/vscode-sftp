@@ -7,7 +7,12 @@ import initCommands from './initCommands';
 import { reportError } from './helper';
 import fileActivityMonitor from './modules/fileActivityMonitor';
 import { tryLoadConfigs } from './modules/config';
-import { getAllFileService, createFileService, disposeFileService } from './modules/serviceManager';
+import {
+  getAllFileService,
+  createFileService,
+  disposeFileService,
+  refreshUploadOnSaveState,
+} from './modules/serviceManager';
 import { getWorkspaceFolders, setContextValue } from './host';
 import RemoteExplorer from './modules/remoteExplorer';
 import TransferView from './modules/transferView';
@@ -67,6 +72,7 @@ export async function activate(context: vscode.ExtensionContext) {
   });
   try {
     await setup(workspaceFolders);
+    refreshUploadOnSaveState();
     app.remoteExplorer = new RemoteExplorer(context);
     app.transferView = new TransferView(context);
   } catch (error) {

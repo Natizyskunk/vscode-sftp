@@ -11,6 +11,7 @@ import commandSavePassword from './commandSavePassword';
 import commandSetProfile from './commandSetProfile';
 import commandTestConnection from './commandTestConnection';
 import commandToggleOutputPanel from './commandToggleOutputPanel';
+import commandToggleUploadOnSave from './commandToggleUploadOnSave';
 import commandUploadChangedFiles from './commandUploadChangedFiles';
 import fileCommandCompareFolders from './fileCommandCompareFolders';
 import fileCommandCreateFile from './fileCommandCreateFile';
@@ -60,6 +61,7 @@ export default {
   commandSetProfile,
   commandTestConnection,
   commandToggleOutputPanel,
+  commandToggleUploadOnSave,
   commandUploadChangedFiles,
   fileCommandCompareFolders,
   fileCommandCreateFile,

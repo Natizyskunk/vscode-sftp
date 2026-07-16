@@ -3,6 +3,7 @@ import * as path from 'path';
 import app from '../../app';
 import logger from '../../logger';
 import { simplifyPath, reportError } from '../../helper';
+import { getActiveTextEditor } from '../../host';
 import { UResource, FileService, TransferTask } from '../../core';
 import { validateConfig } from '../config';
 import watcherService from '../fileWatcher';
@@ -136,6 +137,33 @@ function updateAvailableProfiles() {
 export function reconcileActiveProfile() {
   if (app.state.profile && !app.state.availableProfiles.includes(app.state.profile)) {
     app.state.profile = null;
+  }
+}
+
+// recompute the uploadOnSave value shown in the status bar. Prefer the config
+// tied to the active editor, falling back to the sole service when there's
+// exactly one. Leaves it unknown (null) when it can't be resolved.
+export function refreshUploadOnSaveState() {
+  let service: FileService | undefined;
+
+  const activeEditor = getActiveTextEditor();
+  if (activeEditor) {
+    service = getFileService(activeEditor.document.uri);
+  }
+  if (!service) {
+    const services = getAllFileService();
+    service = services.length === 1 ? services[0] : undefined;
+  }
+
+  if (!service) {
+    app.state.uploadOnSave = null;
+    return;
+  }
+
+  try {
+    app.state.uploadOnSave = Boolean(service.getConfig().uploadOnSave);
+  } catch (error) {
+    app.state.uploadOnSave = null;
   }
 }
 
