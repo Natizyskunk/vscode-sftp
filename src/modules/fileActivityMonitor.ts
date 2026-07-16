@@ -11,6 +11,7 @@ import {
   findAllFileService,
   disposeFileService,
   reconcileActiveProfile,
+  refreshUploadOnSaveState,
 } from './serviceManager';
 import { reportError, isValidFile, isConfigFile, isInWorkspace } from '../helper';
 import { downloadFile, uploadFile } from '../fileHandlers';
@@ -36,6 +37,7 @@ async function handleConfigSave(uri: vscode.Uri) {
     reportError(error);
   } finally {
     reconcileActiveProfile();
+    refreshUploadOnSaveState();
     app.remoteExplorer.refresh();
   }
 }
@@ -115,6 +117,8 @@ function watchWorkspace({
   });
 }
 
+let activeEditorWatcher: vscode.Disposable;
+
 function init() {
   onDidOpenTextDocument((doc: vscode.TextDocument) => {
     if (!isValidFile(doc.uri) || !isInWorkspace(doc.uri.fsPath)) {
@@ -122,6 +126,12 @@ function init() {
     }
 
     downloadOnOpen(doc.uri);
+  });
+
+  // keep the status-bar "upload on save" indicator in sync with the focused
+  // file, since it can differ between workspaces/configs
+  activeEditorWatcher = vscode.window.onDidChangeActiveTextEditor(() => {
+    refreshUploadOnSaveState();
   });
 
   watchWorkspace({
@@ -133,6 +143,9 @@ function init() {
 function destory() {
   if (workspaceWatcher) {
     workspaceWatcher.dispose();
+  }
+  if (activeEditorWatcher) {
+    activeEditorWatcher.dispose();
   }
 }
 

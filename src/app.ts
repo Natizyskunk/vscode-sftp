@@ -27,18 +27,33 @@ const app: App = Object.create(null);
 app.state = new AppState();
 app.sftpBarItem = new StatusBarItem(
   () => {
+    let label: string;
     if (app.state.profile) {
-      return `SFTP: ${app.state.profile}`;
+      label = `SFTP: ${app.state.profile}`;
     } else if (app.state.availableProfiles.length > 0) {
-      return 'SFTP: (no profile)';
+      label = 'SFTP: (no profile)';
     } else {
-      return 'SFTP';
+      label = 'SFTP';
     }
+
+    // surface an "upload on save" indicator when it's active
+    if (app.state.uploadOnSave === true) {
+      label += ' $(cloud-upload)';
+    }
+    return label;
   },
-  () =>
-    app.state.availableProfiles.length > 0
-      ? 'SFTPresso — click to switch profile'
-      : 'SFTPresso',
+  () => {
+    const parts: string[] = [];
+    if (app.state.availableProfiles.length > 0) {
+      parts.push('SFTPresso — click to switch profile');
+    } else {
+      parts.push('SFTPresso');
+    }
+    if (app.state.uploadOnSave !== null) {
+      parts.push(`Upload on Save: ${app.state.uploadOnSave ? 'On' : 'Off'}`);
+    }
+    return parts.join('\n');
+  },
   () =>
     app.state.availableProfiles.length > 0 ? COMMAND_SET_PROFILE : COMMAND_TOGGLE_OUTPUT
 );

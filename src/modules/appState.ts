@@ -1,6 +1,8 @@
 class AppState {
   private _profile: string | null = null;
   private _availableProfiles: string[] = [];
+  // uploadOnSave state of the active config; null when it can't be determined
+  private _uploadOnSave: boolean | null = null;
   private _observer: (x: any) => void;
 
   get profile(): string | null {
@@ -33,10 +35,24 @@ class AppState {
     this._notify();
   }
 
+  get uploadOnSave(): boolean | null {
+    return this._uploadOnSave;
+  }
+
+  set uploadOnSave(value: boolean | null) {
+    if (this._uploadOnSave === value) {
+      return;
+    }
+
+    this._uploadOnSave = value;
+    this._notify();
+  }
+
   getStateSnapshot() {
     return {
       profile: this._profile,
       availableProfiles: this._availableProfiles,
+      uploadOnSave: this._uploadOnSave,
     };
   }
 

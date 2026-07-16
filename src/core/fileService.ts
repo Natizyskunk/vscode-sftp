@@ -573,6 +573,17 @@ export default class FileService {
     return profiles ? Object.keys(profiles).map(p => this.getConfig(p)) : [];
   }
 
+  // the raw (unmerged) config this service was created from
+  getRawConfig(): FileServiceConfig {
+    return this._config;
+  }
+
+  // update a top-level config value in memory so behaviour changes without a
+  // full reload (callers are responsible for persisting the change to disk)
+  setConfigValue(key: keyof FileServiceConfig, value: any) {
+    (this._config as any)[key] = value;
+  }
+
   dispose() {
     this._disposeWatcher();
     this._disposeFileSystem();
