@@ -1,3 +1,6 @@
+## 1.24.0 - 2026-07-17
+* New Feature : Add resources to `ignore` without editing JSON. A new `SFTP: Add to Ignore` command is available on the file-explorer right-click menu — it appends the selected file or folder's workspace-relative path to the active config's `ignore` array in `.vscode/sftp.json` (folders are added as `path/**`), editing only that array via `jsonc-parser` so comments and formatting survive. In a multi-config array file the matching entry is updated, and an entry already present in `ignore` is left untouched.
+
 ## 1.23.0 - 2026-07-16
 * New Feature : Toggle `uploadOnSave` without editing JSON. A new `SFTP: Toggle Upload on Save` command flips the active config's `uploadOnSave` value and writes it back to `.vscode/sftp.json`, editing only that property so comments, formatting, and trailing commas survive (via `jsonc-parser`). The active config is resolved from the focused editor (or the sole config, otherwise a quick pick); in a multi-config array file the matching entry is updated. The status-bar item now shows a `$(cloud-upload)` indicator and an "Upload on Save: On/Off" tooltip line reflecting the current state, kept in sync as you switch files, profiles, or reload the config.
 
