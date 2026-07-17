@@ -247,6 +247,32 @@ export async function writeConfigValue(
   await fse.writeFile(configPath, updated, 'utf8');
 }
 
+// appends `entry` to a config's `ignore` array, skipping if it's already present
+export async function addConfigIgnoreEntry(
+  configPath: string,
+  entry: string,
+  matchConfig?: (config: any) => boolean
+): Promise<boolean> {
+  const text = await fse.readFile(configPath, 'utf8');
+  const root = parseTree(text, [], { allowTrailingComma: true });
+  if (!root) {
+    throw new Error(`Failed to parse ${configPath}.`);
+  }
+
+  const configs = parseJsonc(text, [], { allowTrailingComma: true });
+  const config = Array.isArray(configs)
+    ? configs[matchConfig ? Math.max(configs.findIndex(matchConfig), 0) : 0]
+    : configs;
+
+  const existing: string[] = Array.isArray(config.ignore) ? config.ignore : [];
+  if (existing.includes(entry)) {
+    return false;
+  }
+
+  await writeConfigValue(configPath, 'ignore', [...existing, entry], matchConfig);
+  return true;
+}
+
 export function tryLoadConfigs(workspace): Promise<any[]> {
   const configPath = getConfigPath(workspace);
   return fse.pathExists(configPath).then(

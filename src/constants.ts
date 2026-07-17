@@ -71,3 +71,4 @@ export const COMMAND_REMOTEEXPLORER_VIEW_CONTENT = 'sftp.viewContent';
 
 export const COMMAND_CREATE_FOLDER = 'sftp.create.folder';
 export const COMMAND_CREATE_FILE = 'sftp.create.file';
+export const COMMAND_ADD_TO_IGNORE = 'sftp.addToIgnore';

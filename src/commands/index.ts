@@ -1,5 +1,6 @@
 // Command modules must be listed here explicitly so the bundler can include
 // them statically (the previous require.context approach was webpack-only).
+import commandAddToIgnore from './commandAddToIgnore';
 import commandCancelAllTransfer from './commandCancelAllTransfer';
 import commandCancelTransfer from './commandCancelTransfer';
 import commandClearPassword from './commandClearPassword';
@@ -50,6 +51,7 @@ import fileMultiCommandUploadProjectToAllProfiles from './fileMultiCommandUpload
 import fileMultiCommandUploadToAllProfiles from './fileMultiCommandUploadToAllProfiles';
 
 export default {
+  commandAddToIgnore,
   commandCancelAllTransfer,
   commandCancelTransfer,
   commandClearPassword,

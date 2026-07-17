@@ -298,6 +298,11 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.addToIgnore",
+        "title": "Add to Ignore",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.revealInExplorer",
         "title": "Reveal in Explorer",
         "category": "SFTP"
@@ -494,6 +499,10 @@
           "when": "false"
         },
         {
+          "command": "sftp.addToIgnore",
+          "when": "false"
+        },
+        {
           "command": "sftp.revealInExplorer",
           "when": "false"
         },
@@ -577,6 +586,11 @@
           "group": "sftp.trans@2",
           "alt": "sftp.forceDownload",
           "when": "sftp.enabled && explorerResourceIsFolder"
+        },
+        {
+          "command": "sftp.addToIgnore",
+          "group": "7_modification",
+          "when": "sftp.enabled && !explorerResourceIsRoot"
         }
       ],
       "editor/context": [
