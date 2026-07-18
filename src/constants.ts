@@ -24,6 +24,7 @@ export const COMMAND_TEST_CONNECTION = 'sftp.testConnection';
 export const COMMAND_TOGGLE_UPLOAD_ON_SAVE = 'sftp.toggleUploadOnSave';
 export const COMMAND_SAVE_PASSWORD = 'sftp.savePassword';
 export const COMMAND_CLEAR_PASSWORD = 'sftp.clearPassword';
+export const COMMAND_MIGRATE_PASSWORD = 'sftp.migratePassword';
 
 export const COMMAND_FORCE_UPLOAD = 'sftp.forceUpload';
 export const COMMAND_UPLOAD = 'sftp.upload';

@@ -11,10 +11,10 @@ import {
   ParseError,
   JSONPath,
 } from 'jsonc-parser';
-import { CONFIG_PATH } from '../constants';
+import { CONFIG_PATH, COMMAND_MIGRATE_PASSWORD } from '../constants';
 import logger from '../logger';
 import { reportError } from '../helper';
-import { showTextDocument } from '../host';
+import { showTextDocument, showWarningMessage, executeCommand } from '../host';
 
 const nullable = schema => schema.optional().allow(null);
 
@@ -169,9 +169,18 @@ function warnPlaintextPassword(configPath: string, configs: any[]) {
   plaintextPasswordWarned.add(configPath);
   logger.warn(
     `A plaintext password was found in ${configPath}.` +
-      ' Consider removing it and running the "SFTP: Save Password" command' +
-      " to keep the password in VS Code's secret storage instead."
+      ' Consider running the "SFTP: Migrate Plaintext Password" command' +
+      " to move it into VS Code's secret storage instead."
   );
+
+  showWarningMessage(
+    `A plaintext password was found in ${configPath}.`,
+    'Migrate Password'
+  ).then(choice => {
+    if (choice === 'Migrate Password') {
+      executeCommand(COMMAND_MIGRATE_PASSWORD);
+    }
+  });
 }
 
 function offsetToLineColumn(text: string, offset: number): { line: number; column: number } {
@@ -210,14 +219,16 @@ export async function readConfigsFromFile(configPath): Promise<any[]> {
   return configs.map(mergedDefault);
 }
 
-// Writes a top-level option into an sftp.json file without disturbing the
+// Edits a single property in an sftp.json file without disturbing the
 // surrounding comments or formatting (jsonc-parser rewrites only the edited
-// span). When the file holds an array of configs, `matchConfig` selects which
-// element to edit; if nothing matches (or no matcher is given) the first one is
-// used.
-export async function writeConfigValue(
+// span). Passing `value === undefined` removes the property. `keyPath` is the
+// path within a config object (e.g. `['password']` or
+// `['profiles', 'dev', 'password']`); when the file holds an array of configs,
+// `matchConfig` selects which element to edit, defaulting to the first one when
+// nothing matches (or no matcher is given).
+async function editConfigProperty(
   configPath: string,
-  key: string,
+  keyPath: JSONPath,
   value: any,
   matchConfig?: (config: any) => boolean
 ): Promise<void> {
@@ -227,7 +238,7 @@ export async function writeConfigValue(
     throw new Error(`Failed to parse ${configPath}.`);
   }
 
-  let jsonPath: JSONPath = [key];
+  let jsonPath: JSONPath = keyPath;
   if (root.type === 'array') {
     const configs = parseJsonc(text, [], { allowTrailingComma: true });
     let index = 0;
@@ -237,7 +248,7 @@ export async function writeConfigValue(
         index = found;
       }
     }
-    jsonPath = [index, key];
+    jsonPath = [index, ...keyPath];
   }
 
   const edits = modify(text, jsonPath, value, {
@@ -245,6 +256,26 @@ export async function writeConfigValue(
   });
   const updated = applyEdits(text, edits);
   await fse.writeFile(configPath, updated, 'utf8');
+}
+
+// Writes a top-level option into an sftp.json file. See `editConfigProperty`.
+export function writeConfigValue(
+  configPath: string,
+  key: string,
+  value: any,
+  matchConfig?: (config: any) => boolean
+): Promise<void> {
+  return editConfigProperty(configPath, [key], value, matchConfig);
+}
+
+// Removes a property from an sftp.json file. `keyPath` may point at a nested
+// property (e.g. a profile's password). See `editConfigProperty`.
+export function removeConfigValue(
+  configPath: string,
+  keyPath: JSONPath,
+  matchConfig?: (config: any) => boolean
+): Promise<void> {
+  return editConfigProperty(configPath, keyPath, undefined, matchConfig);
 }
 
 // appends `entry` to a config's `ignore` array, skipping if it's already present

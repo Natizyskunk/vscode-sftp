@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import { writeConfigValue } from '../config';
+import { writeConfigValue, removeConfigValue } from '../config';
 
 async function withTempConfig(contents: string, run: (configPath: string) => Promise<void>) {
   const dir = await fse.mkdtemp(path.join(os.tmpdir(), 'sftp-config-'));
@@ -76,6 +76,63 @@ describe('writeConfigValue', () => {
       const parsed = JSON.parse(await fse.readFile(configPath, 'utf8'));
       expect(parsed[0].uploadOnSave).toBe(true);
       expect(parsed[1].uploadOnSave).toBeUndefined();
+    });
+  });
+});
+
+describe('removeConfigValue', () => {
+  it('removes a top-level property while preserving unrelated comments and keys', async () => {
+    const original = [
+      '{',
+      '    // my server',
+      '    "host": "example.com",',
+      '    "password": "s3cret"',
+      '}',
+      '',
+    ].join('\n');
+
+    await withTempConfig(original, async configPath => {
+      await removeConfigValue(configPath, ['password']);
+      const updated = await fse.readFile(configPath, 'utf8');
+      expect(updated).toContain('// my server');
+      expect(updated).toContain('"host": "example.com"');
+      expect(updated).not.toContain('password');
+    });
+  });
+
+  it('removes a nested profile property', async () => {
+    const original = [
+      '{',
+      '    "host": "example.com",',
+      '    "profiles": {',
+      '        "dev": { "password": "s3cret", "remotePath": "/dev" }',
+      '    }',
+      '}',
+      '',
+    ].join('\n');
+
+    await withTempConfig(original, async configPath => {
+      await removeConfigValue(configPath, ['profiles', 'dev', 'password']);
+      const parsed = JSON.parse(await fse.readFile(configPath, 'utf8'));
+      expect(parsed.profiles.dev.password).toBeUndefined();
+      expect(parsed.profiles.dev.remotePath).toBe('/dev');
+    });
+  });
+
+  it('removes the property from the matched element in an array of configs', async () => {
+    const original = [
+      '[',
+      '    { "host": "a.example.com", "password": "aaa" },',
+      '    { "host": "b.example.com", "password": "bbb" }',
+      ']',
+      '',
+    ].join('\n');
+
+    await withTempConfig(original, async configPath => {
+      await removeConfigValue(configPath, ['password'], config => config.host === 'b.example.com');
+      const parsed = JSON.parse(await fse.readFile(configPath, 'utf8'));
+      expect(parsed[0].password).toBe('aaa');
+      expect(parsed[1].password).toBeUndefined();
     });
   });
 });
