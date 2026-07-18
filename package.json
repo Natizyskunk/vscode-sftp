@@ -114,6 +114,11 @@
         "category": "SFTP"
       },
       {
+        "command": "sftp.migratePassword",
+        "title": "Migrate Plaintext Password",
+        "category": "SFTP"
+      },
+      {
         "command": "sftp.cancelAllTransfer",
         "title": "Cancel All Transfers",
         "category": "SFTP"
@@ -360,6 +365,10 @@
         },
         {
           "command": "sftp.clearPassword",
+          "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.migratePassword",
           "when": "sftp.enabled"
         },
         {
