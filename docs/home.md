@@ -4,7 +4,7 @@
 
 > **SFTPresso** — SFTP/FTP sync for Visual Studio Code. Actively maintained fork of `vscode-sftp`.
 >
-> - **Publisher:** `jmwerk` · **Current version:** 1.25.0 · **License:** MIT
+> - **Publisher:** `jmwerk` · **Current version:** 1.26.0 · **License:** MIT
 > - **Repository:** https://github.com/jmwerk/SFTPresso
 > - **Requires:** VS Code `^1.64.2`
 > - **Lineage:** forked from [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp) after it went unmaintained.
@@ -131,6 +131,8 @@ npm run package      # produces sftpresso-<version>.vsix via vsce
 ```
 
 ### First-time setup
+
+> **Guided walkthrough:** Run **`Welcome: Open Walkthrough…`** from the Command Palette and choose **Get started with SFTPresso** for a native, checklist-style version of these steps — Create your config, Test the connection, Download the project, and Enable upload on save — each with a one-click button that runs the matching command.
 
 1. Open the local folder you want to sync (`File → Open Folder…`).
 2. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **`SFTP: Config`**.

@@ -44,6 +44,8 @@ Prefer to sideload a specific build? Grab a `.vsix` from [Releases](https://gith
 
 ## Quick start
 
+> **Prefer a guided tour?** Run **`Welcome: Open Walkthrough…`** from the Command Palette and pick **Get started with SFTPresso** for a native, checklist-style walkthrough of the steps below.
+
 1. Open the local folder you want to sync (`File → Open Folder…`).
 2. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **`SFTP: Config`**.
 3. When no `sftp.json` exists yet, choose how to create it:
