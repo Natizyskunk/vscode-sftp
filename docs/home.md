@@ -4,7 +4,7 @@
 
 > **SFTPresso** — SFTP/FTP sync for Visual Studio Code. Actively maintained fork of `vscode-sftp`.
 >
-> - **Publisher:** `jmwerk` · **Current version:** 1.24.0 · **License:** MIT
+> - **Publisher:** `jmwerk` · **Current version:** 1.25.0 · **License:** MIT
 > - **Repository:** https://github.com/jmwerk/SFTPresso
 > - **Requires:** VS Code `^1.64.2`
 > - **Lineage:** forked from [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp), which continued [liximomo's original SFTP plugin](https://github.com/liximomo/vscode-sftp) after it went unmaintained.
@@ -88,7 +88,7 @@ SFTPresso lets you add, edit, or delete files in a local directory and have thos
 | Test Connection | `SFTP: Test Connection` / CodeLens on `sftp.json` | Verifies the active profile can connect |
 | Connection status | Status bar (when enabled) | An icon reflects the live remote connection state — idle, connecting/reconnecting, connected, or error; click it to run `SFTP: Test Connection` |
 | Guided config setup | `SFTP: Config` → **Quick setup** | Step-by-step wizard that generates `sftp.json` and tests the connection — see [First-time setup](#first-time-setup) |
-| Secure password storage | `SFTP: Save Password` / `SFTP: Clear Password` | Keep passwords in VS Code's secret storage (OS keychain) instead of plaintext `sftp.json` — see [Storing passwords securely](#storing-passwords-securely) |
+| Secure password storage | `SFTP: Save Password` / `SFTP: Clear Password` / `SFTP: Migrate Plaintext Password` | Keep passwords in VS Code's secret storage (OS keychain) instead of plaintext `sftp.json` — see [Storing passwords securely](#storing-passwords-securely) |
 | Upload on save | [`uploadOnSave`](#uploadonsave) | Mirrors every VS Code save to the server |
 | Upload conflict check | [`conflictCheck`](#conflictcheck) | Prompts before an upload overwrites a remote file someone else changed |
 | File watcher | [`watcher`](#watcher) | Reacts to changes made *outside* VS Code (build tools, git checkout, …) |
@@ -171,9 +171,10 @@ Instead of writing `password` into `sftp.json` (which is plain text), you can ke
 
 - Run **`SFTP: Save Password`**, pick the remote, and enter the password. Future connections use it automatically — no prompt, nothing in `sftp.json`.
 - Or just connect: when you're prompted for a password and the connection succeeds, the extension offers to **remember** it.
+- Already have a plaintext `password` in `sftp.json`? Run **`SFTP: Migrate Plaintext Password`** (or click **Migrate Password** on the warning) to move it into secret storage and strip the `password` key from the file in one step — comments and formatting are preserved, and you're asked to confirm first.
 - Run **`SFTP: Clear Password`** to delete a saved password (for example after it changed on the server).
 
-Saved passwords are keyed by `protocol://username@host:port`, so each server/user pair is stored independently (configs and profiles that point at the same server share one saved password). A saved password is only used when the config provides no other authentication — configs that set `password`, `privateKeyPath`, `agent`, or `interactiveAuth` behave exactly as before. If `sftp.json` still contains a plaintext `password`, the extension logs a one-time reminder in the output channel.
+Saved passwords are keyed by `protocol://username@host:port`, so each server/user pair is stored independently (configs and profiles that point at the same server share one saved password). A saved password is only used when the config provides no other authentication — configs that set `password`, `privateKeyPath`, `agent`, or `interactiveAuth` behave exactly as before. If `sftp.json` still contains a plaintext `password`, the extension logs a one-time reminder in the output channel and offers a **Migrate Password** button to fix it.
 
 ---
 
@@ -192,6 +193,7 @@ All commands live under the **SFTP** category in the Command Palette. Most are a
 | Add to Ignore | `sftp.addToIgnore` | File-explorer context menu command. Appends the right-clicked file or folder's workspace-relative path to the active config's [`ignore`](#ignore) array in `sftp.json` (folders as `path/**`), preserving comments and formatting; a no-op if the entry is already listed. |
 | `SFTP: Open SSH in Terminal` | `sftp.openConnectInTerminal` | Open a VS Code terminal auto-logged-in to the server. Extra CLI flags can be added via [`sshCustomParams`](#sshcustomparams). |
 | `SFTP: Save Password` | `sftp.savePassword` | Store a password for a remote in VS Code's secret storage (OS keychain). See [Storing passwords securely](#storing-passwords-securely). |
+| `SFTP: Migrate Plaintext Password` | `sftp.migratePassword` | Move a plaintext `password` from `sftp.json` (top-level or in a profile) into secret storage, then remove the `password` key via a `jsonc-parser` edit (comments and formatting preserved); confirms before writing. Also offered as a **Migrate Password** button on the plaintext-password warning. See [Storing passwords securely](#storing-passwords-securely). |
 | `SFTP: Clear Password` | `sftp.clearPassword` | Remove a saved password from secret storage. |
 
 ### Upload commands

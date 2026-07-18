@@ -1,3 +1,6 @@
+## 1.25.0 - 2026-07-18
+* New Feature : Move a plaintext password out of `sftp.json` in one click. A new `SFTP: Migrate Plaintext Password` command finds a plaintext `password` in the active `sftp.json` (top-level or in a profile), saves it to VS Code's secret storage via the same path as `SFTP: Save Password` (keyed by `protocol://username@host:port`), then removes the `password` key with a `jsonc-parser` edit so comments and formatting survive — asking for confirmation before writing. In a multi-config array file the matching entry is edited. The existing one-time plaintext-password warning now also shows a notification with a **Migrate Password** button that launches the command.
+
 ## 1.24.0 - 2026-07-17
 * New Feature : Add resources to `ignore` without editing JSON. A new `SFTP: Add to Ignore` command is available on the file-explorer right-click menu — it appends the selected file or folder's workspace-relative path to the active config's `ignore` array in `.vscode/sftp.json` (folders are added as `path/**`), editing only that array via `jsonc-parser` so comments and formatting survive. In a multi-config array file the matching entry is updated, and an entry already present in `ignore` is left untouched.
 
