@@ -1,3 +1,6 @@
+## 1.26.1 - 2026-07-18
+* Improvement : Consolidate the two duplicate debug settings. `sftp.debug` is now the canonical setting; `sftp.printDebugLog` — which had an identical description and purpose — is marked deprecated in the Settings UI (VS Code `deprecationMessage`) and in the docs, pointing to `sftp.debug`. Both flags are still honored, so existing setups that use `sftp.printDebugLog` keep working.
+
 ## 1.26.0 - 2026-07-18
 * New Feature : A native getting-started walkthrough. A new "Get started with SFTPresso" entry (VS Code's `contributes.walkthroughs`) replaces the wall of README text for first-run onboarding with a checklist of four steps — **Create your config** (`SFTP: Config` quick setup), **Test the connection** (`SFTP: Test Connection`), **Download the project** (`SFTP: Download Project`), and **Enable upload on save** (`SFTP: Toggle Upload on Save`). Each step has a one-click command-link button and a `completionEvents` entry wired to the relevant command ID so it checks itself off once run, with step markdown under a new `resources/walkthrough/` folder. Open it any time from **Help → Welcome** or the Command Palette's "Welcome: Open Walkthrough…".
 
