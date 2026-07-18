@@ -809,6 +809,59 @@
           "separator": "/"
         }
       }
+    ],
+    "walkthroughs": [
+      {
+        "id": "sftpresso.gettingStarted",
+        "title": "Get started with SFTPresso",
+        "description": "Connect a local folder to a remote server over SFTP/FTP and sync your changes on save.",
+        "steps": [
+          {
+            "id": "createConfig",
+            "title": "Create your config",
+            "description": "Run **SFTP: Config** and pick Quick setup to write a `.vscode/sftp.json` for your server.\n[Run SFTP: Config](command:sftp.config)",
+            "media": {
+              "markdown": "resources/walkthrough/create-config.md"
+            },
+            "completionEvents": [
+              "onCommand:sftp.config"
+            ]
+          },
+          {
+            "id": "testConnection",
+            "title": "Test the connection",
+            "description": "Run **SFTP: Test Connection** to confirm SFTPresso can reach your server before syncing files.\n[Run SFTP: Test Connection](command:sftp.testConnection)",
+            "media": {
+              "markdown": "resources/walkthrough/test-connection.md"
+            },
+            "completionEvents": [
+              "onCommand:sftp.testConnection"
+            ]
+          },
+          {
+            "id": "downloadProject",
+            "title": "Download the project",
+            "description": "Starting from an existing remote project? Run **SFTP: Download Project** to pull it into your folder.\n[Run SFTP: Download Project](command:sftp.download.project)",
+            "media": {
+              "markdown": "resources/walkthrough/download-project.md"
+            },
+            "completionEvents": [
+              "onCommand:sftp.download.project"
+            ]
+          },
+          {
+            "id": "uploadOnSave",
+            "title": "Enable upload on save",
+            "description": "Run **SFTP: Toggle Upload on Save** so every save mirrors to the remote automatically.\n[Run SFTP: Toggle Upload on Save](command:sftp.toggleUploadOnSave)",
+            "media": {
+              "markdown": "resources/walkthrough/upload-on-save.md"
+            },
+            "completionEvents": [
+              "onCommand:sftp.toggleUploadOnSave"
+            ]
+          }
+        ]
+      }
     ]
   },
   "scripts": {
