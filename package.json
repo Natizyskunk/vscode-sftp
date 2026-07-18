@@ -60,15 +60,17 @@
       "type": "object",
       "title": "sftp configuration",
       "properties": {
-        "sftp.printDebugLog": {
-          "type": "boolean",
-          "default": false,
-          "description": "print debug log on sftp output channel.(reload vscode when change this)"
-        },
         "sftp.debug": {
           "type": "boolean",
           "default": false,
-          "description": "print debug log on sftp output channel.(reload vscode when change this)"
+          "description": "Print debug output to the sftp output channel. (reload VS Code when you change this)"
+        },
+        "sftp.printDebugLog": {
+          "type": "boolean",
+          "default": false,
+          "description": "Deprecated alias for sftp.debug. Use sftp.debug instead.",
+          "deprecationMessage": "Deprecated: use sftp.debug instead. This setting is still honored for backward compatibility.",
+          "markdownDeprecationMessage": "**Deprecated** — use `#sftp.debug#` instead. This setting is still honored for backward compatibility."
         },
         "sftp.downloadWhenOpenInRemoteExplorer": {
           "type": "boolean",

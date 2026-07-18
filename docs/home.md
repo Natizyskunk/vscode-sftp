@@ -773,7 +773,7 @@ These are regular VS Code settings (`File → Preferences → Settings`, or `set
 | Setting | Type | Default | Description |
 | --- | --- | --- | --- |
 | `sftp.debug` | boolean | `false` | Print debug output to the `sftp` Output channel. **Reload VS Code after changing.** |
-| `sftp.printDebugLog` | boolean | `false` | Legacy alias for the same debug output. |
+| `sftp.printDebugLog` | boolean | `false` | **Deprecated** — use `sftp.debug` instead. Still honored for backward compatibility. |
 | `sftp.downloadWhenOpenInRemoteExplorer` | boolean | `false` | When opening a file in the Remote Explorer, download it ("Edit in Local") instead of showing a read-only "View Content". |
 
 ---

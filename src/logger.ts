@@ -2,6 +2,8 @@ import * as output from './ui/output';
 import { getExtensionSetting } from './modules/ext';
 
 const extSetting = getExtensionSetting();
+// `sftp.debug` is the canonical setting; `sftp.printDebugLog` is a deprecated
+// alias still honored for backward compatibility.
 const debug = extSetting.debug || extSetting.printDebugLog;
 
 const paddingTime = time => ('00' + time).slice(-2);
