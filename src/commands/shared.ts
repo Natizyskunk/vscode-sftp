@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { Uri, window } from 'vscode';
-import { FileType } from '../core';
+import { FileService, FileType } from '../core';
 import logger from '../logger';
-import { getAllFileService } from '../modules/serviceManager';
+import { getAllFileService, getFileService } from '../modules/serviceManager';
 import { ExplorerItem } from '../modules/remoteExplorer';
 import { getActiveTextEditor, showInformationMessage } from '../host';
 import { connectionToken, ConnectIdentity } from '../credentialStore';
@@ -128,6 +128,44 @@ export async function selectRemoteConnection(): Promise<ConnectIdentity | undefi
       : await window.showQuickPick(items, { placeHolder: 'Select a remote...' });
 
   return picked ? picked.identity : undefined;
+}
+
+// resolve the config a command should act on: an explicit uri (context menu,
+// CodeLens), else the active editor, else the only config in the workspace,
+// else ask
+export async function resolveTargetService(
+  uri: Uri | undefined,
+  placeHolder: string
+): Promise<FileService | undefined> {
+  if (uri) {
+    const service = getFileService(uri);
+    if (service) {
+      return service;
+    }
+  }
+
+  const activeUri = getActiveDocumentUri();
+  if (activeUri) {
+    const service = getFileService(activeUri);
+    if (service) {
+      return service;
+    }
+  }
+
+  const services = getAllFileService();
+  if (services.length <= 1) {
+    return services[0];
+  }
+
+  const pick = await window.showQuickPick(
+    services.map(service => ({
+      label: service.name || service.workspace,
+      description: service.workspace,
+      service,
+    })),
+    { placeHolder }
+  );
+  return pick && pick.service;
 }
 
 export function applySelector<T>(...selectors: ((...args: any[]) => T | Promise<T>)[]) {

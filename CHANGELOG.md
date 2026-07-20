@@ -1,3 +1,6 @@
+## Unreleased
+* Fix : `SFTP: Test Connection` no longer requires `.vscode/sftp.json` to be the active editor. Running it from the Command Palette while any workspace file is open now resolves that file's config; with no matching editor it falls back to the workspace's only config, or prompts to pick one when several are configured (the same resolution `SFTP: Toggle Upload on Save` uses).
+
 ## 1.26.1 - 2026-07-18
 * Improvement : Consolidate the two duplicate debug settings. `sftp.debug` is now the canonical setting; `sftp.printDebugLog` — which had an identical description and purpose — is marked deprecated in the Settings UI (VS Code `deprecationMessage`) and in the docs, pointing to `sftp.debug`. Both flags are still honored, so existing setups that use `sftp.printDebugLog` keep working.
 
