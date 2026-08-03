@@ -458,7 +458,6 @@ export default class FileService {
       concurrency,
     });
     scheduler.onTaskStart(task => {
-      this._pendingTransferTasks.add(task as TransferTask);
       this._eventEmitter.emit(Event.BEFORE_TRANSFER, task);
     });
     scheduler.onTaskDone((err, task) => {
@@ -481,6 +480,11 @@ export default class FileService {
           return;
         }
 
+        // Track the task from the moment it is queued rather than from the
+        // moment it starts. Only `concurrency` tasks run at a time, so
+        // consumers of getPendingTransferTasks() would otherwise be blind to
+        // every task still waiting in the queue.
+        fileService._pendingTransferTasks.add(task);
         scheduler.add(task);
       },
       run() {

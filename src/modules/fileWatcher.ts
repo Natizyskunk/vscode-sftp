@@ -12,14 +12,18 @@ const watchers: {
   [x: string]: vscode.FileSystemWatcher;
 } = {};
 
-const uploadQueue = new Set<vscode.Uri>();
-const deleteQueue = new Set<vscode.Uri>();
+// Keyed by fsPath. The watcher emits a new Uri instance per event, so a
+// Set<vscode.Uri> keeps one entry per event instead of one entry per file.
+const uploadQueue = new Map<string, vscode.Uri>();
+const deleteQueue = new Map<string, vscode.Uri>();
 
 // less than 550 will not work
 const ACTION_INTEVAL = 550;
 
 function doUpload() {
-  const files = Array.from(uploadQueue).sort((a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath));
+  const files = Array.from(uploadQueue.values()).sort(
+    (a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath)
+  );
   uploadQueue.clear();
 
   const currentDownloadTasks = getRunningTransformTasks().filter(
@@ -44,7 +48,9 @@ function doUpload() {
 }
 
 function doDelete() {
-  const files = Array.from(deleteQueue).sort((a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath));
+  const files = Array.from(deleteQueue.values()).sort(
+    (a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath)
+  );
   deleteQueue.clear();
   files.forEach(async uri => {
     const fspath = uri.fsPath;
@@ -66,7 +72,7 @@ function uploadHandler(uri: vscode.Uri) {
     return;
   }
 
-  uploadQueue.add(uri);
+  uploadQueue.set(uri.fsPath, uri);
   debouncedUpload();
 }
 
@@ -117,7 +123,7 @@ function createWatcher(
         return;
       }
 
-      deleteQueue.add(uri);
+      deleteQueue.set(uri.fsPath, uri);
       debouncedDelete();
     });
   }
