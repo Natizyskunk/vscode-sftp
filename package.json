@@ -2,7 +2,7 @@
   "name": "veu-sftp",
   "displayName": "VEU sFTP extension",
   "description": "SFTP/FTP sync with ignore list and file status indicators",
-  "version": "1.17.1",
+  "version": "1.17.3",
   "publisher": "jonasxwebdev",
   "author": "jonasxwebdev",
   "engines": {
@@ -66,6 +66,21 @@
           "type": "boolean",
           "default": false,
           "description": "\"Download\" instead of \"View Content\" when open file in Remote Explorer"
+        },
+        "sftp.changedFiles.confirm": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the list of changed files (git/svn) before \"Upload Changed Files\" starts so single files can be deselected. When disabled, all changed files except deletions are uploaded immediately."
+        },
+        "sftp.changedFiles.includeUntracked": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include untracked (git) and unversioned (svn) files in \"Upload Changed Files\"."
+        },
+        "sftp.changedFiles.allowRemoteDelete": {
+          "type": "boolean",
+          "default": false,
+          "description": "Offer files that were deleted locally for deletion on the remote in \"Upload Changed Files\". They are never preselected and need confirmation in the list."
         }
       }
     },
@@ -609,6 +624,11 @@
           "command": "sftp.upload.changedFiles",
           "group": "sftp",
           "when": "sftp.enabled && scmProvider == git && !gitFreshRepository"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "sftp",
+          "when": "sftp.enabled && scmProvider == svn"
         }
       ],
       "scm/resourceGroup/context": [
@@ -631,6 +651,26 @@
           "command": "sftp.upload.changedFiles",
           "group": "sftp",
           "when": "sftp.enabled && scmProvider == git && scmResourceGroup == index && !gitFreshRepository"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "inline",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == changes"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "sftp",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == changes"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "inline",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == unversioned"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "sftp",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == unversioned"
         }
       ]
     },

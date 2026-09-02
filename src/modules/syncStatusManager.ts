@@ -24,6 +24,7 @@ export class SyncStatusManager {
   private refreshTimer: NodeJS.Timer | null = null;
   private pendingChecks: Set<string> = new Set();
   private debounceTimer: NodeJS.Timer | null = null;
+  private pendingListings: Map<string, Promise<Map<string, RemoteFileInfo>>> = new Map();
   
   private readonly CACHE_TTL = 30000; // 30 seconds
   private readonly REMOTE_LIST_CACHE_TTL = 60000; // 1 minute
@@ -243,43 +244,58 @@ export class SyncStatusManager {
       return { exists: false, mtime: 0, size: 0 };
     }
 
-    // Fetch remote folder listing
+    // Fetch remote folder listing (one request per folder, even if many files ask at once)
     try {
-      console.log(`[SyncStatus] Fetching remote folder listing for: ${remoteDir}`);
+      const filesMap = await this.fetchRemoteListing(remoteDir, fileService);
+      const fileInfo = filesMap.get(fileName);
+      logger.debug(`[SyncStatus] ${fileName} ${fileInfo ? 'found' : 'not found'} in fresh listing of ${remoteDir}`);
+      return fileInfo || { exists: false, mtime: 0, size: 0 };
+    } catch (error) {
+      logger.error(`[SyncStatus] Error fetching remote file info: ${error.message}`, error);
+      return { exists: false, mtime: 0, size: 0 };
+    }
+  }
+
+  /**
+   * List a remote folder and cache it. Concurrent requests for the same folder share one listing.
+   */
+  private fetchRemoteListing(remoteDir: string, fileService: FileService): Promise<Map<string, RemoteFileInfo>> {
+    const pending = this.pendingListings.get(remoteDir);
+    if (pending) {
+      return pending;
+    }
+
+    const listing = (async () => {
       logger.info(`[SyncStatus] Fetching remote folder listing for: ${remoteDir}`);
       const remoteFs = await fileService.getRemoteFileSystem(fileService.getConfig());
       const entries = await remoteFs.list(remoteDir);
-      
-      console.log(`[SyncStatus] Remote folder has ${entries.length} entries`);
-      logger.info(`[SyncStatus] Remote folder has ${entries.length} entries`);
-      
-      // Cache the entire folder listing
+      logger.info(`[SyncStatus] Remote folder ${remoteDir} has ${entries.length} entries`);
+
       const filesMap = new Map<string, RemoteFileInfo>();
       entries.forEach(entry => {
-        logger.info(`[SyncStatus] Entry: ${entry.name}, type: ${entry.type}, mtime: ${entry.mtime}, size: ${entry.size}`);
+        logger.debug(`[SyncStatus] Entry: ${entry.name}, type: ${entry.type}, mtime: ${entry.mtime}, size: ${entry.size}`);
         filesMap.set(entry.name, {
           exists: true,
           mtime: entry.mtime,
           size: entry.size,
         });
       });
-      
+
       this.remoteListCache.set(remoteDir, {
         files: filesMap,
         timestamp: Date.now(),
       });
+      return filesMap;
+    })();
 
-      const fileInfo = filesMap.get(fileName);
-      if (fileInfo) {
-        logger.info(`[SyncStatus] Found file in fresh listing: mtime=${fileInfo.mtime}, size=${fileInfo.size}`);
-      } else {
-        logger.info(`[SyncStatus] File not found in fresh listing`);
+    this.pendingListings.set(remoteDir, listing);
+    const cleanup = () => {
+      if (this.pendingListings.get(remoteDir) === listing) {
+        this.pendingListings.delete(remoteDir);
       }
-      return fileInfo || { exists: false, mtime: 0, size: 0 };
-    } catch (error) {
-      logger.error(`[SyncStatus] Error fetching remote file info: ${error.message}`, error);
-      return { exists: false, mtime: 0, size: 0 };
-    }
+    };
+    listing.then(cleanup, cleanup);
+    return listing;
   }
 
   /**

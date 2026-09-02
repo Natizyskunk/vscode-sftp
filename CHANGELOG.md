@@ -1,3 +1,15 @@
+## 1.17.3 - 2026-09-02
+* Perf : `Upload Changed Files` uploads all files of a server in one batch: remote folders are created once, the connection only carries transfers, remote explorer and sync status are refreshed once at the end.
+* Perf : Sync status shares one folder listing between concurrent requests and logs single entries only in debug mode.
+
+## 1.17.2 - 2026-09-02
+* New : `Upload Changed Files` supports Subversion working copies (via `svn status`) in addition to Git.
+* New : `Upload Changed Files` shows a selection list before uploading, reports the result and never deletes remote files unless `sftp.changedFiles.allowRemoteDelete` is enabled.
+* New : Settings `sftp.changedFiles.confirm`, `sftp.changedFiles.includeUntracked` and `sftp.changedFiles.allowRemoteDelete`.
+* New : `Upload Changed Files` is available in the Source Control view for SVN too.
+* Fix : `Upload Changed Files` did not wait for the uploads to finish and swallowed errors.
+* Fix : Remote rename used local paths.
+
 ## 1.16.3 - 2023-06-16
 * [#356] New Feature : Upload to all profiles (Pull request [#313](https://github.com/Natizyskunk/vscode-sftp/pull/313) from @wewawa vscode-sftp:create_multi_command).
 * [#357] Fix : Correcting Typo 'avaliable' => 'available' (Pull request [#343](https://github.com/Natizyskunk/vscode-sftp/pull/343) from @kjo-sdds vscode-sftp:develop).

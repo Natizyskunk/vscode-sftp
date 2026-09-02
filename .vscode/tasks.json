@@ -19,8 +19,8 @@
     "reveal": "silent"
   },
 
-  // we run the custom script "dev" as defined in package.json
-  "args": ["run", "dev", "--", "--display", "minimal"],
+  // we run the custom script "dev" as defined in package.json (webpack 5 has no --display flag)
+  "args": ["run", "dev"],
 
   // The dev is started in watching mode
   "isBackground": true,

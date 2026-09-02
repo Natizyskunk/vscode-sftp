@@ -66,6 +66,28 @@ It also adds a new config option for showing synced files status (its fully cust
       },
 ```
 
+## Upload Changed Files (Git / SVN)
+
+`SFTP: Upload Changed Files` (default shortcut `Ctrl+Alt+U`) uploads only the files your version control reports as changed.
+Git repositories are read through the built-in Git extension, Subversion working copies through the `svn` command line client (`svn status`), so `svn` has to be on your `PATH`.
+
+1. All added, modified, untracked/unversioned and renamed files below your configured SFTP folders are collected.
+2. A list shows every change with its status, the version control system and the target profile. Everything is preselected; deselect what you do not want to upload and confirm.
+3. Renamed files are renamed on the remote (when the old file exists there) and uploaded afterwards. Conflicted files are always skipped.
+4. The result is shown as a notification and in the SFTP output panel.
+
+The command is also available in the Source Control view (title menu and the context menu of the "Changes", "Staged Changes" and "Unversioned" groups). From there it only handles the files of the clicked group.
+
+Settings (VS Code settings, not `sftp.json`):
+
+| Setting | Default | Description |
+| --- | --- | --- |
+| `sftp.changedFiles.confirm` | `true` | Show the selection list first. When `false` everything except deletions is uploaded right away. |
+| `sftp.changedFiles.includeUntracked` | `true` | Include untracked (git) / unversioned (svn) files. |
+| `sftp.changedFiles.allowRemoteDelete` | `false` | Also offer locally deleted files for deletion on the remote. They are never preselected. |
+
+`useIgnoreForUpload` is respected: ignored files are listed as skipped.
+
 ## Installation
 
 ### Method 1 (Recommended : Auto update)

@@ -137,6 +137,14 @@ export class SftpFileDecorationProvider implements vscode.FileDecorationProvider
   }
 
   /**
+   * Invalidate the cache of several files and refresh them with a single event
+   */
+  invalidateAndRefreshMany(uris: vscode.Uri[]) {
+    uris.forEach(uri => syncStatusManager.invalidate(uri));
+    this.refresh(uris);
+  }
+
+  /**
    * Invalidate cache and refresh
    */
   invalidateAndRefresh(uri?: vscode.Uri) {
