@@ -8,6 +8,6 @@ export default checkFileCommand({
   getFileTarget: uriFromExplorerContextOrEditorContext,
 
   async handleFile(ctx) {
-    await uploadFile(ctx, { ignore: null });
+    await uploadFile(ctx);
   },
 });

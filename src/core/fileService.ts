@@ -37,6 +37,7 @@ interface ServiceOption {
   protocol: string;
   remote?: string;
   uploadOnSave: boolean;
+  useIgnoreForUpload: boolean;
   useTempFile: boolean;
   openSsh: boolean;
   downloadOnOpen: boolean | 'confirm';
@@ -53,6 +54,16 @@ interface ServiceOption {
   remoteExplorer: {
     filesExclude?: string[];
     order: number;
+  };
+  syncStatus: {
+    enabled: boolean;
+    refreshInterval: number;
+    showLocalOnly: boolean;
+    showRemoteOnly: boolean;
+    showModified: boolean;
+    showSynced: boolean;
+    showIgnored: boolean;
+    timeTolerance: number;
   };
   remoteTimeOffsetInHours: number;
   limitOpenFilesOnRemote: number | true;
@@ -443,12 +454,19 @@ export default class FileService {
     this._pendingTransferTasks.clear();
   }
 
-  beforeTransfer(listener: (task: TransferTask) => void) {
+  // returns a function that removes the listener again
+  beforeTransfer(listener: (task: TransferTask) => void): () => void {
     this._eventEmitter.on(Event.BEFORE_TRANSFER, listener);
+    return () => {
+      this._eventEmitter.removeListener(Event.BEFORE_TRANSFER, listener);
+    };
   }
 
-  afterTransfer(listener: (err: Error | null, task: TransferTask) => void) {
+  afterTransfer(listener: (err: Error | null, task: TransferTask) => void): () => void {
     this._eventEmitter.on(Event.AFTER_TRANSFER, listener);
+    return () => {
+      this._eventEmitter.removeListener(Event.AFTER_TRANSFER, listener);
+    };
   }
 
   createTransferScheduler(concurrency): TransferScheduler {

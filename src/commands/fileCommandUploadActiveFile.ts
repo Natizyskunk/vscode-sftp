@@ -8,6 +8,6 @@ export default checkFileCommand({
   getFileTarget: getActiveDocumentUri,
 
   async handleFile(ctx) {
-    await uploadFile(ctx, { ignore: null });
+    await uploadFile(ctx);
   },
 });

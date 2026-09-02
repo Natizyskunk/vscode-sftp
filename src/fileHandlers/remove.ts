@@ -28,12 +28,12 @@ export const removeRemote = createFileHandler<FileHandleOption & { skipDir?: boo
     }
     await promise;
   },
-  transformOption() {
+ /*  transformOption() {
     const config = this.config;
     return {
       ignore: config.ignore,
     };
-  },
+  }, */
   afterHandle() {
     refreshRemoteExplorer(this.target, false);
   },

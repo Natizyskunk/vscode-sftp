@@ -38,6 +38,29 @@ Client.prototype.setLastMod = function(path: string, date: Date, cb) {
   this._send('MFMT ' + dateStr + ' ' + path, cb);
 };
 
+Client.prototype.getLastMod = function(path: string, cb) {
+  this._send('MDTM ' + path, (err, text) => {
+    if (err) {
+      return cb(err);
+    }
+    // Response format: "213 YYYYMMDDHHmmss"
+    const match = text.match(/^213\s+(\d{14})/);
+    if (!match) {
+      return cb(new Error('Invalid MDTM response: ' + text));
+    }
+    const timeStr = match[1];
+    const date = new Date(Date.UTC(
+      parseInt(timeStr.substr(0, 4), 10),
+      parseInt(timeStr.substr(4, 2), 10) - 1,
+      parseInt(timeStr.substr(6, 2), 10),
+      parseInt(timeStr.substr(8, 2), 10),
+      parseInt(timeStr.substr(10, 2), 10),
+      parseInt(timeStr.substr(12, 2), 10)
+    ));
+    cb(null, date);
+  }, true);
+};
+
 export default class FTPClient extends RemoteClient {
   private connected: boolean = false;
 

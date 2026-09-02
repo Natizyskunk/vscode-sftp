@@ -13,8 +13,10 @@ func(profileName: string)
 Upload the current file.
 
 ## SFTP: Upload Changed Files
-Upload all files changed or created since the last commit to your Git.
+Upload only the files that Git or Subversion reports as changed (added, modified, untracked/unversioned, renamed).
+A list lets you deselect single files before the upload starts. Subversion support needs the `svn` command on your `PATH`.
 Can be called by default keyboard shortcut `Ctrl+Alt+U`.
+See the `sftp.changedFiles.*` settings for options.
 
 ## SFTP: Upload Active Folder
 Upload the entire folder the current file is located in.

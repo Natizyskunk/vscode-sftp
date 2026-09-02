@@ -1,21 +1,17 @@
 {
-  "name": "sftp",
-  "displayName": "SFTP",
-  "description": "SFTP/FTP sync",
-  "version": "1.16.3",
-  "publisher": "Natizyskunk",
-  "author": "Natizyskunk <natan.fourie@hotmail.fr> (https://github.com/Natizyskunk)",
+  "name": "veu-sftp",
+  "displayName": "VEU sFTP extension",
+  "description": "SFTP/FTP sync with ignore list and file status indicators",
+  "version": "1.17.3",
+  "publisher": "jonasxwebdev",
+  "author": "jonasxwebdev",
   "engines": {
     "vscode": "^1.64.2"
   },
-  "bugs": {
-    "url": "https://github.com/Natizyskunk/vscode-sftp/issues",
-    "email": "natan.fourie@hotmail.fr"
-  },
-  "homepage": "https://github.com/Natizyskunk/vscode-sftp/blob/master/README.md",
+  "homepage": "https://github.com/jonasxwebdev/vscode-sftp-veudss/blob/master/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Natizyskunk/vscode-sftp.git"
+    "url": "https://github.com/jonasxwebdev/vscode-sftp-veudss.git"
   },
   "license": "MIT",
   "categories": [
@@ -70,6 +66,21 @@
           "type": "boolean",
           "default": false,
           "description": "\"Download\" instead of \"View Content\" when open file in Remote Explorer"
+        },
+        "sftp.changedFiles.confirm": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the list of changed files (git/svn) before \"Upload Changed Files\" starts so single files can be deselected. When disabled, all changed files except deletions are uploaded immediately."
+        },
+        "sftp.changedFiles.includeUntracked": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include untracked (git) and unversioned (svn) files in \"Upload Changed Files\"."
+        },
+        "sftp.changedFiles.allowRemoteDelete": {
+          "type": "boolean",
+          "default": false,
+          "description": "Offer files that were deleted locally for deletion on the remote in \"Upload Changed Files\". They are never preselected and need confirmation in the list."
         }
       }
     },
@@ -613,6 +624,11 @@
           "command": "sftp.upload.changedFiles",
           "group": "sftp",
           "when": "sftp.enabled && scmProvider == git && !gitFreshRepository"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "sftp",
+          "when": "sftp.enabled && scmProvider == svn"
         }
       ],
       "scm/resourceGroup/context": [
@@ -635,6 +651,26 @@
           "command": "sftp.upload.changedFiles",
           "group": "sftp",
           "when": "sftp.enabled && scmProvider == git && scmResourceGroup == index && !gitFreshRepository"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "inline",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == changes"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "sftp",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == changes"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "inline",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == unversioned"
+        },
+        {
+          "command": "sftp.upload.changedFiles",
+          "group": "sftp",
+          "when": "sftp.enabled && scmProvider == svn && scmResourceGroup == unversioned"
         }
       ]
     },
@@ -674,7 +710,7 @@
     "@types/jest": "^23.3.5",
     "@types/lru-cache": "^4.1.1",
     "@types/node": "^9.6.51",
-    "@types/vscode": "1.40",
+    "@types/vscode": "1.60.0",
     "@types/webpack-env": "^1.13.6",
     "braces": ">=2.3.1",
     "glob-parent": ">=5.1.2",

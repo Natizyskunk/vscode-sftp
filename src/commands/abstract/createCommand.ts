@@ -34,7 +34,7 @@ export function createCommand(commandOption: CommandOption & { name: string }) {
     }
 
     doCommandRun(...args) {
-      commandOption.handleCommand.apply(this, args);
+      return commandOption.handleCommand.apply(this, args);
     }
   };
 }

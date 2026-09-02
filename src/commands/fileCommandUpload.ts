@@ -8,6 +8,6 @@ export default checkFileCommand({
   getFileTarget: uriFromfspath,
 
   async handleFile(ctx) {
-    await upload(ctx, { ignore: null });
+    await upload(ctx);
   },
 });

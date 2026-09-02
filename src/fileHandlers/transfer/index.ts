@@ -1,6 +1,7 @@
 import { refreshRemoteExplorer } from '../shared';
 import createFileHandler, { FileHandlerContext } from '../createFileHandler';
 import { transfer, sync, TransferOption, SyncOption, TransferDirection } from './transfer';
+import app from '../../app';
 
 function createTransferHandle(direction: TransferDirection) {
   return async function handle(this: FileHandlerContext, option) {
@@ -128,11 +129,15 @@ export const upload = createFileHandler<TransferOption>({
       useTempFile: config.useTempFile,
       openSsh: config.openSsh,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
-      ignore: config.ignore,
+      ignore: config.useIgnoreForUpload ? config.ignore : null,
     };
   },
   afterHandle() {
     refreshRemoteExplorer(this.target, this.fileService);
+    // Refresh file decoration
+    if (app.decorationProvider) {
+      app.decorationProvider.scheduleRefresh(this.target.localUri);
+    }
   },
 });
 
@@ -141,16 +146,27 @@ export const uploadFile = createFileHandler<TransferOption>({
   handle: uploadHandle,
   transformOption() {
     const config = this.config;
+    console.log('=== DEBUG uploadFile transformOption ===');
+    console.log('useIgnoreForUpload:', config.useIgnoreForUpload);
+    console.log('config.ignore type:', typeof config.ignore);
+    console.log('config.ignore:', config.ignore);
+    
+    const ignoreValue = config.useIgnoreForUpload ? config.ignore : null;
+    console.log('Final ignore value:', ignoreValue);
     return {
       perserveTargetMode: config.protocol === 'sftp' && !config.filePerm,
       useTempFile: config.useTempFile,
       openSsh: config.openSsh,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
-      ignore: config.ignore,
+      ignore: ignoreValue,
     };
   },
   afterHandle() {
     refreshRemoteExplorer(this.target, false);
+    // Refresh file decoration
+    if (app.decorationProvider) {
+      app.decorationProvider.scheduleRefresh(this.target.localUri);
+    }
   },
 });
 
@@ -164,11 +180,15 @@ export const uploadFolder = createFileHandler<TransferOption>({
       useTempFile: config.useTempFile,
       openSsh: config.openSsh,
       // remoteTimeOffsetInHours: config.remoteTimeOffsetInHours,
-      ignore: config.ignore,
+      ignore: config.useIgnoreForUpload ? config.ignore : null,
     };
   },
   afterHandle() {
     refreshRemoteExplorer(this.target, true);
+    // Refresh file decoration
+    if (app.decorationProvider) {
+      app.decorationProvider.scheduleRefresh(this.target.localUri);
+    }
   },
 });
 

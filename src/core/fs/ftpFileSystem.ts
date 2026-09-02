@@ -55,8 +55,19 @@ export default class FTPFileSystem extends RemoteFileSystem {
     return this.getClient().getFsClient();
   }
 
-  toFileStat(stat): FileStats {
-    const mtime = this.toLocalTime(stat.date.getTime());
+  toFileStat(stat, preciseTime?: number): FileStats {
+    console.log('[FTP] toFileStat called with preciseTime:', preciseTime);
+    
+    // Use preciseTime from MDTM if available, otherwise fall back to stat.date
+    let mtime: number;
+    if (preciseTime) {
+      mtime = this.toLocalTime(preciseTime);
+      console.log('[FTP] Using MDTM precise time:', new Date(mtime).toISOString());
+    } else {
+      mtime = this.toLocalTime(stat.date.getTime());
+      console.log('[FTP] Using LIST date (truncated):', new Date(mtime).toISOString());
+    }
+    
     return {
       type: FTPFileSystem.getFileType(stat.type),
       mode: toNumMode(stat.rights), // Caution: windows will always get 0o666
@@ -67,11 +78,11 @@ export default class FTPFileSystem extends RemoteFileSystem {
     };
   }
 
-  toFileEntry(fullPath, stat): FileEntry {
+  toFileEntry(fullPath, stat, preciseTime?: number): FileEntry {
     return {
       fspath: fullPath,
       name: stat.name,
-      ...this.toFileStat(stat),
+      ...this.toFileStat(stat, preciseTime),
     };
   }
 
@@ -291,11 +302,16 @@ export default class FTPFileSystem extends RemoteFileSystem {
   private async atomicList(path: string): Promise<any[]> {
     const task = () =>
       new Promise<any[]>((resolve, reject) => {
+        // First try without raw mode
         this.ftp.list(path, (err, stats) => {
           if (err) {
             return reject(err);
           }
 
+          console.log('[FTP] atomicList received', stats ? stats.length : 0, 'entries');
+          if (stats && stats.length > 0) {
+            console.log('[FTP] First entry sample:', JSON.stringify(stats[0], null, 2));
+          }
           resolve(stats || []);
         });
       });

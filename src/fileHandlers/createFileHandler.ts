@@ -3,6 +3,7 @@ import app from '../app';
 import { UResource, FileService, ServiceConfig } from '../core';
 import logger from '../logger';
 import { getFileService } from '../modules/serviceManager';
+import * as path from 'path';
 
 interface FileHandlerConfig {
   _?: boolean;
@@ -98,8 +99,21 @@ export default function createFileHandler<T>(
     }
 
     if (invokeOption.ignore && invokeOption.ignore(target.localFsPath)) {
+      console.log('=== File IGNORED ===');
+      console.log('File:', target.localFsPath);
+      /* ignore file logging */
+      logger.info(`File ignored by ignore list: ${target.localFsPath}`);
+      app.sftpBarItem.showMsg(
+        `ignored ${path.basename(target.localFsPath)}`, 
+        `Upload ignored: ${target.localFsPath}`, 
+        3000
+      );
       return;
     }
+
+    console.log('=== File NOT ignored, proceeding with upload ===');
+    console.log('File:', target.localFsPath);
+    console.log('invokeOption.ignore exists?', !!invokeOption.ignore);
 
     logger.trace(`handle ${handlerOption.name} for`, target.localFsPath);
 
