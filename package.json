@@ -4,13 +4,12 @@
   "description": "SFTP/FTP sync",
   "version": "1.16.3",
   "publisher": "Natizyskunk",
-  "author": "Natizyskunk <natan.fourie@hotmail.fr> (https://github.com/Natizyskunk)",
+  "author": "Natizyskunk (https://github.com/Natizyskunk)",
   "engines": {
     "vscode": "^1.64.2"
   },
   "bugs": {
     "url": "https://github.com/Natizyskunk/vscode-sftp/issues",
-    "email": "natan.fourie@hotmail.fr"
   },
   "homepage": "https://github.com/Natizyskunk/vscode-sftp/blob/master/README.md",
   "repository": {
