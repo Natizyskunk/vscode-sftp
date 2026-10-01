@@ -44,6 +44,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
   }
 
   toFileEntry(fullPath, item): FileEntry {
+    item.filename =  Buffer.from(item.filename, 'binary').toString('utf8');
     return {
       fspath: fullPath,
       name: item.filename,
@@ -323,7 +324,7 @@ export default class SFTPFileSystem extends RemoteFileSystem {
         }
 
         const fileEntries = result.map(item =>
-          this.toFileEntry(this.pathResolver.join(dir, item.filename), item)
+          this.toFileEntry(this.pathResolver.join(dir, Buffer.from(item.filename, 'binary').toString('utf8')), item)
         );
         resolve(fileEntries);
       });

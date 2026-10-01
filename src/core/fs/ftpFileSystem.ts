@@ -68,6 +68,7 @@ export default class FTPFileSystem extends RemoteFileSystem {
   }
 
   toFileEntry(fullPath, stat): FileEntry {
+    stat.name =  Buffer.from(stat.name, 'binary').toString('utf8')
     return {
       fspath: fullPath,
       name: stat.name,
@@ -256,7 +257,7 @@ export default class FTPFileSystem extends RemoteFileSystem {
         // we simply ignore it by check whether it has a name property
         .filter(item => item.name && item.name !== '.' && item.name !== '..')
         .map(item =>
-          this.toFileEntry(this.pathResolver.join(dir, item.name), item)
+          this.toFileEntry(this.pathResolver.join(dir, Buffer.from(item.name, 'binary').toString('utf8')), item)
         )
     );
   }
