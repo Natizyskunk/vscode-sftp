@@ -1,11 +1,34 @@
-# FTP(s) configuration
+## FTP(s) configuration
 
-## secure
-*mixed*: Set to true for both control and data connection encryption.
+### secure
+Set to true for both control and data connection encryption. <br>
 Set to `control` for control encryption only, or `implicit` for implicitly encrypted control connection (this mode is deprecated in modern times, but usually uses port 990).
 
-**default**: false
+| Key | Value | Default |
+| --- | --- | --- |
+| *secure* | *mixed* | `false` |
 
-## secureOptions
+```json
+{
+  "secure": control
+}
+```
+
+### secureOptions
 Additional options to be passed to `tls.connect()`.
-See [TLS connect options callback](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback).
+
+| 💡 Note |
+| :--- |
+| *See [TLS connect options callback](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback).* | 
+
+| Key | Value |
+| --- | --- |
+| *secureOptions* | *object* |
+
+```json
+{
+  "secureOptions": {
+    "enableTrace": true
+  }
+}
+```

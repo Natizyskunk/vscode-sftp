@@ -1,163 +1,533 @@
-# Full configuration
+# VSCode-SFTP
 
-## name
-*string*: A string to identify your configuration.
+Configurations are stored in your project working directory under `../.vscode/sftp.json`. <br>
+The configuration file can always be accessed with `CTRL` + `Shift` + `P`, and searching for `SFTP: Config`.
 
-## context
-*string*: A path relative to the workspace root folder.
+![image](https://github.com/user-attachments/assets/5ceff350-7678-4264-98d4-2741a98a9dbe)
+
+## Table of Contents
+
+### Configuration
+- [name](#name)
+- [context](#context)
+- [protocol](#protocol)
+- [host](#host)
+- [port](#port)
+- [username](#username)
+- [password](#password)
+- [remotePath](#remotepath)
+- [filePerm](#fileperm)
+- [dirPerm](#dirperm)
+- [uploadOnSave](#uploadonsave)
+- [useTempFile](#usetempfile)
+- [openSsh](#openssh)
+- [downloadOnOpen](#downloadonopen)
+- [syncOption](#syncoption)
+- [ignore](#ignore)
+- [ignoreFile](#ignorefile)
+- [watcher](#watcher)
+- [remoteTimeOffsetInHours](#remotetimeoffsetinhours)
+- [remoteExplorer](#remoteexplorer)
+- [concurrency](#concurrency)
+- [connectTimeout](#connecttimeout)
+- [limitOpenFilesOnRemote](#limitopenfilesonremote)
+
+### SFTP only configuration
+- [agent](#agent)
+- [privateKeyPath](#privatekeypath)
+- [passphrase](#passphrase)
+- [interactiveAuth](#interactiveauth)
+- [algorithms](#algorithms)
+- [sshConfigPath](#sshconfigpath)
+- [sshCustomParams](#sshcustomparams)
+
+### FTP(s) only configuration
+- [secure](#secure)
+- [secureOptions](#secureoptions)
+
+
+
+## Configuration
+
+### name
+A string to identify your configuration.
+
+| Key | Value |
+| --- | --- |
+| *name* | *string* |
+
+```json
+{
+  "name": "My Server"
+}
+```
+
+### context
+A path relative to the workspace root folder. <br>
 Use this when you want to map a subfolder to the `remotePath`.
 
-**default**: The workspace root.
+| Key | Value | Default |
+| --- | --- | --- |
+| *context* | *string* | *The workspace root.* |
 
-## protocol
-*string*: `sftp` or `ftp`.
+```json
+{
+  "context": "/_subfolder_"
+}
+```
 
-**default**: `sftp`
+### protocol
+Protocol to be used.
 
-## host
-*string*: Hostname or IP address of the server.
+| Key | Value | Default |
+| --- | --- | --- |
+| *protocol* | `sftp` *or* `ftp` | `sftp` |
 
-## port
-*integer*: Port number of the server.
+```json
+{
+  "protocol": "sftp"
+}
+```
 
-**default**: 22
+### host
+Hostname or IP address of the server.
 
-## username
-*string*: Username for authentication.
+| Key | Value |
+| --- | --- |
+| *host* | *string* |
 
-## password
-*string*: The password for password-based user authentication (**note: this is stored as plain-text**).
+```json
+{
+  "host": "server.example.com"
+}
+```
 
-## remotePath
-*string*: The absolute path on the remote host.
+### port
+Port number of the server.
 
-**default**: `/`
+| Key | Value |
+| --- | --- |
+| *port* | *integer* |
 
-## filePerm
-*number*: Set octal file permissions for new files.
+```json
+{
+  "port": 22
+}
+```
 
-**default**: false
+### username
+Username for authentication.
 
-## dirPerm
-*number*: Set octal directory permissions for new directories.
+| Key | Value |
+| --- | --- |
+| *username* | *string* |
 
-**default**: false
+```json
+{
+  "username": "user1"
+}
+```
 
-## uploadOnSave
-*boolean*: Upload on every save operation of VSCode.
+### password
+[!WARNING]
+**Passwords are stored as plain-text!**
 
-**default**: false
+The password for password-based user authentication.
 
-## useTempFile
-*boolean*: Upload temp file on every save operation of VSCode to avoid breaking a webpage when a user acceses it while the file is still being uploaded (is incomplete).
+| Key | Value |
+| --- | --- |
+| *password* | *string* |
 
-**default**: false
+```json
+{
+  "password": "Password123"
+}
+```
 
-## openSsh
-*boolean*: Enable atomic file uploads (only supported by openSSH servers).
-If set to true, the `useTempFile` option must also be set to true.
+### remotePath
+The absolute path on the remote host.
 
-**default**: false
+| Key | Value | Default |
+| --- | --- | --- |
+| *remotePath* | *string* | `/` |
 
-## downloadOnOpen
-*boolean*: Download the file from the remote server whenever it is opened.
+```json
+{
+  "remotePath": "/_subfolder_"
+}
+```
 
-**default**: false
+### filePerm
+Set octal file permissions for new files.
 
-## syncOption
-*object*: Configure the behavior of the `Sync` command.
+| Key | Value | Default |
+| --- | --- | --- |
+| *filePerm* | *number* | `false` |
 
-**default**: `{}`
+```json
+{
+  "filePerm": 644
+}
+```
+ 
+### dirPerm
+Set octal directory permissions for new directories.
 
-## syncOption.delete
-*boolean*: Delete extraneous files from destination directories.
+| Key | Value | Default |
+| --- | --- | --- |
+| *dirPerm* | *number* | `false` |
 
-## syncOption.skipCreate
-*boolean*: Skip creating new files on the destination.
+```json
+{
+  "dirPerm": 750
+}
+```
 
-## syncOption.ignoreExisting
-*boolean*: Skip updating files that exist on the destination.
+### uploadOnSave
+Upload on every save operation of VSCode.
 
-## syncOption.update
-*boolean*: Update the destination only if a newer version is on the source filesystem.
+| Key | Value | Default |
+| --- | --- | --- |
+| *uploadOnSave* | *boolean* | `false` |
 
-## ignore
-*string[]*: Same behavior as gitignore, all paths relative to context of the current configuration.
+```json
+{
+  "uploadOnSave": true
+}
+```
 
-**default**: []
+### useTempFile
+Upload temp file on every save operation of VSCode to avoid breaking a webpage when a user accesses it while the file is still being uploaded (is incomplete).
 
-## ignoreFile
-*string*: Absolute path to the ignore file or Relative path relative to the workspace root folder.
+| Key | Value | Default |
+| --- | --- | --- |
+| *useTempFile* | *boolean* | `false` |
 
-## watcher
-*object*.
+```json
+{
+  "useTempFile": true
+}
+```
 
-## watcher.files
-*string*: Glob patterns that are watched and when edited outside of the VSCode editor are processed.
-Set `uploadOnSave` to false when you watch everything.
+### openSsh
+Enable atomic file uploads (*only supported by openSSH servers*).
 
-## watcher.autoUpload
-*boolean*: Upload when the file changed.
+| 💡 Important |
+| :--- |
+| *If set to* `true`*, the* `useTempFile` *option must also be set to* `true`.|
 
-## watcher.autoDelete
-*boolean*: Delete when the file is removed.
+| Key | Value | Default |
+| --- | --- | --- |
+| *openSsh* | *boolean* | `false` |
 
-## remoteTimeOffsetInHours
-*number*: The number of hours difference between the local machine and the remote server (remote minus local).
+```json
+{
+  "openSsh": true,
+  "useTempFile": true
+}
+```
 
-**default**: 0
+### downloadOnOpen
+Download the file from the remote server whenever it is opened.
 
-## remoteExplorer
-*object*.
+| Key | Value | Default |
+| --- | --- | --- |
+| *downloadOnOpen* | *boolean* | `false` |
 
-## remoteExplorer.filesExclude
-*string[]*: Configure that patterns for excluding files and folders.
-The Remote Explorer decides which files and folders to show or hide based on this setting.
+```json
+{
+  "downloadOnOpen": true
+}
+```
 
-## concurrency
-*number*: Lowering the concurrency could get more stability because some clients/servers have some sort of configured/hard coded limit.
+### syncOption
+Configure the behavior of the `Sync` command.
 
-**default**: 4
+| Key | Value | Default |
+| --- | --- | --- |
+| *syncOption* | *object* | `{}` |
 
-## connectTimeout
-*number*: The maximum connection time.
+#### syncOption.delete
+Delete extraneous files from destination directories.
 
-**default**: 10000
+| Key | Value |
+| --- | --- |
+| *syncOption.delete* | *boolean* |
 
-## limitOpenFilesOnRemote
-*mixed*: Limit open file descriptors to the specific number in a remote server.
-Set to true for using default `limit(222)`. Do not set this unless you have to.
+#### syncOption.skipCreate
+Skip creating new files on the destination.
 
-**default**: false
+| Key | Value |
+| --- | --- |
+| *syncOption.skipCreate* | *boolean* |
 
-***
+#### syncOption.ignoreExisting
+Skip updating files that exist on the destination.
 
-# SFTP only configuration
+| Key | Value |
+| --- | --- |
+| *syncOption.ignoreExisting* | *boolean* |
 
-## agent
-*string*: Path to ssh-agent's UNIX socket for ssh-agent-based user authentication.
-Windows users must set to 'pageant' for authenticating with Pagenat or (actual) path to a Cygwin "UNIX socket".
-Id get more stability because some client/server have some sort of configured/hard coded limit.
+#### syncOption.update
+Update the destination only if a newer version is on the source filesystem.
 
-## privateKeyPath
-*string*: Absolute path to user private key.
+| Key | Value |
+| --- | --- |
+| *syncOption.update* | *boolean* |
 
-## passphrase
-*mixed*: For an encrypted private key, this is the passphrase string used to decrypt it.
-Set to true for enable passphrase dialog. This will prevent from using cleartext passphrase in this config.
+```json
+{
+  "syncOption": {
+    "delete": true,
+    "skipCreate": false,
+    "ignoreExisting": false,
+    "update": true
+  },
+}
+```
 
-## interactiveAuth
-*boolean*|*string[]*: Enable keyboard interaction authentication mechanism. Set to true to enable `verifyCode` dialog.
+### useTempFile
+Upload temp file on every save operation of VSCode to avoid breaking a webpage when a user accesses it while the file is still being uploaded (is incomplete).
+
+| Key | Value | Default |
+| --- | --- | --- |
+| *useTempFile* | *boolean* | `false` |
+
+```json
+{
+  "useTempFile": true
+}
+```
+
+### ignore
+Ignore can be used to ignore files and folders from sync, and even supports wildcards using `*`. <br>
+This is the same behavior as gitignore, all paths relative to context of the current configuration.
+ 
+| Key | Value | Default |
+| --- | --- | --- |
+| *ignore* | *string[]* | `[]` |
+ 
+```json
+{
+  "ignore": [
+    "/.vscode",
+    "/.git",
+    "/.cache",
+    "/_subfolder_",
+    ".DS_Store",
+    "*.gz",
+    "*.log"
+  ],
+}
+```
+
+### ignoreFile
+Absolute path to the ignore file or Relative path relative to the workspace root folder.
+ 
+| Key | Value |
+| --- | --- |
+| *ignoreFile* | *string* |
+ 
+```json
+{
+  "ignoreFile": "/.vscode/sftp.json"
+}
+```
+
+### watcher
+Configure the behavior of the `watcher` command.
+
+| Key | Value | Default |
+| --- | --- | --- |
+| *watcher* | *object* | `{}` |
+
+#### watcher.files
+Glob patterns that are watched and when edited outside of the VSCode editor are processed.
+
+| 💡 Important |
+| :--- |
+| *Set* `uploadOnSave` *to* `false` *when you watch everything.*| 
+
+| Key | Value |
+| --- | --- |
+| *watcher.files* | *string* |
+ 
+#### watcher.autoUpload
+Upload when the file changed.
+
+| Key | Value |
+| --- | --- |
+| *watcher.autoUpload* | *boolean* |
+
+#### watcher.autoDelete
+Delete when the file is removed.
+
+| Key | Value |
+| --- | --- |
+| *watcher.autoDelete* | *boolean* |
+```json
+{
+  "watcher": {
+    "files": "**/*",
+    "autoUpload": true,
+    "autoDelete": true
+  },
+}
+```
+
+### remoteTimeOffsetInHours
+The number of hours difference between the local machine and the remote server (remote minus local).
+
+| Key | Value | Default |
+| --- | --- | --- |
+| *remoteTimeOffsetInHours* | *number* | `0` |
+
+```json
+{
+  "remoteTimeOffsetInHours": 3
+}
+```
+
+### remoteExplorer
+Configure the behavior of the `remoteExplorer` command.
+
+| Key | Value | Default |
+| --- | --- | --- | 
+| *remoteExplorer* | *object* | `{}` |
+ 
+#### remoteExplorer.filesExclude
+Configure that patterns for excluding files and folders. <br>
+The Remote Explorer decides which files and folders to show or hide based on this setting..
+
+| Key | Value |
+| --- | --- |
+| *remoteExplorer.filesExclude* | *string[]* |
+
+#### remoteExplorer.order
+
+| Key | Value |
+| --- | --- |
+| *remoteExplorer.order* | *number* |
+```json
+{
+  "remoteExplorer": {
+    "filesExclude": [],
+    "order": 0
+  }
+}
+```
+
+### concurrency
+Lowering the concurrency could get more stability because some clients/servers have some sort of configured/hard coded limit.
+
+| Key | Value | Default |
+| --- | --- | --- |
+| *concurrency* | *number* | `4` |
+
+```json
+{
+  "concurrency": 3
+}
+```
+
+### connectTimeout
+The maximum connection time.
+
+| Key | Value | Default |
+| --- | --- | --- |
+| *connectTimeout* | *number* | `10000` |
+
+```json
+{
+  "connectTimeout": 15000
+}
+```
+
+### limitOpenFilesOnRemote
+Limit open file descriptors to the specific number in a remote server. <br>
+Set to true for using default `limit(222)`.
+
+| 💡 Important |
+| :--- |
+| *Do not set this unless you have to!* | 
+
+| Key | Value | Default |
+| --- | --- | --- |
+| *limitOpenFilesOnRemote* | *mixed* | `false` |
+
+```json
+{
+  "limitOpenFilesOnRemote": 15000
+}
+```
+
+
+## SFTP only configuration
+
+### agent
+Path to ssh-agent's UNIX socket for ssh-agent-based user authentication. <br>
+Windows users must set to 'pageant' for authenticating with Pagenat or (actual) path to a Cygwin "UNIX socket". <br>
+It'd get more stability because some client/server have some sort of configured/hard coded limit.
+
+| Key | Value |
+| --- | --- |
+| *agent* | *string* |
+
+```json
+{
+  "agent": "/_subfolder_/agent"
+}
+```
+
+### privateKeyPath
+Absolute path to user private key.
+
+| Key | Value |
+| --- | --- |
+| *privateKeyPath* | *string* |
+
+```json
+{
+  "privateKeyPath": "/.ssh/key.pem"
+}
+```
+
+### passphrase
+For an encrypted private key, this is the passphrase string used to decrypt it. <br>
+Set to 'true' for enable passphrase dialog. This will prevent from using cleartext passphrase in this config.
+
+| Key | Value |
+| --- | --- |
+| *passphrase* | *mixed* |
+
+```json
+{
+  "passphrase": true
+}
+```
+
+### interactiveAuth
+Enable keyboard interaction authentication mechanism. Set to 'true' to enable `verifyCode` dialog. <br>
 For example using Google Authentication (multi-factor). Or pass array of predefined phrases to automatically enter them without user prompting.
 
-Note: *Requires the server to have keyboard-interactive authentication enabled.*
+| 💡 Note |
+| :--- |
+| *Requires the server to have keyboard-interactive authentication enabled.* | 
 
-**default**: false
+| Key | Value | Default |
+| --- | --- | --- |
+| *interactiveAuth* | *boolean*\|*string[]* | 'false' |
 
-## algorithms
+```json
+{
+  "interactiveAuth": true
+}
+```
+
+### algorithms
 Explicit overrides for the default transport layer algorithms used for the connection.
 
-**default**:
+**Default**:
 ```json
 {
   "algorithms": {
@@ -169,15 +539,15 @@ Explicit overrides for the default transport layer algorithms used for the conne
     ],
     "cipher": [
       "aes128-gcm",
-			"aes128-gcm@openssh.com",
-			"aes256-gcm",
-			"aes256-gcm@openssh.com",
-			"aes128-cbc",
-			"aes192-cbc",
-			"aes256-cbc",
-			"aes128-ctr",
-			"aes192-ctr",
-			"aes256-ctr"
+		"aes128-gcm@openssh.com",
+		"aes256-gcm",
+		"aes256-gcm@openssh.com",
+		"aes128-cbc",
+		"aes192-cbc",
+		"aes256-cbc",
+		"aes128-ctr",
+		"aes192-ctr",
+		"aes256-ctr"
     ],
     "serverHostKey": [
       "ssh-rsa",
@@ -197,24 +567,64 @@ Explicit overrides for the default transport layer algorithms used for the conne
 }
 ```
 
-## sshConfigPath
+### sshConfigPath
 Absolute path to your SSH configuration file.
 
-**default**: `~/.ssh/config`
+| Key | Value | Default |
+| --- | --- | --- |
+| *sshConfigPath* | *string* | `~/.ssh/config` |
 
-## sshCustomParams
+```json
+{
+  "sshConfigPath": "~/.ssh/config"
+}
+```
+
+### sshCustomParams
 Extra parameters appended to the SSH command used by "Open SSH in Terminal".
 
-***
+| Key | Value |
+| --- | --- |
+| *sshCustomParams* | *string* |
 
-# FTP(s) only configuration
+```json
+{
+  "sshCustomParams": "-g"
+}
+```
 
-## secure
-*mixed*: Set to true for both control and data connection encryption.
+
+## FTP(s) only configuration
+
+### secure
+Set to true for both control and data connection encryption. <br>
 Set to `control` for control encryption only, or `implicit` for implicitly encrypted control connection (this mode is deprecated in modern times, but usually uses port 990).
 
-**default**: false
+| Key | Value | Default |
+| --- | --- | --- |
+| *secure* | *mixed* | `false` |
 
-## secureOptions
+```json
+{
+  "secure": control
+}
+```
+
+### secureOptions
 Additional options to be passed to `tls.connect()`.
-See [TLS connect options callback](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback).
+
+| 💡 Note |
+| :--- |
+| *See [TLS connect options callback](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback).* | 
+
+| Key | Value |
+| --- | --- |
+| *secureOptions* | *object* |
+
+```json
+{
+  "secureOptions": {
+    "enableTrace": true
+  }
+}
+```

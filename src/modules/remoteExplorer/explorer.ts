@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { registerCommand } from '../../host';
 import {
   COMMAND_REMOTEEXPLORER_REFRESH,
+  COMMAND_REMOTEEXPLORER_REFRESH_ACTIVE_FILE,
   COMMAND_REMOTEEXPLORER_VIEW_CONTENT,
 } from '../../constants';
 import { UResource } from '../../core';
@@ -27,6 +28,7 @@ export default class RemoteExplorer {
     });
 
     registerCommand(context, COMMAND_REMOTEEXPLORER_REFRESH, () => this._refreshSelection());
+    registerCommand(context, COMMAND_REMOTEEXPLORER_REFRESH_ACTIVE_FILE, () => this._refreshActiveRemoteFile());
     registerCommand(context, COMMAND_REMOTEEXPLORER_VIEW_CONTENT, (item: ExplorerItem) =>
       this._treeDataProvider.showItem(item)
     );
@@ -73,5 +75,28 @@ export default class RemoteExplorer {
     } else {
       this.refresh();
     }
+  }
+
+  private _refreshActiveRemoteFile() {
+    const focusedEditor = vscode.window.activeTextEditor;
+    if (focusedEditor) {
+
+      const remoteFileUri = focusedEditor.document.uri;
+      const root = this._treeDataProvider.findRoot(remoteFileUri);
+      const incompleteResource = UResource.makeResource(remoteFileUri);
+
+      if (!root) {
+        return;
+      }
+      const remoteFileItem = {
+        resource: UResource.updateResource(root.resource, {
+          remotePath: incompleteResource.fsPath
+        }),
+        isDirectory: false
+      };
+
+      this.refresh(remoteFileItem);
+    }
+    
   }
 }

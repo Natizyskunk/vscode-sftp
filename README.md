@@ -6,21 +6,18 @@ New maintained and updated version by [@Natizyskunk](https://github.com/Natizysk
 - VS Code marketplace : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp <br>
 - VSIX release : https://github.com/Natizyskunk/vscode-sftp/releases/
 
-## INFOS - 2023/06/23
+✳ I would be more than happy to have you participate in one way or another to this project. You can do so by simply following the [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose) when you open a new issue or a new pull request.
+
+## ℹ INFOS - 2025/03/13
+I've tried to keep this extension up-to-date as much as I can and added a lot of new relevant features. Saddly, for the last year and a half I wasn't really able to work on the project because of personal reasons and I'm really not sure if and when I'll be able to get more time to work on it again. So for now consider the [v1.16.3](https://github.com/Natizyskunk/vscode-sftp/releases/tag/v1.16.3) as the latest official stable release available.
+
+## ℹ INFOS - 2023/06/23
 This is the main repository for the SFTP extension since [@liximomo](https://github.com/liximomo) has set his own to deprecated in favor of this one in the VSCode marketplace.
 There are also other forks that are available. Feel free to try them.
 
 A lot of work as been brought to fix bugs, add new features and more than 50 updates have been released with a lot of improvements and stability fixes for almost two years now. 😎
 
-At the start of the year 2023, a new fork from [@satiromarra](https://github.com/satiromarra) was born with some really cool features. So for the future we decided to work together and put our efforts in one place to make an even better extension for the community.
-
-As of today (2023-06-23) we'll now be two collaborators : [@satiromarra](https://github.com/satiromarra) and [@me](https://github.com/Natizyskunk) 🙂.
-
-We've been working hard to fix a lot of things and we've updated more than 50 new releases with a lot of improvements and stability fixes and we've brought new features for almost two years now. 
-
-We'll try to keep this extension up-to-date as much as we can and add new relevant features. For the last 6 months I wasn't able to work a lot on the project because of personal reasons at the time so I'm glad [@satiromarra](https://github.com/satiromarra) was able to take on while I wasn't here.
-
-Also we would be more than happy to have you participate in one way or another to this project. You can do so by simply following the [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose) when you open a new issue or a new pull request.
+I've been working hard to fix a lot of things and I've updated more than 50 new releases with a lot of improvements and stability fixes and I've brought new features for almost three years now. 
 
 ---
 

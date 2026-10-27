@@ -4,13 +4,12 @@
   "description": "SFTP/FTP sync",
   "version": "1.16.3",
   "publisher": "Natizyskunk",
-  "author": "Natizyskunk <natan.fourie@hotmail.fr> (https://github.com/Natizyskunk)",
+  "author": "Natizyskunk (https://github.com/Natizyskunk)",
   "engines": {
     "vscode": "^1.64.2"
   },
   "bugs": {
     "url": "https://github.com/Natizyskunk/vscode-sftp/issues",
-    "email": "natan.fourie@hotmail.fr"
   },
   "homepage": "https://github.com/Natizyskunk/vscode-sftp/blob/master/README.md",
   "repository": {
@@ -166,7 +165,11 @@
       {
         "command": "sftp.download.file",
         "title": "Download File",
-        "category": "SFTP"
+        "category": "SFTP",
+        "icon": {
+          "dark": "resources/dark/download-file.svg",
+          "light": "resources/light/download-file.svg"
+        }
       },
       {
         "command": "sftp.download.activeFile",
@@ -176,7 +179,11 @@
       {
         "command": "sftp.download.folder",
         "title": "Download Folder",
-        "category": "SFTP"
+        "category": "SFTP",
+        "icon": {
+          "dark": "resources/dark/download-folder.svg",
+          "light": "resources/light/download-folder.svg"
+        }
       },
       {
         "command": "sftp.download.activeFolder",
@@ -271,6 +278,15 @@
       {
         "command": "sftp.remoteExplorer.refresh",
         "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "sftp.remoteExplorer.refreshActiveFile",
+        "title": "Refresh Active Remote File",
+        "category": "SFTP",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
@@ -519,6 +535,13 @@
           "when": "sftp.enabled && resourceScheme == remote"
         }
       ],
+      "editor/title": [
+        {
+          "command": "sftp.remoteExplorer.refreshActiveFile",
+          "group": "navigation",
+          "when": "sftp.enabled && resourceScheme == remote"
+        }
+      ],
       "editor/title/context": [
         {
           "command": "sftp.revealInExplorer",
@@ -606,6 +629,16 @@
           "command": "sftp.create.file",
           "group": "7_modification",
           "when": "view == remoteExplorer && viewItem != file"
+        },
+        {
+          "command": "sftp.download.file",
+          "group": "inline",
+          "when": "view == remoteExplorer && viewItem == file"
+        },
+        {
+          "command": "sftp.download.folder",
+          "group": "inline",
+          "when": "sftp.enabled && view == remoteExplorer && viewItem == folder"
         }
       ],
       "scm/title": [
