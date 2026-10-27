@@ -12,11 +12,14 @@ const randomInt = function(min, max) {
 
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
+const timers = new Set();
 const delay = millisecends =>
   new Promise(resolve => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      timers.delete(timer);
       resolve();
     }, millisecends);
+    timers.add(timer);
   });
 const fixture = Symbol('fixture');
 
@@ -25,6 +28,12 @@ const wrapTask = fn => ({
 });
 
 describe('scheduler', () => {
+  // some tests never await their long-running tasks
+  afterAll(() => {
+    timers.forEach(timer => clearTimeout(timer));
+    timers.clear();
+  });
+
   test('.add()', () => {
     let result;
     const queue = new Scheduler();
