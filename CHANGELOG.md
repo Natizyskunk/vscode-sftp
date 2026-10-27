@@ -1,3 +1,15 @@
+## 1.16.4 - 2026-10-27
+* Add download icons (file & folder) inline in the remote explorer treeview (Pull request [#381](https://github.com/Natizyskunk/vscode-sftp/pull/381) from @satiromarra vscode-sftp:dev-download-icons).
+* Add `Refresh Active Remote File` command and editor title button to refresh the currently focused remote file (Pull request [#408](https://github.com/Natizyskunk/vscode-sftp/pull/408) from @atariq11700 vscode-sftp:develop).
+* Fix casing from canonical URI when computing remote paths on Windows/macOS (Pull request [#396](https://github.com/Natizyskunk/vscode-sftp/pull/396) from @ain-soph vscode-sftp:master).
+* Add `close` & `end` events handlers for ssh2 to detect disconnections (Pull request [#457](https://github.com/Natizyskunk/vscode-sftp/pull/457) from @mbroinsky vscode-sftp:detectDisconnect).
+* Add confirmation popup for `Upload File To All Profiles` & `Upload Folder To All Profiles` commands (Pull request [#507](https://github.com/Natizyskunk/vscode-sftp/pull/507) from @criuRW vscode-sftp:develop).
+* Update [configuration.md](https://github.com/Natizyskunk/vscode-sftp/blob/master/docs/configuration.md) for better readability (Pull request [#537](https://github.com/Natizyskunk/vscode-sftp/pull/537) from @level42ca vscode-sftp:develop).
+* Update [README.md](https://github.com/Natizyskunk/vscode-sftp/blob/master/README.md), [LICENSE](https://github.com/Natizyskunk/vscode-sftp/blob/master/LICENSE) and [documentations](https://github.com/Natizyskunk/vscode-sftp/tree/master/docs).
+* Update [commands.md](https://github.com/Natizyskunk/vscode-sftp/blob/master/docs/commands.md) and [README.md](https://github.com/Natizyskunk/vscode-sftp/blob/master/README.md) with `Upload To All Profiles`, `Refresh Active Remote File` and remote explorer download buttons.
+* Update npm `memfs` dev dependency to v3.6.0 and fix test suite (jest preprocessor, fs mock, scheduler timers) and type-check (`skipLibCheck`).
+* Change dependabot schedule interval from weekly to daily.
+
 ## 1.16.3 - 2023-06-16
 * [#356] New Feature : Upload to all profiles (Pull request [#313](https://github.com/Natizyskunk/vscode-sftp/pull/313) from @wewawa vscode-sftp:create_multi_command).
 * [#357] Fix : Correcting Typo 'avaliable' => 'available' (Pull request [#343](https://github.com/Natizyskunk/vscode-sftp/pull/343) from @kjo-sdds vscode-sftp:develop).

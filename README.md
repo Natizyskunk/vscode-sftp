@@ -9,7 +9,7 @@ New maintained and updated version by [@Natizyskunk](https://github.com/Natizysk
 ✳ I would be more than happy to have you participate in one way or another to this project. You can do so by simply following the [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose) when you open a new issue or a new pull request.
 
 ## ℹ INFOS - 2025/03/13
-I've tried to keep this extension up-to-date as much as I can and added a lot of new relevant features. Saddly, for the last year and a half I wasn't really able to work on the project because of personal reasons and I'm really not sure if and when I'll be able to get more time to work on it again. So for now consider the [v1.16.3](https://github.com/Natizyskunk/vscode-sftp/releases/tag/v1.16.3) as the latest official stable release available.
+I've tried to keep this extension up-to-date as much as I can and added a lot of new relevant features. Saddly, for the last year and a half I wasn't really able to work on the project because of personal reasons and I'm really not sure if and when I'll be able to get more time to work on it again. So for now consider the [v1.16.4](https://github.com/Natizyskunk/vscode-sftp/releases/tag/v1.16.4) as the latest official stable release available.
 
 ## ℹ INFOS - 2023/06/23
 This is the main repository for the SFTP extension since [@liximomo](https://github.com/liximomo) has set his own to deprecated in favor of this one in the VSCode marketplace.
@@ -289,6 +289,12 @@ You can only view a files content with Remote Explorer. Run command `SFTP: Edit 
 You are able to select multiple files/folders at once on the remote server to download and upload. You can do it simply by holding down Ctrl or Shift while selecting all desired files, just like on the regular explorer view.
 
 _Note：_ You need to manually refresh the parent folder after you **delete** a file if the explorer isn't correctly updated.
+
+### Download buttons
+Files and folders in the Remote Explorer have an inline download button, shown when hovering an item, to quickly run `Download File` or `Download Folder`.
+
+### Refresh Active Remote File
+When a remote file is open in the editor, click the refresh button in the editor title bar (or run `SFTP: Refresh Active Remote File`) to reload its content from the server.
 
 ### Order
 You can order the remote Explorer by adding the `remoteExplorer.order` parameter inside your `sftp.json` config file.
