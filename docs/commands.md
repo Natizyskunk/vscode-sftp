@@ -5,7 +5,7 @@ Create a new configuration file for a project.
 
 ### SFTP: Set Profile
 Set the current profile.
-           
+
 #### KeyBindings Args
 func(profileName: string)
 
@@ -41,6 +41,14 @@ Compare file modification times, and will always perform the action that causes 
 
 ### SFTP: List Active Folder
 List the folder the current file is located in.
+
+### SFTP: Upload To All Profiles
+Upload files or folders to every profile defined in your configuration. Available variants: `Upload File To All Profiles`, `Upload Active File To All Profiles`, `Upload Folder To All Profiles`, `Upload Active Folder To All Profiles`, `Upload Project To All Profiles` and `Force Upload To All Profiles`.
+
+*`Upload File To All Profiles` and `Upload Folder To All Profiles` ask for confirmation before uploading.*
+
+### SFTP: Refresh Active Remote File
+Reload the content of the remote file currently open in the editor. Also available as a refresh button in the editor title bar for remote files.
 
 ### sftp.upload
 Upload file or folders.

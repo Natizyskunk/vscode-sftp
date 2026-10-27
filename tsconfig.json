@@ -10,6 +10,7 @@
         "rootDir": ".",
         "noUnusedLocals": true,
         "strictNullChecks": true,
+        "skipLibCheck": true,
         "plugins": [
           {
             "name": "typescript-tslint-plugin",
