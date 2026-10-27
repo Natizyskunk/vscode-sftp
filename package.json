@@ -9,7 +9,7 @@
     "vscode": "^1.64.2"
   },
   "bugs": {
-    "url": "https://github.com/Natizyskunk/vscode-sftp/issues",
+    "url": "https://github.com/Natizyskunk/vscode-sftp/issues"
   },
   "homepage": "https://github.com/Natizyskunk/vscode-sftp/blob/master/README.md",
   "repository": {
@@ -45,6 +45,7 @@
     "views": {
       "sftp": [
         {
+          "icon": "",
           "id": "remoteExplorer",
           "name": "Explorer",
           "when": "sftp.enabled"
@@ -713,7 +714,7 @@
     "glob-parent": ">=5.1.2",
     "jest": "^29.0.3",
     "json-schema": ">=0.4.0",
-    "memfs": "^2.15.5",
+    "memfs": "^3.6.0",
     "merge": ">=2.1.1",
     "node-notifier": ">=8.0.1",
     "rimraf": "^2.7.1",
