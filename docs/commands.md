@@ -16,6 +16,13 @@ Upload the current file.
 Upload all files changed or created since the last commit to your Git.
 Can be called by default keyboard shortcut `Ctrl+Alt+U`.
 
+### SFTP: Upload Commit Files
+Pick a branch (the current one is listed first), then a commit from its last 50 commits, and upload only the files added or modified in that commit, with their content as of that commit. Your uncommitted local changes are never uploaded, and the branch does not need to be checked out (it only needs to be fetched).
+Files deleted in the commit are deleted from the remote too (after a confirmation). Merge commits are compared against their first parent.
+
+#### KeyBindings Args
+func(commitHash: string)
+
 ### SFTP: Upload Active Folder
 Upload the entire folder the current file is located in.
 

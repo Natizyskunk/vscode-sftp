@@ -14,13 +14,27 @@ function getFileSystemPath(fsPath: string): string {
 		result = result[0].toUpperCase() + result.substr(1);
 	}
 	if (process.platform === 'win32' || process.platform === 'darwin') {
-		const realpath = fs.realpathSync.native(result);
+		const realpath = getRealpath(result);
 		// Only use the real path if only the casing has changed.
 		if (realpath.toLowerCase() === result.toLowerCase()) {
 			result = realpath;
 		}
 	}
 	return result;
+}
+
+// The path may not exist locally (e.g. a file deleted locally that must be removed from the remote),
+// so resolve the casing of its closest existing ancestor and keep the rest as is.
+function getRealpath(fsPath: string): string {
+	try {
+		return fs.realpathSync.native(fsPath);
+	} catch (error) {
+		const parent = path.dirname(fsPath);
+		if (parent === fsPath) {
+			return fsPath;
+		}
+		return path.join(getRealpath(parent), path.basename(fsPath));
+	}
 }
 
 export function simplifyPath(absolutePath: string) {
