@@ -20,12 +20,15 @@ function createTransferHandle(direction: TransferDirection) {
         transferDirection: TransferDirection.REMOTE_TO_LOCAL,
       };
     } else {
+      // `srcFsPath` lets callers upload another local file (e.g. a file extracted from a git commit)
+      // to the remote path of the target. The ignore check already ran against the target path.
+      const { srcFsPath, ...transferOption } = option;
       transferConfig = {
-        srcFsPath: localFsPath,
+        srcFsPath: srcFsPath || localFsPath,
         srcFs: localFs,
         targetFsPath: remoteFsPath,
         targetFs: remoteFs,
-        transferOption: option,
+        transferOption: srcFsPath ? { ...transferOption, ignore: undefined } : transferOption,
         filePerm: this.config.filePerm,
         dirPerm: this.config.dirPerm,
         transferDirection: TransferDirection.LOCAL_TO_REMOTE,
@@ -136,7 +139,7 @@ export const upload = createFileHandler<TransferOption>({
   },
 });
 
-export const uploadFile = createFileHandler<TransferOption>({
+export const uploadFile = createFileHandler<TransferOption & { srcFsPath?: string }>({
   name: 'upload file',
   handle: uploadHandle,
   transformOption() {

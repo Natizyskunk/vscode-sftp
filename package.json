@@ -109,6 +109,15 @@
         }
       },
       {
+        "command": "sftp.upload.commitFiles",
+        "title": "Upload Commit Files",
+        "category": "SFTP",
+        "icon": {
+          "light": "resources/light/upload.svg",
+          "dark": "resources/dark/upload.svg"
+        }
+      },
+      {
         "command": "sftp.upload.activeFile",
         "title": "Upload Active File",
         "category": "SFTP"
@@ -378,6 +387,10 @@
         },
         {
           "command": "sftp.upload.changedFiles",
+          "when": "sftp.enabled"
+        },
+        {
+          "command": "sftp.upload.commitFiles",
           "when": "sftp.enabled"
         },
         {

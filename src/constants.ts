@@ -23,6 +23,7 @@ export const COMMAND_FORCE_UPLOAD = 'sftp.forceUpload';
 export const COMMAND_UPLOAD = 'sftp.upload';
 export const COMMAND_UPLOAD_FILE = 'sftp.upload.file';
 export const COMMAND_UPLOAD_CHANGEDFILES = 'sftp.upload.changedFiles';
+export const COMMAND_UPLOAD_COMMITFILES = 'sftp.upload.commitFiles';
 export const COMMAND_UPLOAD_ACTIVEFILE = 'sftp.upload.activeFile';
 export const COMMAND_UPLOAD_FOLDER = 'sftp.upload.folder';
 export const COMMAND_UPLOAD_ACTIVEFOLDER = 'sftp.upload.activeFolder';

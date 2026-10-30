@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { COMMAND_UPLOAD_CHANGEDFILES } from '../constants';
 import { getFileService } from '../modules/serviceManager';
 import { uploadFile, renameRemote, removeRemote } from '../fileHandlers';
-import { getGitService, GitAPI, Repository, Status, Change } from '../modules/git';
+import { getGitService, getRepository, Repository, Status, Change } from '../modules/git';
 import { checkCommand } from './abstract/createCommand';
 import logger from '../logger';
 import { simplifyPath } from '../helper';
@@ -139,29 +138,4 @@ function outputGroup<T>(label: string, items: T[], formatItem: (x: T) => string)
   logger.log(`${label.toUpperCase()}:`);
   logger.log(items.map(i => formatItem(i)).join('\n'));
   logger.log('');
-}
-
-async function getRepository(git: GitAPI): Promise<Repository | undefined> {
-  if (git.repositories.length === 1) {
-    return git.repositories[0];
-  }
-
-  if (git.repositories.length === 0) {
-    throw new Error('There are no available repositories');
-  }
-
-  const picks = git.repositories.map(repo => {
-    const label = path.basename(repo.rootUri.fsPath);
-    const description = repo.state.HEAD ? repo.state.HEAD.name : '';
-
-    return {
-      label,
-      description,
-      repository: repo,
-    };
-  });
-
-  const pick = await vscode.window.showQuickPick(picks, { placeHolder: 'Choose a repository' });
-
-  return pick && pick.repository;
 }
