@@ -125,16 +125,22 @@ export function uriFromExplorerContextOrEditorContext(item, items): undefined | 
     } else {
       return item;
     }
-  } else if ((item as ExplorerItem).resource) {
+  } else if ((item as ExplorerItem)?.resource) {
     // from remote explorer
-    if (Array.isArray(items) && (items[0] as ExplorerItem).resource) {
+    if (Array.isArray(items) && (items[0] as ExplorerItem)?.resource) {
       // multi-select in remote explorer
       return items.map(_ => _.resource.uri);
     } else {
       return item.resource.uri;
     }
+  } else if (item?.resourceUri instanceof Uri) {
+    // from modern VS Code remote explorer TreeItem
+    if (Array.isArray(items) && items[0]?.resourceUri instanceof Uri) {
+      return items.map(_ => _.resourceUri);
+    } else {
+      return item.resourceUri;
+    }
   }
-
   return;
 }
 
@@ -149,12 +155,13 @@ export function selectFolderFallbackToConfigContext(item, items): Promise<undefi
       } else {
         return Promise.resolve(item);
       }
-    } else if ((item as ExplorerItem).resource) {
+    } else if ((item as ExplorerItem)?.resource) {
       // from remote explorer
       return Promise.resolve(item.resource.uri);
+    } else if (item?.resourceUri instanceof Uri) {
+      return Promise.resolve(item.resourceUri);
     }
   }
-
   return selectContext();
 }
 
