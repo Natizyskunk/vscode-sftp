@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Uri, window } from 'vscode';
+import { SourceControlResourceState, Uri, window } from 'vscode';
 import { FileType } from '../core';
 import { getAllFileService } from '../modules/serviceManager';
 import { ExplorerItem } from '../modules/remoteExplorer';
@@ -133,6 +133,9 @@ export function uriFromExplorerContextOrEditorContext(item, items): undefined | 
     } else {
       return item.resource.uri;
     }
+  } else if (item && (item as SourceControlResourceState).resourceUri instanceof Uri) {
+    // from source control view
+    return item.resourceUri;
   }
 
   return;
