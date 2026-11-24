@@ -670,6 +670,13 @@
           "group": "sftp",
           "when": "sftp.enabled && scmProvider == git && scmResourceGroup == index && !gitFreshRepository"
         }
+      ],
+      "scm/resourceState/context": [
+        {
+          "command": "sftp.diff",
+          "group": "sftp",
+          "when": "sftp.enabled && scmProvider == git"
+        }
       ]
     },
     "keybindings": [
